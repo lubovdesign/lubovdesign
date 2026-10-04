@@ -26,15 +26,6 @@ function updateAssembly(){
 function requestAssemblyUpdate(){if(!framePending){framePending=true;requestAnimationFrame(updateAssembly)}}
 window.addEventListener('scroll',requestAssemblyUpdate,{passive:true});
 window.addEventListener('resize',requestAssemblyUpdate);motion.addEventListener('change',requestAssemblyUpdate);updateAssembly();
-const principleVisual=document.querySelector('.thinking-visual');
-const principleStates=[['Почему<br>это работает?','Идея','Аргумент','Результат','Логика решений'],['Начнём<br>с вопроса','Задача','Варианты','Решение','Совместный поиск'],['Один<br>визуальный язык','Шрифт','Цвет','Композиция','Цельная система'],['В вашем<br>ритме','Диалог','Апдейт','Обратная связь','Гибкий процесс']];
-document.querySelectorAll('.principle').forEach((details,index)=>details.addEventListener('toggle',()=>{
- if(!details.open)return;
- document.querySelectorAll('.principle').forEach(other=>{if(other!==details)other.open=false});
- const state=principleStates[index];principleVisual.dataset.state=String(index);
- principleVisual.querySelector('.thinking-core span').innerHTML=state[0];
- principleVisual.querySelector('.orbit-one').textContent=state[1];principleVisual.querySelector('.orbit-two').textContent=state[2];principleVisual.querySelector('.orbit-three').textContent=state[3];principleVisual.querySelector('.visual-kind').textContent=state[4];principleVisual.querySelector('.visual-index').textContent='0'+(index+1)+' — 04';
+document.querySelectorAll('.principle').forEach(details=>details.addEventListener('toggle',()=>{
+ if(details.open)document.querySelectorAll('.principle').forEach(other=>{if(other!==details)other.open=false});
 }));
-
-const imageDialog=document.querySelector('.image-dialog');
-if(imageDialog){document.querySelectorAll('.image-expand').forEach(button=>button.addEventListener('click',()=>{const image=imageDialog.querySelector('img');image.src=button.dataset.image;image.alt=button.dataset.title;imageDialog.showModal()}));imageDialog.querySelector('.close').addEventListener('click',()=>imageDialog.close());imageDialog.addEventListener('click',event=>{if(event.target===imageDialog)imageDialog.close()})}

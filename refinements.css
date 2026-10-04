@@ -1,0 +1,60 @@
+@font-face{font-family:Inter;src:url('assets/inter-bold.ttf') format('truetype');font-style:normal;font-weight:700;font-display:swap}
+/* Shared type hierarchy. */
+:root{--heading-ink:radial-gradient(ellipse at 46% 36%,#333 15%,#555 54%,#999 100%)}
+h2,.inner-page h1{background-image:var(--heading-ink);background-clip:text;-webkit-background-clip:text;color:transparent}
+h2 .muted,.contact-content h2 span{color:inherit}
+h3,.name{color:#333}
+p,.role,.project-card .project-note,.contact-content .contact-note,.footer-brand p{color:#797979}
+.headline .line{background-image:var(--heading-ink)}
+.projects .section-heading{text-align:center}
+/* A collaborator cursor draws the selection, then quietly leaves. */
+.selected{animation:selection-color 1.45s .8s ease-in-out both}
+.selected:before{animation:selection-drag 1.45s .8s cubic-bezier(.4,0,.2,1) both}
+.designer-cursor{position:absolute;z-index:3;left:0;top:-.02em;width:25px;height:30px;pointer-events:none;filter:blur(.35px);animation:collaborator-drag 4.4s .8s both;line-height:1;letter-spacing:-.04em}
+.designer-cursor svg{display:block;overflow:visible}
+.designer-cursor>span{position:absolute;left:19px;top:23px;padding:7px 12px;border:1px solid #ffffff85;border-radius:5px 13px 13px;background:radial-gradient(ellipse at 10% 0,#ee3c1c,#ff775d 65%,#f1afbd);color:white;font:400 14px/1.2 Inter,Arial,sans-serif;letter-spacing:0;white-space:nowrap;width:max-content;text-align:left;box-shadow:0 3px 14px #ee3c1c12}
+@keyframes selection-color{0%,12%{color:#333}100%{color:#ee3c1c}}
+@keyframes selection-drag{0%{clip-path:inset(0 100% 100% 0);opacity:0}10%{opacity:1}100%{clip-path:inset(0);opacity:1}}
+@keyframes collaborator-drag{0%{left:0;top:-.02em;opacity:0}5%{opacity:1}33%,52%{left:100%;top:calc(100% + .08em);opacity:1;filter:blur(.35px)}100%{left:100%;top:calc(100% + .08em);opacity:0;filter:blur(5px)}}
+.hero .profile,.hero .headline,.hero .cta{z-index:1}
+/* A single drifting question resolves into the original pixel heart. */
+.project-question{position:relative}
+.floating-symbol{position:relative;width:176px;height:164px;animation:symbol-float 5.8s ease-in-out infinite}
+.project-question .question-symbol,.project-question .heart-symbol{position:absolute;inset:0;display:grid;place-items:center;letter-spacing:0;transition:opacity .85s ease,filter .85s ease,transform .85s ease}
+.project-question .question-symbol{font-size:154px;font-weight:700;line-height:1;color:#fff;filter:blur(3px)}
+.project-question .heart-symbol{inset:17px 10px;background:radial-gradient(ellipse at 30% 0,#fff,#ffe4e8);mask:url('assets/heart.svg') center/contain no-repeat;-webkit-mask:url('assets/heart.svg') center/contain no-repeat;filter:blur(5px);opacity:0;transform:scale(.72) rotate(5deg)}
+.project-question:hover .question-symbol,.project-invite:focus-within .question-symbol{opacity:0;filter:blur(13px);transform:scale(.8) rotate(-8deg)}
+.project-question:hover .heart-symbol,.project-invite:focus-within .heart-symbol{opacity:1;filter:blur(5px);transform:scale(1) rotate(0)}
+@keyframes symbol-float{0%,100%{transform:translate(0,5px) rotate(-3deg)}50%{transform:translate(4px,-7px) rotate(3deg)}}
+@media(max-width:700px){.designer-cursor{scale:.75;transform-origin:top left}.floating-symbol{width:140px;height:140px}.project-question .question-symbol{font-size:128px}}
+@media(prefers-reduced-motion:reduce){.designer-cursor{display:none}.selected{color:#ee3c1c}.selected:before{clip-path:none;opacity:1}.floating-symbol{animation:none}}
+/* Blur the silhouette after applying its SVG mask. */
+.project-question .heart-symbol{background:none;mask:none;-webkit-mask:none}
+.project-question .heart-symbol:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 30% 0,#fff,#ffe4e8);mask:url('assets/heart.svg') center/contain no-repeat;-webkit-mask:url('assets/heart.svg') center/contain no-repeat}
+/* Text keeps the same family, including native controls and dialogs. */
+body,button,input,textarea,select,dialog{font-family:Inter,Arial,sans-serif}
+.tags span{font-size:13px;background:linear-gradient(90deg,rgb(255 255 255 / 15%),rgb(51 51 51 / 15%));color:#333;padding:7px 12px}
+@media(max-width:700px){.tags span{font-size:12px}}
+/* Compact main version; the complete case-study version is archived separately. */
+.menu-panel .nav-socials{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.nav-socials .social-circle,.menu-panel .nav-socials .social-circle,.menu-panel .nav-socials .social-circle:last-child{display:grid;place-items:center;width:44px;height:44px;margin:0;padding:0;flex:0 0 44px;border:1px solid white;border-radius:50%;color:#333;line-height:1}
+.social-circle svg{display:block;width:21px;height:21px;fill:currentColor;stroke:none}
+.nav-home details summary{display:grid;place-items:center;line-height:1}
+.home-chevron{display:block;width:22px;height:22px;fill:none;stroke:#333;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s ease;transform-origin:center}
+.nav-home details[open] .home-chevron{transform:rotate(180deg)}
+.portfolio-nav .portfolio-arrow{opacity:0;transform:translateX(-5px);transition:opacity .25s,transform .25s}
+.portfolio-nav:hover .portfolio-arrow,.portfolio-nav:focus-visible .portfolio-arrow{opacity:1;transform:translateX(0)}
+.project-actions{display:flex;flex-direction:column;gap:9px;margin-top:auto}
+.tags .tag-accent{background:linear-gradient(90deg,rgb(255 255 255 / 15%),rgb(238 60 28 / 15%))}
+.project-image{object-position:center}.project-card[data-project="enerjew"] .project-image{object-position:top}
+.project-invite{grid-column:auto;display:flex;gap:0}.project-question{min-height:0;aspect-ratio:1.525;flex:none}.invite-copy{flex:1;padding:0}.invite-copy .project-copy{padding:20px 12px 22px;justify-content:flex-start}.invite-copy h3{font-size:clamp(23px,1.95vw,31px)}.invite-copy p{font-size:16px;max-width:none}.invite-copy .glow-button{margin-top:auto}
+.approach-stack{max-width:950px;margin:auto;display:flex;flex-direction:column;gap:48px}.approach-stack h2{text-align:center}.approach-stack .assembly{padding:0;max-width:720px;width:100%;align-self:center}.approach-stack .approach-copy p{max-width:720px;margin:0 auto}.collaboration-grid{display:block;max-width:1050px;margin:auto}.collaboration .section-heading{max-width:1050px;margin-inline:auto}
+@media(max-width:700px){.nav-socials .social-circle{width:38px;height:38px;flex-basis:38px}.menu-panel .nav-socials .social-circle,.menu-panel .nav-socials .social-circle:last-child{width:40px;height:40px;flex-basis:40px}.menu-panel .nav-socials{gap:6px}.approach-stack{gap:32px}.invite-copy h3{font-size:25px}.footer-other .nav-socials{max-width:145px}.project-invite{min-height:0}}
+
+/* Center the icon box independently of navigation-link layout. */
+.menu-panel .nav-socials a.social-circle,.menu-panel .nav-socials a.social-circle:last-child{display:flex;align-items:center;justify-content:center;gap:0}
+.menu-panel .nav-socials a.social-circle>svg{flex:0 0 21px;margin:0;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.nav-home details summary{padding:0}
+.nav-home details[open] .home-chevron{transform:rotate(180deg)}
+.menu-panel .blog-nav .nav-arrow{font-size:24px;color:inherit;opacity:0;transform:translateX(-5px);transition:opacity .25s,transform .25s}
+.menu-panel .blog-nav:hover .nav-arrow,.menu-panel .blog-nav:focus-visible .nav-arrow{opacity:1;transform:translateX(0)}
