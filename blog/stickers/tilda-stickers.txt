@@ -1,0 +1,55 @@
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // Массив ссылок на один или несколько стикеров
+  const STICKER_SRCS = [
+    "https://static.tildacdn.com/tild3063-6565-4333-b738-373264323931/photo.png"
+  ];
+
+  const area = document.querySelector(".stickers");
+  if (!area) return;
+
+  area.style.position = area.style.position || "relative";
+  area.style.overflow = "hidden";
+
+  area.addEventListener("click", function (e) {
+    const rect = area.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const img = document.createElement("img");
+
+    // Выбор случайного стикера из массива
+    const randomIndex = Math.floor(Math.random() * STICKER_SRCS.length);
+    img.src = STICKER_SRCS[randomIndex];
+    img.alt = "";
+    img.loading = "lazy";
+    img.style.maxWidth = "120px";
+    img.style.width = "120px";
+    img.style.height = "auto";
+    img.style.position = "absolute";
+    img.style.pointerEvents = "none";
+    img.style.zIndex = "999999";
+    img.style.transform = "scale(0.3)";
+    img.style.opacity = "0";
+    img.style.transition = "transform 0.25s ease, opacity 0.25s ease";
+    area.appendChild(img);
+
+    const w = img.offsetWidth;
+    const h = img.offsetHeight;
+    img.style.left = (x - w / 2) + "px";
+    img.style.top = (y - h / 2) + "px";
+
+    requestAnimationFrame(function () {
+      img.style.transform = "scale(1)";
+      img.style.opacity = "1";
+    });
+
+    setTimeout(function () {
+      img.style.transform = "scale(0.3)";
+      img.style.opacity = "0";
+      setTimeout(function () {
+        img.remove();
+      }, 250);
+    }, 1000);
+  });
+});
+</script>
