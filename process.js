@@ -46,6 +46,7 @@
   const stopByUser = () => { manuallyStopped = true; clearTimer(); };
   const manualMove = delta => {
     stopByUser();
+    index = viewport.scrollLeft >= maxScroll() - 2 ? maxIndex() : Math.round(viewport.scrollLeft / pitch());
     move(index + delta);
     announcement.textContent = cards[Math.min(index, cards.length - 1)].querySelector('h3').textContent;
   };
@@ -94,5 +95,10 @@
     button.addEventListener('keydown', event => { if (event.key === 'Escape') { close(); event.stopPropagation(); } });
   });
   document.addEventListener('pointerdown', event => { if (!event.target.closest('.phase-video-tip')) closeTips(); });
+  // Run illustration timelines only while their card is actually visible.
+  const sceneObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => entry.target.classList.toggle('is-animating', entry.isIntersecting && entry.intersectionRatio > .35));
+  }, {threshold: [0, .35]});
+  cards.forEach(card => sceneObserver.observe(card));
   update();
 })();

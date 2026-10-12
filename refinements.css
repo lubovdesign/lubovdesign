@@ -23,8 +23,8 @@ p,.role,.project-card .project-note,.contact-content .contact-note,.footer-brand
 .project-question .question-symbol,.project-question .heart-symbol{position:absolute;inset:0;display:grid;place-items:center;letter-spacing:0;transition:opacity .85s ease,filter .85s ease,transform .85s ease}
 .project-question .question-symbol{font-size:154px;font-weight:700;line-height:1;color:#fff;filter:blur(3px)}
 .project-question .heart-symbol{inset:17px 10px;background:radial-gradient(ellipse at 30% 0,#fff,#ffe4e8);mask:url('assets/heart.svg') center/contain no-repeat;-webkit-mask:url('assets/heart.svg') center/contain no-repeat;filter:blur(5px);opacity:0;transform:scale(.72) rotate(5deg)}
-.project-question:hover .question-symbol,.project-invite:focus-within .question-symbol{opacity:0;filter:blur(13px);transform:scale(.8) rotate(-8deg)}
-.project-question:hover .heart-symbol,.project-invite:focus-within .heart-symbol{opacity:1;filter:blur(5px);transform:scale(1) rotate(0)}
+.project-invite:hover .question-symbol,.project-invite:focus-within .question-symbol{opacity:0;filter:blur(13px);transform:scale(.8) rotate(-8deg)}
+.project-invite:hover .heart-symbol,.project-invite:focus-within .heart-symbol{opacity:1;filter:blur(5px);transform:scale(1) rotate(0)}
 @keyframes symbol-float{0%,100%{transform:translate(0,5px) rotate(-3deg)}50%{transform:translate(4px,-7px) rotate(3deg)}}
 @media(max-width:700px){.designer-cursor{scale:.75;transform-origin:top left}.floating-symbol{width:140px;height:140px}.project-question .question-symbol{font-size:128px}}
 @media(prefers-reduced-motion:reduce){.designer-cursor{display:none}.selected{color:#ee3c1c}.selected:before{clip-path:none;opacity:1}.floating-symbol{animation:none}}

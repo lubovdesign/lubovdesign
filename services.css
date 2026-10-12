@@ -11,6 +11,7 @@
 .service-brand .service-wash{background:radial-gradient(ellipse at 75% 55%,var(--wash-strong),var(--wash-soft) 25%,transparent 57%);animation-delay:-5s}
 .service-graphic .service-wash{background:radial-gradient(ellipse at 76% 55%,var(--wash-strong),var(--wash-soft) 25%,transparent 60%);animation-delay:-10s}
 .service-custom .service-wash{background:radial-gradient(ellipse at 75% 55%,var(--wash-strong),var(--wash-soft) 25%,transparent 57%);animation-delay:-7s}
+.service-tile:not(.service-web){display:flex;align-items:center}
 .service-text{position:relative;z-index:2;padding:28px 30px;width:66%}
 .service-text h3{font-size:clamp(24px,2.1vw,33px);line-height:1.04;letter-spacing:-.06em;margin:0 0 14px;color:#333}
 .service-text p{font-size:15px;line-height:1.4;letter-spacing:-.03em;color:#646464;max-width:360px}
