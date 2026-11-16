@@ -1,199 +1,665 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f3f3f3">
-  <meta name="description" content="Любовь Русанова — веб и графический дизайнер. Создаю дизайн, который помогает бренду говорить с аудиторией.">
-  <title>Любовь Русанова — дизайнер</title>
-  <link rel="icon" type="image/svg+xml" href="assets/LK.svg">
-  <link rel="preload" href="assets/inter.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="sections.css">
-  <link rel="stylesheet" href="pages.css">
-<link rel="stylesheet" href="/refinements.css?v=2">
-  <link rel="stylesheet" href="services.css?v=8">
-  <link rel="stylesheet" href="process.css?v=2">
-<link rel="stylesheet" href="process-motion.css?v=6">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F3F3F3">
+<meta name="description" content="Любовь Русанова — веб и графический дизайнер. Помогаю бренду говорить с людьми через дизайн: сайты, айдентика, презентации и контент.">
+<title>Любовь Русанова — дизайнер</title>
+<link rel="icon" type="image/svg+xml" href="assets/v2/lr.svg">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* v2: серое поле, плашки внутри блока вплотную, между блоками воздух; шапка, контакт и подвал на всю ширину.
+   одна левая направляющая для текста (--gx). главные кнопки: полосы без скруглений, прибитые к краям.
+   один оранжевый акцент, текст на нём чисто белый. одна светлая тема. */
+:root{
+  color-scheme: light;
+  --ink:#0D0D0D;
+  --bg:#F3F3F3;
+  --card:#FFFFFF;
+  --accent:#FF5031;
+  --lime-l:#E5F0C3;
+  --lime:#CBDB9A;
+  --lil-l:#ECE3FE;
+  --lil:#D0BEF3;
+  --mute:#676767;
+  --mute-dark:#A3A3A3;
+  --line:#DEDEDE;
+  --ph:#E1E1E1;
+  --r:6px;
+  --gap:4px;
+  --edge:16px;
+  --tp:16px;
+  --gx:var(--edge);
+  --head:56px;
+  --ease:.25s ease;
+  --font:'Hauora','Manrope',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:var(--head)}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-weight:400;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body.lock{overflow:hidden}
+a{color:inherit}
+img{max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;border-radius:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.page{padding:var(--edge) var(--edge) 0}
+.block{margin-top:clamp(84px,10vw,160px)}
+.tile{background:var(--card);border-radius:var(--r);padding:var(--tp);position:relative;min-width:0}
+.dark{background:var(--ink);color:#fff}
+
+/* типографика */
+h1,h2,h3,h4{font-weight:400;text-transform:lowercase}
+h1{font-size:clamp(2.6rem,min(7.4vw,12.2vh),8.6rem);line-height:.93;letter-spacing:-.06em}
+h1 .ln{display:block;white-space:nowrap}
+h2{font-size:clamp(2.3rem,5.4vw,5.8rem);line-height:.95;letter-spacing:-.055em;text-wrap:balance}
+h3{font-size:clamp(1.45rem,2.3vw,2.3rem);line-height:1;letter-spacing:-.04em}
+.small{font-size:13px;line-height:1.45;letter-spacing:.005em}
+.mute{color:var(--mute)}
+.dark .mute{color:var(--mute-dark)}
+.num{font-variant-numeric:tabular-nums}
+
+/* метка над заголовком: всегда на одном расстоянии от него */
+.tag{display:inline-block;background:#fff;color:var(--ink);font-size:12px;line-height:1.2;padding:3px 6px;letter-spacing:.01em;font-weight:500;text-transform:lowercase}
+.tag.inv{background:var(--ink);color:#fff}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.bhead{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:0 0 .1em;margin-bottom:clamp(28px,3.4vw,44px)}
+.bhead h2{padding-bottom:.12em}
+
+/* выделение как в инспекторе: рамку рисует курсор и исчезает */
+.sel{position:relative;display:inline-block;padding:0 .08em;color:var(--accent)}
+.sel .fr{position:absolute;left:-.02em;top:.2em;width:calc(100% + .04em);height:calc(100% - .24em);overflow:visible;pointer-events:none;clip-path:inset(-3px)}
+.sel .fr rect{fill:rgb(255 80 49 / .06);stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4 3}
+.cur{position:absolute;z-index:3;left:100%;top:calc(100% - .04em);width:0;height:0;pointer-events:none;opacity:0}
+.cur svg{position:absolute;left:-3px;top:-3px;width:22px;height:26px}
+.cur b{position:absolute;left:15px;top:20px;background:var(--accent);color:#fff;font:500 13px/1 var(--font);letter-spacing:0;padding:6px 9px;white-space:nowrap}
+.js .sel.anim:not(.go){color:inherit}
+.js .sel.anim:not(.go) .fr{clip-path:inset(-3px 100% 100% -3px);opacity:0}
+.sel.go{animation:selc 1.3s ease-in-out both}
+.sel.go .fr{animation:seld 1.3s cubic-bezier(.4,0,.2,1) both}
+.sel.go .cur{animation:curdrag 1.3s cubic-bezier(.4,0,.2,1) both,curout .6s 1.75s ease forwards}
+@keyframes selc{0%,15%{color:inherit}100%{color:var(--accent)}}
+@keyframes seld{0%{clip-path:inset(-3px 100% 100% -3px);opacity:0}10%{opacity:1}100%{clip-path:inset(-3px);opacity:1}}
+@keyframes curdrag{0%{left:0;top:.2em;opacity:0}12%{opacity:1}100%{left:100%;top:calc(100% - .04em);opacity:1}}
+@keyframes curout{from{opacity:1;filter:blur(0)}to{opacity:0;filter:blur(8px)}}
+
+/* главные кнопки: полосы без скруглений, на всю ширину, прибиты к краям */
+.ar{width:16px;height:16px;flex:none;display:block}
+.bars{display:flex;flex-direction:column;margin:0 calc(-1*var(--tp)) calc(-1*var(--tp))}
+.bars.flush{margin:0}
+.bars.row{flex-direction:row;gap:1px;background:#2A2A2A}
+.bars.row > *{flex:1}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:19px var(--tp);font-size:16px;font-weight:500;line-height:1.1;text-decoration:none;text-align:left;color:#fff;background:var(--accent);transition:background-color var(--ease),color var(--ease)}
+.bar.ink{background:var(--ink)}
+.bar.white{background:#fff;color:var(--ink)}
+.bar.sm{padding:13px 12px;font-size:14px}
+
+/* сегменты: бейджи и табы без зазоров и скруглений */
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:1px;background:var(--line)}
+.seg.bleed{margin-left:calc(-1*var(--edge));margin-right:calc(-1*var(--edge))}
+.seg.bleed button{padding-left:var(--edge);padding-right:var(--edge)}
+.seg button{background:var(--card);padding:13px 16px;font-size:14px;line-height:1.2;text-align:left;display:flex;gap:8px;align-items:baseline;transition:background-color var(--ease),color var(--ease)}
+.seg button i{font-style:normal;font-size:11px;color:var(--mute)}
+.seg button[aria-pressed="true"],.seg button[aria-selected="true"]{background:var(--ink);color:#fff}
+.seg button[aria-pressed="true"] i{color:var(--mute-dark)}
+.seg.main button{padding-top:21px;padding-bottom:21px;font-size:clamp(1.05rem,1.55vw,1.4rem);letter-spacing:-.03em}
+.seg.sub button{background:#E9E9E9;padding-top:14px;padding-bottom:14px;font-size:15px}
+.seg.sub button[aria-pressed="true"]{background:var(--ink)}
+.seg.sub:empty{display:none}
+
+/* шапка и меню */
+.top{position:sticky;top:0;z-index:40;background:var(--card);height:var(--head);display:flex;align-items:stretch;justify-content:space-between;gap:16px;padding-left:var(--gx)}
+.logo{position:relative;display:block;align-self:center;width:24px;height:24px;color:var(--ink)}
+.logo svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.logo .g{opacity:0;pointer-events:none}
+.logo.glitch{animation:jitter .22s steps(1) both}
+.logo.glitch .ga{animation:split-a .22s steps(1) both}
+.logo.glitch .gb{animation:split-b .22s steps(1) both}
+@keyframes jitter{0%,100%{translate:0}20%{translate:2px}40%{translate:-2px}65%{translate:1px}85%{translate:0}}
+@keyframes split-a{0%,100%{opacity:0}15%,60%{opacity:.6;clip-path:inset(23% 0 48%);translate:-3px;color:var(--accent)}35%,80%{opacity:.45;clip-path:inset(66% 0 12%);translate:2px;color:var(--accent)}}
+@keyframes split-b{0%,100%{opacity:0}25%,70%{opacity:.5;clip-path:inset(48% 0 31%);translate:3px;color:var(--lil)}}
+.top nav{display:flex;gap:28px;font-size:14px;align-items:center}
+.top nav a{text-decoration:none;transition:color var(--ease)}
+.top-right{display:flex}
+.hb{display:flex;align-items:center;padding:0 22px;font-size:14px;font-weight:500;text-decoration:none;transition:background-color var(--ease),color var(--ease)}
+.hb.ink{background:var(--ink);color:#fff}
+.hb.menu-btn{display:none;background:var(--bg)}
+.menu{position:fixed;inset:0;z-index:60;color:#fff;visibility:hidden;transition:visibility 0s .8s}
+.menu.open{visibility:visible;transition-delay:0s}
+.menu-px{position:absolute;inset:0;overflow:hidden}
+.menu-px i{position:absolute;background:var(--ink);opacity:0;transition:opacity 0s linear var(--d,0s)}
+.menu.open .menu-px i{opacity:1}
+.menu-in{position:relative;height:100%;display:flex;flex-direction:column;overflow:auto;opacity:0;transition:opacity .15s}
+.menu.open .menu-in{opacity:1;transition:opacity .25s .6s}
+.menu-top{display:flex;justify-content:space-between;align-items:stretch;height:var(--head);padding-left:var(--gx);flex:none}
+.menu-top .logo{color:#fff}
+.menu-links{list-style:none;display:flex;flex-direction:column;margin:auto 0;padding:24px 0}
+.menu-links a{display:block;text-decoration:none;font-size:clamp(2.4rem,11vw,4rem);letter-spacing:-.055em;line-height:1.1;padding:4px var(--gx);transition:color var(--ease)}
+.soc-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:rgb(255 255 255 / .16)}
+.soc-row a{position:relative;height:58px;background:#1A1A1A;color:#fff;display:grid;place-items:center;transition:background-color var(--ease)}
+.soc-row svg{width:22px;height:22px;display:block}
+.soc-row sup{position:absolute;left:calc(50% + 13px);top:13px;font-size:11px;line-height:1}
+.star{padding:14px var(--gx) 18px;font-size:12px;line-height:1.4;color:var(--mute-dark)}
+
+/* 1. первый экран */
+.hero{display:flex;flex-direction:column;margin:calc(-1*var(--edge)) calc(-1*var(--edge)) 0;padding:var(--edge) var(--edge) 0;min-height:calc(100svh - var(--head));overflow:hidden}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+.hero h1{padding-bottom:.14em}
+.hero-say{max-width:46ch;margin-top:14px;font-size:16px}
+canvas.eat{display:block;margin:auto calc(-1*var(--edge)) 0;width:calc(100% + 2*var(--edge));height:clamp(130px,22vh,250px);flex:none}
+
+/* 2. кейсы: бейджи и сетка в одном экране */
+.stage{display:flex;flex-direction:column;gap:var(--gap);height:clamp(560px,calc(100svh - var(--head) - var(--edge)),860px);scroll-margin-top:var(--head)}
+.mosaic{flex:1;min-height:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:var(--gap)}
+.stage.one{height:auto}
+.stage.one .mosaic{flex:none;height:clamp(340px,calc((100svh - var(--head) - var(--edge)) * .6),520px)}
+.case{grid-column:span var(--span,4);background:var(--card);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;min-width:0;min-height:0}
+.case[hidden]{display:none}
+.case.in{animation:stepin .4s ease both}
+@keyframes stepin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.cover{position:relative;flex:1;min-height:70px;margin:4px 4px 0;border-radius:4px;overflow:hidden;background:var(--bg)}
+.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.cover .tags{position:absolute;left:8px;top:8px;right:8px}
+.case-body{padding:12px var(--tp) 14px;display:flex;flex-direction:column;gap:6px}
+.case h3{font-size:clamp(1.2rem,1.7vw,1.6rem);letter-spacing:-.04em}
+.case-body p{font-size:13px;line-height:1.4;color:var(--mute);max-width:52ch}
+.invite{background:var(--ink);color:#fff}
+.invite-in{flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;padding:var(--tp)}
+.invite canvas{display:block;width:132px;height:120px;flex:none}
+.invite h3{font-size:clamp(1.6rem,2.4vw,2.4rem);letter-spacing:-.045em}
+.invite p{font-size:14px;max-width:34ch;color:var(--mute-dark);margin-top:8px}
+
+/* 3. моя задача: пауза между плашками */
+.say{padding:clamp(10px,4vh,60px) 0;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.say-t{font-size:clamp(2.1rem,5.8vw,6.2rem);line-height:1;letter-spacing:-.055em;display:flex;flex-direction:column;align-items:flex-start;gap:.09em}
+.say-t > span{display:block;white-space:nowrap;padding-bottom:.06em}
+.say-t mark{display:inline-block;line-height:.78;padding:.05em .1em .07em;background:#fff;color:var(--ink);transition:background-color .45s ease,color .45s ease}
+.say-t mark.on{background:var(--accent);color:#fff}
+.say-t .mb{display:none}
+.say-t .s2{margin-left:8vw}
+.say-t .s3{margin-left:16vw}
+.say-t .s4{margin-left:24vw}
+
+/* 4. услуги и этапы работы */
+.sv{display:flex;flex-direction:column;gap:var(--gap);scroll-margin-top:var(--head)}
+.sv-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--gap) 40px;margin-top:clamp(28px,3.4vw,44px);min-height:430px}
+.sv-info{display:flex;flex-direction:column;gap:26px;min-width:0}
+.sv-about{padding:0}
+.sv-about h3{font-size:clamp(2rem,3.7vw,3.8rem);letter-spacing:-.055em;line-height:.95;padding-bottom:.08em}
+.sv-about p{max-width:40ch;margin-top:10px;font-size:16px}
+.sv-money > *{padding-left:var(--tp);padding-right:var(--tp)}
+.sv-note{background:#fff;padding-top:10px;padding-bottom:10px;font-size:13px}
+.sv-price{padding-top:8px;padding-bottom:12px;font-size:clamp(2.3rem,4.4vw,4.6rem);letter-spacing:-.055em;line-height:1.05;background:var(--accent);color:#fff;white-space:nowrap}
+.sv-price.lil{background:var(--lil);color:var(--ink)}
+.sv-price.lime{background:var(--lime);color:var(--ink)}
+.sv-days{background:var(--ink);color:#fff;padding-top:11px;padding-bottom:11px;font-size:15px}
+.sv-right{display:flex;flex-direction:column;gap:12px;min-width:0}
+.sv-rh{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px}
+.sv-rh b{font-weight:400;font-size:clamp(1.25rem,1.9vw,1.8rem);letter-spacing:-.04em;line-height:1}
+.arrows{display:flex;gap:1px;background:var(--line)}
+.arrows button{width:48px;height:44px;background:var(--card);display:grid;place-items:center;transition:background-color var(--ease),color var(--ease),opacity var(--ease)}
+.arrows button[disabled]{color:#C4C4C4;cursor:default}
+.arrows .ar{width:18px;height:18px}
+.car{flex:1;display:flex;gap:var(--gap);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.car::-webkit-scrollbar{display:none}
+.stc{flex:0 0 78%;scroll-snap-align:start;background:var(--card);border-radius:var(--r);padding:4px 4px var(--tp);display:flex;flex-direction:column;gap:14px;min-width:0}
+.stc:last-child{flex-basis:100%}
+.ph{background:var(--ph);border-radius:4px;display:grid;place-items:center;color:#8F8F8F;font-size:12px}
+.stc .ph{flex:1;min-height:120px}
+.stc-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:0 12px}
+.stc-h h4{font-size:clamp(1.6rem,2.5vw,2.5rem);letter-spacing:-.05em;line-height:1}
+.stc-h .n{font-size:12px;font-weight:500;flex:none}
+.stc p{padding:0 12px;max-width:50ch}
+.stc .tags{padding:0 12px}
+.stc .tag{font-size:13px;padding:5px 8px}
+.sv-wide{flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:28px;align-items:flex-start;overflow:hidden}
+.sv-wide .big{font-size:clamp(1.4rem,2.3vw,2.3rem);letter-spacing:-.045em;line-height:1.08;max-width:22em}
+.sv-list{display:flex;flex-wrap:wrap;gap:5px}
+.sv-list .tag{font-size:clamp(.95rem,1.2vw,1.15rem);letter-spacing:-.02em;font-weight:400;padding:6px 10px}
+.sv-wide .bars{align-self:stretch}
+.sv-wide .top-part{display:flex;flex-direction:column;gap:16px;align-items:flex-start}
+
+/* 5. принципы: один экран, текст меняется по скроллу */
+.pr-pin{display:flex;flex-direction:column}
+.pr-stage{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:24px;align-items:stretch}
+.pr-texts{display:flex;flex-direction:column;gap:48px}
+.pr-item{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.pr-item .n{font-size:13px;font-weight:500}
+.pr-item h3{font-size:clamp(2.3rem,5.6vw,6rem);letter-spacing:-.06em;line-height:.95;text-wrap:balance;padding-bottom:.08em}
+.pr-item p{font-size:clamp(1rem,1.25vw,1.2rem);max-width:40ch;line-height:1.4}
+.pr-shape{min-height:240px}
+.pr-dots{display:none}
+.js .pr{height:calc(100svh - var(--head) + 230vh)}
+.js .pr-pin{position:sticky;top:var(--head);height:calc(100svh - var(--head));padding:var(--edge) 0}
+.js .pr-stage{flex:1;min-height:0}
+.js .pr-texts{display:grid;gap:0;align-items:end}
+.js .pr-item{grid-area:1/1;opacity:0;filter:blur(14px);transform:translateY(14px);transition:opacity .5s ease,filter .5s ease,transform .5s ease;pointer-events:none}
+.js .pr-item.on{opacity:1;filter:blur(0);transform:none;pointer-events:auto;transition-delay:.12s}
+.js .pr-dots{display:flex;gap:4px;padding:16px 0 0}
+.pr-dots button{width:34px;height:8px;background:#D2D2D2;transition:background-color var(--ease)}
+.pr-dots button.on{background:var(--accent)}
+
+/* 6. контакт и подвал: на всю ширину */
+.cta{background:var(--accent);color:#fff;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-areas:"txt pix" "note pix" "bar bar";grid-template-rows:1fr auto auto;column-gap:24px;min-height:min(74svh,620px)}
+.cta-txt{grid-area:txt;padding:28px 0 0 var(--gx);display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.cta-txt p{font-size:17px;max-width:42ch;margin-top:8px}
+.cta-note{grid-area:note;padding:28px 0 16px var(--gx);font-size:14px;color:rgb(255 255 255 / .78)}
+canvas.dust{grid-area:pix;display:block;width:100%;height:100%;min-height:260px}
+.cta .bar{grid-area:bar;padding-left:var(--gx);padding-right:var(--gx)}
+.foot{background:var(--ink);color:#fff}
+.foot-top{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px 24px;padding:32px var(--gx) 36px}
+.foot .logo{color:#fff;width:28px;height:28px;align-self:auto;flex:none}
+.foot-me{display:flex;gap:14px;align-items:center}
+.foot-nav{display:grid;grid-template-columns:auto auto;justify-content:start;gap:0 44px;font-size:15px}
+.foot-nav a{padding:9px 0;text-decoration:none;transition:color var(--ease)}
+.foot .bar,.menu .bar{padding-left:var(--gx);padding-right:var(--gx)}
+
+/* заметки: не часть сайта */
+.notes{margin:28px var(--edge);border:1.5px dashed var(--ink);border-radius:var(--r);padding:16px;font-size:14px;line-height:1.5}
+.notes summary{cursor:pointer;font-weight:500}
+.notes ul{padding-left:1.2em;max-width:84ch;margin-top:10px}
+.notes li{margin-bottom:4px}
+
+/* наведение: только там, где есть настоящий курсор */
+@media (hover:hover){
+  .bar:hover{background:var(--ink)}
+  .bar.ink:hover{background:var(--accent)}
+  .bar.go-cases:hover{background:var(--lil);color:var(--ink)}
+  .bar.white:hover{background:var(--ink);color:#fff}
+  .dark .bar:not(.ink):not(.white):hover,.foot .bar:hover,.menu .bar:hover{background:#fff;color:var(--ink)}
+  .seg button:hover{background:var(--ink);color:#fff}
+  .seg button:hover i{color:var(--mute-dark)}
+  .top nav a:hover,.menu-links a:hover,.foot-nav a:hover{color:var(--accent)}
+  .hb.ink:hover{background:var(--accent)}
+  .hb.menu-btn:hover{background:var(--accent);color:#fff}
+  .soc-row a:hover{background:var(--accent)}
+  .case:hover .cover img{transform:scale(1.035)}
+  .arrows button:not([disabled]):hover{background:var(--ink);color:#fff}
+  .pr-dots button:hover{background:var(--ink)}
+}
+
+@media (max-width:1000px){
+  .top nav{display:none}
+  .hb.menu-btn{display:flex}
+  .stage{height:auto}
+  .mosaic,.stage.one .mosaic{grid-template-columns:1fr 1fr;grid-template-rows:none !important;height:auto}
+  .case{grid-column:auto}
+  .cover{flex:none;aspect-ratio:16/9}
+  .sv-body{grid-template-columns:1fr;gap:36px;min-height:0}
+  .car{min-height:380px}
+  .cta{grid-template-columns:1fr;grid-template-areas:"txt" "pix" "note" "bar";grid-template-rows:auto;min-height:0}
+  .cta-txt{padding-right:var(--gx)}
+  canvas.dust{height:230px;min-height:0}
+  .cta-note{padding-top:8px;padding-right:var(--gx)}
+}
+@media (max-width:640px){
+  :root{--edge:12px;--tp:14px}
+  h1,h2{font-size:calc((100vw - 2*var(--edge) - 2*var(--tp)) / 8.5);text-wrap:wrap}
+  h1 .ln{display:inline;white-space:normal}
+  .hb{padding:0 16px}
+  .hero-say{font-size:15px}
+  canvas.eat{height:clamp(150px,24vh,210px)}
+  .seg{grid-auto-flow:row;grid-template-columns:1fr 1fr}
+  .seg button{padding-top:14px;padding-bottom:14px;justify-content:space-between}
+  .seg.main button{padding-top:18px;padding-bottom:18px;font-size:1.15rem}
+  .mosaic{display:flex;flex-direction:column}
+  .case h3{font-size:1.5rem}
+  .case-body p{font-size:14px}
+  .bar.sm{padding:15px var(--tp);font-size:15px}
+  .say-t{font-size:calc((100vw - 2*var(--edge)) / 9.75);gap:.12em}
+  .say-t .s1{white-space:normal}
+  .say-t .s2,.say-t .s3,.say-t .s4{margin-left:0}
+  .say-t mark{line-height:.92;padding-top:0}
+  .say-t .mb{display:inline}
+  .sv-about h3{font-size:2.5rem}
+  .stc{flex-basis:86%}
+  .car{min-height:0}
+  .stc .ph{flex:none;height:150px}
+  .stc-h h4{font-size:1.9rem}
+  .pr-stage{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;gap:20px}
+  .pr-shape{order:-1;min-height:120px}
+  .pr-item h3{font-size:calc((100vw - 2*var(--edge) - 2*var(--tp)) / 8.5)}
+  .foot-top{grid-template-columns:1fr;padding-bottom:28px}
+  .foot-nav{grid-template-columns:1fr 1fr;gap:0 16px}
+  .foot-nav a{padding:12px 0}
+  .cur b{left:auto;right:6px;top:22px;font-size:12px;padding:5px 7px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none !important;animation:none !important}
+  .cur{display:none}
+  .logo .g{display:none}
+}
+.hero .bars{margin:0 calc(-1*var(--edge))}
+.hero .bar{padding-left:var(--edge);padding-right:var(--edge)}
+@media (max-width:640px){h1{font-size:calc((100vw - 2*var(--edge)) / 8.5)}}
+</style>
 </head>
 <body>
-    <header class="header entrance">
-      <a class="logo" href="/#home" aria-label="Любовь Русанова — главная">
-        <img src="/assets/LK.svg" width="21" height="24" alt="LK">
-        <img class="glitch-part glitch-a" src="/assets/LK.svg" alt="" aria-hidden="true">
-        <img class="glitch-part glitch-b" src="/assets/LK.svg" alt="" aria-hidden="true">
-      </a>
-      <button class="menu" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="site-menu"><svg class="menu-icon" width="24" height="14" viewBox="0 0 24 14" aria-hidden="true"><path d="M0 1H24 M0 7H24 M0 13H24" fill="none" stroke="currentColor" stroke-width="2" shape-rendering="crispEdges"/></svg></button>
-    </header>
-    <nav class="menu-panel" id="site-menu" aria-label="Навигация по сайту" hidden><div class="nav-home"><a href="/">Главная</a><details><summary aria-label="Разделы главной страницы"><svg class="home-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="home-subnav"><a href="/#home">Первый экран</a><a href="/#projects">Избранные проекты</a><a href="/#services">С чем могу помочь</a><a href="/#process">Этапы работы</a><a href="/#approach">Подход</a><a href="/#collaboration">Принципы работы</a><a href="/#contact">Контакты</a></div></details></div><a class="portfolio-nav" href="/#projects">Портфолио <span class="portfolio-arrow" aria-hidden="true">→</span></a><a class="blog-nav" href="/blog/">Блог <span class="nav-arrow" aria-hidden="true">→</span></a><div class="nav-socials" aria-label="Социальные сети"><a class="social-circle" href="https://www.instagram.com/lyubakravchuk" target="_blank" rel="noopener noreferrer" aria-label="Instagram*"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13.0281 2.00073C14.1535 2.00259 14.7238 2.00855 15.2166 2.02322L15.4107 2.02956C15.6349 2.03753 15.8561 2.04753 16.1228 2.06003C17.1869 2.1092 17.9128 2.27753 18.5503 2.52503C19.2094 2.7792 19.7661 3.12253 20.3219 3.67837C20.8769 4.2342 21.2203 4.79253 21.4753 5.45003C21.7219 6.0867 21.8903 6.81337 21.9403 7.87753C21.9522 8.1442 21.9618 8.3654 21.9697 8.58964L21.976 8.78373C21.9906 9.27647 21.9973 9.84686 21.9994 10.9723L22.0002 11.7179C22.0003 11.809 22.0003 11.903 22.0003 12L22.0002 12.2821L21.9996 13.0278C21.9977 14.1532 21.9918 14.7236 21.9771 15.2163L21.9707 15.4104C21.9628 15.6347 21.9528 15.8559 21.9403 16.1225C21.8911 17.1867 21.7219 17.9125 21.4753 18.55C21.2211 19.2092 20.8769 19.7659 20.3219 20.3217C19.7661 20.8767 19.2069 21.22 18.5503 21.475C17.9128 21.7217 17.1869 21.89 16.1228 21.94C15.8561 21.9519 15.6349 21.9616 15.4107 21.9694L15.2166 21.9757C14.7238 21.9904 14.1535 21.997 13.0281 21.9992L12.2824 22C12.1913 22 12.0973 22 12.0003 22L11.7182 22L10.9725 21.9993C9.8471 21.9975 9.27672 21.9915 8.78397 21.9768L8.58989 21.9705C8.36564 21.9625 8.14444 21.9525 7.87778 21.94C6.81361 21.8909 6.08861 21.7217 5.45028 21.475C4.79194 21.2209 4.23444 20.8767 3.67861 20.3217C3.12278 19.7659 2.78028 19.2067 2.52528 18.55C2.27778 17.9125 2.11028 17.1867 2.06028 16.1225C2.0484 15.8559 2.03871 15.6347 2.03086 15.4104L2.02457 15.2163C2.00994 14.7236 2.00327 14.1532 2.00111 13.0278L2.00098 10.9723C2.00284 9.84686 2.00879 9.27647 2.02346 8.78373L2.02981 8.58964C2.03778 8.3654 2.04778 8.1442 2.06028 7.87753C2.10944 6.81253 2.27778 6.08753 2.52528 5.45003C2.77944 4.7917 3.12278 4.2342 3.67861 3.67837C4.23444 3.12253 4.79278 2.78003 5.45028 2.52503C6.08778 2.27753 6.81278 2.11003 7.87778 2.06003C8.14444 2.04816 8.36564 2.03847 8.58989 2.03062L8.78397 2.02433C9.27672 2.00969 9.8471 2.00302 10.9725 2.00086L13.0281 2.00073ZM12.0003 7.00003C9.23738 7.00003 7.00028 9.23956 7.00028 12C7.00028 14.7629 9.23981 17 12.0003 17C14.7632 17 17.0003 14.7605 17.0003 12C17.0003 9.23713 14.7607 7.00003 12.0003 7.00003ZM12.0003 9.00003C13.6572 9.00003 15.0003 10.3427 15.0003 12C15.0003 13.6569 13.6576 15 12.0003 15C10.3434 15 9.00028 13.6574 9.00028 12C9.00028 10.3431 10.3429 9.00003 12.0003 9.00003ZM17.2503 5.50003C16.561 5.50003 16.0003 6.05994 16.0003 6.74918C16.0003 7.43843 16.5602 7.9992 17.2503 7.9992C17.9395 7.9992 18.5003 7.4393 18.5003 6.74918C18.5003 6.05994 17.9386 5.49917 17.2503 5.50003Z"/></svg><sup aria-hidden="true">*</sup></a><a class="social-circle" href="https://t.me/lyubakravchuk" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM12.3584 9.38246C11.3857 9.78702 9.4418 10.6244 6.5266 11.8945C6.05321 12.0827 5.80524 12.2669 5.78266 12.4469C5.74451 12.7513 6.12561 12.8711 6.64458 13.0343C6.71517 13.0565 6.78832 13.0795 6.8633 13.1039C7.37388 13.2698 8.06071 13.464 8.41776 13.4717C8.74164 13.4787 9.10313 13.3452 9.50222 13.0711C12.226 11.2325 13.632 10.3032 13.7203 10.2832C13.7826 10.269 13.8689 10.2513 13.9273 10.3032C13.9858 10.3552 13.98 10.4536 13.9739 10.48C13.9361 10.641 12.4401 12.0318 11.666 12.7515C11.4351 12.9661 11.2101 13.1853 10.9833 13.4039C10.509 13.8611 10.1533 14.204 11.003 14.764C11.8644 15.3317 12.7323 15.8982 13.5724 16.4971C13.9867 16.7925 14.359 17.0579 14.8188 17.0156C15.0861 16.991 15.3621 16.7397 15.5022 15.9903C15.8335 14.2193 16.4847 10.3821 16.6352 8.80083C16.6484 8.6623 16.6318 8.485 16.6185 8.40717C16.6052 8.32934 16.5773 8.21844 16.4762 8.13635C16.3563 8.03913 16.1714 8.01863 16.0887 8.02009C15.7125 8.02672 15.1355 8.22737 12.3584 9.38246Z"/></svg></a><a class="social-circle" href="https://wa.me/77751026931?text=" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.001 2C17.5238 2 22.001 6.47715 22.001 12C22.001 17.5228 17.5238 22 12.001 22C10.1671 22 8.44851 21.5064 6.97086 20.6447L2.00516 22L3.35712 17.0315C2.49494 15.5536 2.00098 13.8345 2.00098 12C2.00098 6.47715 6.47813 2 12.001 2ZM8.59339 7.30019L8.39232 7.30833C8.26293 7.31742 8.13607 7.34902 8.02057 7.40811C7.93392 7.45244 7.85348 7.51651 7.72709 7.63586C7.60774 7.74855 7.53857 7.84697 7.46569 7.94186C7.09599 8.4232 6.89729 9.01405 6.90098 9.62098C6.90299 10.1116 7.03043 10.5884 7.23169 11.0336C7.63982 11.9364 8.31288 12.8908 9.20194 13.7759C9.4155 13.9885 9.62473 14.2034 9.85034 14.402C10.9538 15.3736 12.2688 16.0742 13.6907 16.4482C13.6907 16.4482 14.2507 16.5342 14.2589 16.5347C14.4444 16.5447 14.6296 16.5313 14.8153 16.5218C15.1066 16.5068 15.391 16.428 15.6484 16.2909C15.8139 16.2028 15.8922 16.159 16.0311 16.0714C16.0311 16.0714 16.0737 16.0426 16.1559 15.9814C16.2909 15.8808 16.3743 15.81 16.4866 15.6934C16.5694 15.6074 16.6406 15.5058 16.6956 15.3913C16.7738 15.2281 16.8525 14.9166 16.8838 14.6579C16.9077 14.4603 16.9005 14.3523 16.8979 14.2854C16.8936 14.1778 16.8047 14.0671 16.7073 14.0201L16.1258 13.7587C16.1258 13.7587 15.2563 13.3803 14.7245 13.1377C14.6691 13.1124 14.6085 13.1007 14.5476 13.097C14.4142 13.0888 14.2647 13.1236 14.1696 13.2238C14.1646 13.2218 14.0984 13.279 13.3749 14.1555C13.335 14.2032 13.2415 14.3069 13.0798 14.2972C13.0554 14.2955 13.0311 14.292 13.0074 14.2858C12.9419 14.2685 12.8781 14.2457 12.8157 14.2193C12.692 14.1668 12.6486 14.1469 12.5641 14.1105C11.9868 13.8583 11.457 13.5209 10.9887 13.108C10.8631 12.9974 10.7463 12.8783 10.6259 12.7616C10.2057 12.3543 9.86169 11.9211 9.60577 11.4938C9.5918 11.4705 9.57027 11.4368 9.54708 11.3991C9.50521 11.331 9.45903 11.25 9.44455 11.1944C9.40738 11.0473 9.50599 10.9291 9.50599 10.9291C9.50599 10.9291 9.74939 10.663 9.86248 10.5183C9.97128 10.379 10.0652 10.2428 10.125 10.1457C10.2428 9.95633 10.2801 9.76062 10.2182 9.60963C9.93764 8.92565 9.64818 8.24536 9.34986 7.56894C9.29098 7.43545 9.11585 7.33846 8.95659 7.32007C8.90265 7.31384 8.84875 7.30758 8.79459 7.30402C8.66053 7.29748 8.5262 7.29892 8.39232 7.30833L8.59339 7.30019Z"/></svg></a><a class="social-circle" href="https://ru.pinterest.com/lubovwebdesign/" target="_blank" rel="noopener noreferrer" aria-label="Pinterest"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13.3717 2.09442C8.42512 1.41268 3.73383 4.48505 2.38064 9.29256C1.02745 14.1001 3.42711 19.1692 8.00271 21.1689C7.94264 20.4008 7.99735 19.628 8.16502 18.8761C8.34964 18.0374 9.46121 13.4132 9.46121 13.4132C9.23971 12.9173 9.12893 12.379 9.13659 11.8359C9.13659 10.3509 9.99353 9.24295 11.0597 9.24295C11.4472 9.23718 11.8181 9.40028 12.0758 9.68981C12.3335 9.97934 12.4526 10.3667 12.402 10.751C12.402 11.6512 11.8236 13.0131 11.5228 14.2903C11.4014 14.7656 11.5131 15.2703 11.8237 15.65C12.1343 16.0296 12.6069 16.2389 13.0967 16.2139C14.9944 16.2139 16.2675 13.7825 16.2675 10.9126C16.2675 8.71205 14.8098 7.0655 12.1243 7.0655C10.826 7.01531 9.56388 7.4996 8.63223 8.40543C7.70057 9.31126 7.18084 10.5595 7.19423 11.859C7.16563 12.5722 7.39566 13.2717 7.84194 13.8287C8.01361 13.9564 8.07985 14.1825 8.00425 14.3827C7.9581 14.5673 7.84194 15.0059 7.79578 15.1675C7.77632 15.278 7.70559 15.3728 7.60516 15.4228C7.50473 15.4729 7.38651 15.4724 7.28654 15.4214C5.9019 14.8674 5.24957 13.3439 5.24957 11.6051C5.24957 8.75822 7.63424 5.3497 12.4036 5.3497C16.1998 5.3497 18.723 8.1273 18.723 11.0972C18.723 15.0059 16.5468 17.9451 13.3298 17.9451C12.3526 17.9761 11.4273 17.5061 10.8759 16.6986C10.8759 16.6986 10.2974 19.0146 10.1835 19.4531C9.95101 20.2099 9.60779 20.9281 9.16505 21.5844C10.0877 21.8643 11.0471 22.0044 12.0113 22C14.6636 22.0017 17.2078 20.9484 19.0829 19.072C20.958 17.1957 22.0099 14.6504 22.0069 11.9975C22.004 7.00306 18.3183 2.77616 13.3717 2.09442Z"/></svg></a><a class="social-circle" href="https://www.behance.net/lyubakravchuk" target="_blank" rel="noopener noreferrer" aria-label="Behance"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7.44262 5.34998C8.08197 5.34998 8.67213 5.39945 9.21311 5.54786C9.7541 5.6468 10.1967 5.84468 10.5902 6.09203C10.9836 6.33938 11.2787 6.68566 11.4754 7.13089C11.6721 7.57612 11.7705 8.12029 11.7705 8.71393C11.7705 9.40651 11.623 10.0002 11.2787 10.4454C10.9836 10.8906 10.4918 11.2864 9.90164 11.5832C10.7377 11.8305 11.377 12.2758 11.7705 12.8694C12.1639 13.463 12.4098 14.2051 12.4098 15.0461C12.4098 15.7387 12.2623 16.3323 12.0164 16.827C11.7705 17.3217 11.377 17.7669 10.9344 18.0638C10.4918 18.3606 9.95082 18.6079 9.36066 18.7563C8.77049 18.9047 8.18033 19.0037 7.59016 19.0037H1V5.34998H7.44262ZM7.04918 10.8906C7.59016 10.8906 8.03279 10.7422 8.37705 10.4949C8.72131 10.2475 8.86885 9.80227 8.86885 9.2581C8.86885 8.96128 8.81967 8.66446 8.72131 8.46658C8.62295 8.2687 8.47541 8.12029 8.27869 7.97188C8.08197 7.87294 7.88525 7.774 7.63934 7.72453C7.39344 7.67506 7.14754 7.67506 6.85246 7.67506H4V10.8906H7.04918ZM7.19672 16.7281C7.4918 16.7281 7.78689 16.6786 8.03279 16.6291C8.27869 16.5797 8.52459 16.4807 8.72131 16.3323C8.91803 16.1839 9.06557 16.0355 9.21311 15.7881C9.31148 15.5408 9.40984 15.244 9.40984 14.8977C9.40984 14.2051 9.21312 13.7104 8.81967 13.3641C8.42623 13.0673 7.88525 12.9189 7.2459 12.9189H4V16.7281H7.19672ZM16.6885 16.6786C17.082 17.0744 17.6721 17.2722 18.459 17.2722C19 17.2722 19.4918 17.1238 19.8852 16.8765C20.2787 16.5797 20.5246 16.2828 20.623 15.986H23.0328C22.6393 17.1733 22.0492 18.0143 21.2623 18.5585C20.4754 19.0532 19.541 19.35 18.4098 19.35C17.6229 19.35 16.9344 19.2016 16.2951 18.9542C15.6557 18.7069 15.1639 18.3606 14.7213 17.8659C14.2787 17.4206 13.9344 16.8765 13.7377 16.2334C13.4918 15.5903 13.3934 14.8977 13.3934 14.1062C13.3934 13.3641 13.4918 12.6715 13.7377 12.0284C13.9836 11.3853 14.3279 10.8411 14.7705 10.3464C15.2131 9.90121 15.7541 9.50545 16.3443 9.2581C16.9836 9.01075 17.6229 8.86234 18.4098 8.86234C19.2459 8.86234 19.9836 9.01075 20.623 9.35704C21.2623 9.70333 21.7541 10.0991 22.1475 10.6927C22.541 11.2369 22.8361 11.88 23.0328 12.5726C23.1311 13.2652 23.1803 13.9577 23.1311 14.7493H16C16 15.5408 16.2951 16.2828 16.6885 16.6786ZM19.7869 11.4843C19.4426 11.138 18.9016 10.9401 18.2623 10.9401C17.8197 10.9401 17.4754 11.039 17.1803 11.1874C16.8852 11.3358 16.6885 11.5337 16.4918 11.7316C16.2951 11.9295 16.1967 12.1768 16.1475 12.4242C16.0984 12.6715 16.0492 12.8694 16.0492 13.0673H20.4754C20.3771 12.3252 20.1311 11.8305 19.7869 11.4843ZM15.459 6.2899H20.9672V7.62559H15.459V6.2899Z"/></svg></a></div></nav>
-  <main>
-  <section class="hero" id="home" aria-label="Любовь Русанова — дизайнер">
-    <div class="edge-glow" aria-hidden="true"></div>
-    <div class="profile entrance">
-      <div class="avatar"><img src="assets/portrait.png" alt="Любовь Русанова"><span class="status" aria-label="Открыта к проектам"></span></div>
-      <div class="profile-copy"><div class="name">Любовь Русанова</div><div class="role">Веб и графический дизайнер</div></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="lr" viewBox="0 0 20 20"><path fill="currentColor" d="M3.10845 17.5H12.4347V20H0V0H3.10845V17.5ZM20 20H16.8504V15H20V20ZM16.8504 2.5H10.5512V7.5H16.8504V15H13.7008V10H10.5512V10.0039H7.40157V0H16.8504V2.5ZM20 7.5H16.8504V2.5H20V7.5Z"/></symbol>
+  <symbol id="ar" viewBox="0 0 16 16"><path d="M4.2 11.8 11.6 4.4M5.6 4.2h6.2v6.2" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+  <symbol id="al" viewBox="0 0 16 16"><path d="M13 8H3.4M7.4 3.8 3.2 8l4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+  <symbol id="arr" viewBox="0 0 16 16"><path d="M3 8h9.6M8.6 3.8 12.8 8l-4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+</svg>
+
+<header class="top">
+  <a class="logo" id="logo" href="#home" aria-label="Любовь Русанова, на главную">
+    <svg aria-hidden="true"><use href="#lr"/></svg>
+    <svg class="g ga" aria-hidden="true"><use href="#lr"/></svg>
+    <svg class="g gb" aria-hidden="true"><use href="#lr"/></svg>
+  </a>
+  <nav aria-label="Разделы">
+    <a href="#cases">кейсы</a>
+        <a href="#contact">контакт</a>
+  </nav>
+  <div class="top-right">
+    <a class="hb ink" href="https://t.me/lyuba_rusanova" target="_blank" rel="noopener">написать</a>
+    <button class="hb menu-btn" type="button" id="menuOpen" aria-haspopup="dialog" aria-controls="menu">меню</button>
+  </div>
+</header>
+
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Меню">
+  <div class="menu-px" id="menuPx" aria-hidden="true"></div>
+  <div class="menu-in">
+    <div class="menu-top">
+      <a class="logo" href="#home" aria-label="На главную"><svg aria-hidden="true"><use href="#lr"/></svg></a>
+      <button class="hb" type="button" id="menuClose" style="background:#fff;color:#0D0D0D">закрыть</button>
     </div>
-    <h1 class="headline entrance"><span class="line first">Создаю <span class="selected">дизайн,<span class="designer-cursor" aria-hidden="true"><svg width="25" height="30" viewBox="0 0 25 30"><defs><linearGradient id="cursor-gradient" x2=".6" y2="1"><stop stop-color="#ee3c1c"/><stop offset="1" stop-color="#f1afbd"/></linearGradient></defs><path d="M2 2 22 17 12 18 7 27Z" fill="url(#cursor-gradient)" stroke="#fff" stroke-width="1.3"/></svg><span>Любовь</span></span></span></span><span class="line second">который помогает</span><span class="line third">бренду говорить</span><span class="line fourth">с аудиторией</span></h1>
-    <a class="cta entrance" href="https://t.me/lyubakravchuk" target="_blank" rel="noopener noreferrer">Обсудить проект</a>
+    <ul class="menu-links">
+      <li><a href="#cases">кейсы</a></li>
+      <li><a href="#contact">контакт</a></li>
+    </ul>
+    <div class="soc-row"><a href="https://t.me/lyuba_rusanova" target="_blank" rel="noopener" aria-label="Telegram"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM12.3584 9.38246C11.3857 9.78702 9.4418 10.6244 6.5266 11.8945C6.05321 12.0827 5.80524 12.2669 5.78266 12.4469C5.74451 12.7513 6.12561 12.8711 6.64458 13.0343C6.71517 13.0565 6.78832 13.0795 6.8633 13.1039C7.37388 13.2698 8.06071 13.464 8.41776 13.4717C8.74164 13.4787 9.10313 13.3452 9.50222 13.0711C12.226 11.2325 13.632 10.3032 13.7203 10.2832C13.7826 10.269 13.8689 10.2513 13.9273 10.3032C13.9858 10.3552 13.98 10.4536 13.9739 10.48C13.9361 10.641 12.4401 12.0318 11.666 12.7515C11.4351 12.9661 11.2101 13.1853 10.9833 13.4039C10.509 13.8611 10.1533 14.204 11.003 14.764C11.8644 15.3317 12.7323 15.8982 13.5724 16.4971C13.9867 16.7925 14.359 17.0579 14.8188 17.0156C15.0861 16.991 15.3621 16.7397 15.5022 15.9903C15.8335 14.2193 16.4847 10.3821 16.6352 8.80083C16.6484 8.6623 16.6318 8.485 16.6185 8.40717C16.6052 8.32934 16.5773 8.21844 16.4762 8.13635C16.3563 8.03913 16.1714 8.01863 16.0887 8.02009C15.7125 8.02672 15.1355 8.22737 12.3584 9.38246Z"/></svg></a><a href="https://wa.me/77751026931?text=" target="_blank" rel="noopener" aria-label="WhatsApp"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.001 2C17.5238 2 22.001 6.47715 22.001 12C22.001 17.5228 17.5238 22 12.001 22C10.1671 22 8.44851 21.5064 6.97086 20.6447L2.00516 22L3.35712 17.0315C2.49494 15.5536 2.00098 13.8345 2.00098 12C2.00098 6.47715 6.47813 2 12.001 2ZM8.59339 7.30019L8.39232 7.30833C8.26293 7.31742 8.13607 7.34902 8.02057 7.40811C7.93392 7.45244 7.85348 7.51651 7.72709 7.63586C7.60774 7.74855 7.53857 7.84697 7.46569 7.94186C7.09599 8.4232 6.89729 9.01405 6.90098 9.62098C6.90299 10.1116 7.03043 10.5884 7.23169 11.0336C7.63982 11.9364 8.31288 12.8908 9.20194 13.7759C9.4155 13.9885 9.62473 14.2034 9.85034 14.402C10.9538 15.3736 12.2688 16.0742 13.6907 16.4482C13.6907 16.4482 14.2507 16.5342 14.2589 16.5347C14.4444 16.5447 14.6296 16.5313 14.8153 16.5218C15.1066 16.5068 15.391 16.428 15.6484 16.2909C15.8139 16.2028 15.8922 16.159 16.0311 16.0714C16.0311 16.0714 16.0737 16.0426 16.1559 15.9814C16.2909 15.8808 16.3743 15.81 16.4866 15.6934C16.5694 15.6074 16.6406 15.5058 16.6956 15.3913C16.7738 15.2281 16.8525 14.9166 16.8838 14.6579C16.9077 14.4603 16.9005 14.3523 16.8979 14.2854C16.8936 14.1778 16.8047 14.0671 16.7073 14.0201L16.1258 13.7587C16.1258 13.7587 15.2563 13.3803 14.7245 13.1377C14.6691 13.1124 14.6085 13.1007 14.5476 13.097C14.4142 13.0888 14.2647 13.1236 14.1696 13.2238C14.1646 13.2218 14.0984 13.279 13.3749 14.1555C13.335 14.2032 13.2415 14.3069 13.0798 14.2972C13.0554 14.2955 13.0311 14.292 13.0074 14.2858C12.9419 14.2685 12.8781 14.2457 12.8157 14.2193C12.692 14.1668 12.6486 14.1469 12.5641 14.1105C11.9868 13.8583 11.457 13.5209 10.9887 13.108C10.8631 12.9974 10.7463 12.8783 10.6259 12.7616C10.2057 12.3543 9.86169 11.9211 9.60577 11.4938C9.5918 11.4705 9.57027 11.4368 9.54708 11.3991C9.50521 11.331 9.45903 11.25 9.44455 11.1944C9.40738 11.0473 9.50599 10.9291 9.50599 10.9291C9.50599 10.9291 9.74939 10.663 9.86248 10.5183C9.97128 10.379 10.0652 10.2428 10.125 10.1457C10.2428 9.95633 10.2801 9.76062 10.2182 9.60963C9.93764 8.92565 9.64818 8.24536 9.34986 7.56894C9.29098 7.43545 9.11585 7.33846 8.95659 7.32007C8.90265 7.31384 8.84875 7.30758 8.79459 7.30402C8.66053 7.29748 8.5262 7.29892 8.39232 7.30833L8.59339 7.30019Z"/></svg></a><a href="https://www.behance.net/lyubakravchuk" target="_blank" rel="noopener" aria-label="Behance"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7.44262 5.34998C8.08197 5.34998 8.67213 5.39945 9.21311 5.54786C9.7541 5.6468 10.1967 5.84468 10.5902 6.09203C10.9836 6.33938 11.2787 6.68566 11.4754 7.13089C11.6721 7.57612 11.7705 8.12029 11.7705 8.71393C11.7705 9.40651 11.623 10.0002 11.2787 10.4454C10.9836 10.8906 10.4918 11.2864 9.90164 11.5832C10.7377 11.8305 11.377 12.2758 11.7705 12.8694C12.1639 13.463 12.4098 14.2051 12.4098 15.0461C12.4098 15.7387 12.2623 16.3323 12.0164 16.827C11.7705 17.3217 11.377 17.7669 10.9344 18.0638C10.4918 18.3606 9.95082 18.6079 9.36066 18.7563C8.77049 18.9047 8.18033 19.0037 7.59016 19.0037H1V5.34998H7.44262ZM7.04918 10.8906C7.59016 10.8906 8.03279 10.7422 8.37705 10.4949C8.72131 10.2475 8.86885 9.80227 8.86885 9.2581C8.86885 8.96128 8.81967 8.66446 8.72131 8.46658C8.62295 8.2687 8.47541 8.12029 8.27869 7.97188C8.08197 7.87294 7.88525 7.774 7.63934 7.72453C7.39344 7.67506 7.14754 7.67506 6.85246 7.67506H4V10.8906H7.04918ZM7.19672 16.7281C7.4918 16.7281 7.78689 16.6786 8.03279 16.6291C8.27869 16.5797 8.52459 16.4807 8.72131 16.3323C8.91803 16.1839 9.06557 16.0355 9.21311 15.7881C9.31148 15.5408 9.40984 15.244 9.40984 14.8977C9.40984 14.2051 9.21312 13.7104 8.81967 13.3641C8.42623 13.0673 7.88525 12.9189 7.2459 12.9189H4V16.7281H7.19672ZM16.6885 16.6786C17.082 17.0744 17.6721 17.2722 18.459 17.2722C19 17.2722 19.4918 17.1238 19.8852 16.8765C20.2787 16.5797 20.5246 16.2828 20.623 15.986H23.0328C22.6393 17.1733 22.0492 18.0143 21.2623 18.5585C20.4754 19.0532 19.541 19.35 18.4098 19.35C17.6229 19.35 16.9344 19.2016 16.2951 18.9542C15.6557 18.7069 15.1639 18.3606 14.7213 17.8659C14.2787 17.4206 13.9344 16.8765 13.7377 16.2334C13.4918 15.5903 13.3934 14.8977 13.3934 14.1062C13.3934 13.3641 13.4918 12.6715 13.7377 12.0284C13.9836 11.3853 14.3279 10.8411 14.7705 10.3464C15.2131 9.90121 15.7541 9.50545 16.3443 9.2581C16.9836 9.01075 17.6229 8.86234 18.4098 8.86234C19.2459 8.86234 19.9836 9.01075 20.623 9.35704C21.2623 9.70333 21.7541 10.0991 22.1475 10.6927C22.541 11.2369 22.8361 11.88 23.0328 12.5726C23.1311 13.2652 23.1803 13.9577 23.1311 14.7493H16C16 15.5408 16.2951 16.2828 16.6885 16.6786ZM19.7869 11.4843C19.4426 11.138 18.9016 10.9401 18.2623 10.9401C17.8197 10.9401 17.4754 11.039 17.1803 11.1874C16.8852 11.3358 16.6885 11.5337 16.4918 11.7316C16.2951 11.9295 16.1967 12.1768 16.1475 12.4242C16.0984 12.6715 16.0492 12.8694 16.0492 13.0673H20.4754C20.3771 12.3252 20.1311 11.8305 19.7869 11.4843ZM15.459 6.2899H20.9672V7.62559H15.459V6.2899Z"/></svg></a><a href="https://ru.pinterest.com/lubovwebdesign/" target="_blank" rel="noopener" aria-label="Pinterest"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13.3717 2.09442C8.42512 1.41268 3.73383 4.48505 2.38064 9.29256C1.02745 14.1001 3.42711 19.1692 8.00271 21.1689C7.94264 20.4008 7.99735 19.628 8.16502 18.8761C8.34964 18.0374 9.46121 13.4132 9.46121 13.4132C9.23971 12.9173 9.12893 12.379 9.13659 11.8359C9.13659 10.3509 9.99353 9.24295 11.0597 9.24295C11.4472 9.23718 11.8181 9.40028 12.0758 9.68981C12.3335 9.97934 12.4526 10.3667 12.402 10.751C12.402 11.6512 11.8236 13.0131 11.5228 14.2903C11.4014 14.7656 11.5131 15.2703 11.8237 15.65C12.1343 16.0296 12.6069 16.2389 13.0967 16.2139C14.9944 16.2139 16.2675 13.7825 16.2675 10.9126C16.2675 8.71205 14.8098 7.0655 12.1243 7.0655C10.826 7.01531 9.56388 7.4996 8.63223 8.40543C7.70057 9.31126 7.18084 10.5595 7.19423 11.859C7.16563 12.5722 7.39566 13.2717 7.84194 13.8287C8.01361 13.9564 8.07985 14.1825 8.00425 14.3827C7.9581 14.5673 7.84194 15.0059 7.79578 15.1675C7.77632 15.278 7.70559 15.3728 7.60516 15.4228C7.50473 15.4729 7.38651 15.4724 7.28654 15.4214C5.9019 14.8674 5.24957 13.3439 5.24957 11.6051C5.24957 8.75822 7.63424 5.3497 12.4036 5.3497C16.1998 5.3497 18.723 8.1273 18.723 11.0972C18.723 15.0059 16.5468 17.9451 13.3298 17.9451C12.3526 17.9761 11.4273 17.5061 10.8759 16.6986C10.8759 16.6986 10.2974 19.0146 10.1835 19.4531C9.95101 20.2099 9.60779 20.9281 9.16505 21.5844C10.0877 21.8643 11.0471 22.0044 12.0113 22C14.6636 22.0017 17.2078 20.9484 19.0829 19.072C20.958 17.1957 22.0099 14.6504 22.0069 11.9975C22.004 7.00306 18.3183 2.77616 13.3717 2.09442Z"/></svg></a><a href="https://www.instagram.com/lyubakravchuk" target="_blank" rel="noopener" aria-label="Instagram*"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13.0281 2.00073C14.1535 2.00259 14.7238 2.00855 15.2166 2.02322L15.4107 2.02956C15.6349 2.03753 15.8561 2.04753 16.1228 2.06003C17.1869 2.1092 17.9128 2.27753 18.5503 2.52503C19.2094 2.7792 19.7661 3.12253 20.3219 3.67837C20.8769 4.2342 21.2203 4.79253 21.4753 5.45003C21.7219 6.0867 21.8903 6.81337 21.9403 7.87753C21.9522 8.1442 21.9618 8.3654 21.9697 8.58964L21.976 8.78373C21.9906 9.27647 21.9973 9.84686 21.9994 10.9723L22.0002 11.7179C22.0003 11.809 22.0003 11.903 22.0003 12L22.0002 12.2821L21.9996 13.0278C21.9977 14.1532 21.9918 14.7236 21.9771 15.2163L21.9707 15.4104C21.9628 15.6347 21.9528 15.8559 21.9403 16.1225C21.8911 17.1867 21.7219 17.9125 21.4753 18.55C21.2211 19.2092 20.8769 19.7659 20.3219 20.3217C19.7661 20.8767 19.2069 21.22 18.5503 21.475C17.9128 21.7217 17.1869 21.89 16.1228 21.94C15.8561 21.9519 15.6349 21.9616 15.4107 21.9694L15.2166 21.9757C14.7238 21.9904 14.1535 21.997 13.0281 21.9992L12.2824 22C12.1913 22 12.0973 22 12.0003 22L11.7182 22L10.9725 21.9993C9.8471 21.9975 9.27672 21.9915 8.78397 21.9768L8.58989 21.9705C8.36564 21.9625 8.14444 21.9525 7.87778 21.94C6.81361 21.8909 6.08861 21.7217 5.45028 21.475C4.79194 21.2209 4.23444 20.8767 3.67861 20.3217C3.12278 19.7659 2.78028 19.2067 2.52528 18.55C2.27778 17.9125 2.11028 17.1867 2.06028 16.1225C2.0484 15.8559 2.03871 15.6347 2.03086 15.4104L2.02457 15.2163C2.00994 14.7236 2.00327 14.1532 2.00111 13.0278L2.00098 10.9723C2.00284 9.84686 2.00879 9.27647 2.02346 8.78373L2.02981 8.58964C2.03778 8.3654 2.04778 8.1442 2.06028 7.87753C2.10944 6.81253 2.27778 6.08753 2.52528 5.45003C2.77944 4.7917 3.12278 4.2342 3.67861 3.67837C4.23444 3.12253 4.79278 2.78003 5.45028 2.52503C6.08778 2.27753 6.81278 2.11003 7.87778 2.06003C8.14444 2.04816 8.36564 2.03847 8.58989 2.03062L8.78397 2.02433C9.27672 2.00969 9.8471 2.00302 10.9725 2.00086L13.0281 2.00073ZM12.0003 7.00003C9.23738 7.00003 7.00028 9.23956 7.00028 12C7.00028 14.7629 9.23981 17 12.0003 17C14.7632 17 17.0003 14.7605 17.0003 12C17.0003 9.23713 14.7607 7.00003 12.0003 7.00003ZM12.0003 9.00003C13.6572 9.00003 15.0003 10.3427 15.0003 12C15.0003 13.6569 13.6576 15 12.0003 15C10.3434 15 9.00028 13.6574 9.00028 12C9.00028 10.3431 10.3429 9.00003 12.0003 9.00003ZM17.2503 5.50003C16.561 5.50003 16.0003 6.05994 16.0003 6.74918C16.0003 7.43843 16.5602 7.9992 17.2503 7.9992C17.9395 7.9992 18.5003 7.4393 18.5003 6.74918C18.5003 6.05994 17.9386 5.49917 17.2503 5.50003Z"/></svg><sup aria-hidden="true">*</sup></a></div>
+    <a class="bar" href="https://t.me/lyuba_rusanova" target="_blank" rel="noopener">обсудить проект <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a>
+    <p class="star">*компания Meta Platforms Inc. (а также её продукты) признана экстремистской организацией на территории РФ.</p>
+  </div>
+</div>
+
+<main class="page">
+
+  <!-- 1. первый экран -->
+  <section class="hero" id="home">
+    <div class="hero-top">
+      <span class="tag inv">привет, это люба</span>
+      <span class="small mute">дизайн через смысл</span>
+    </div>
+    <h1><span class="ln">помогаю вашему бренду</span> <span class="ln"><span class="sel anim" id="heroSel">говорить<svg class="fr" aria-hidden="true"><rect width="100%" height="100%"/></svg><span class="cur" aria-hidden="true"><svg viewBox="0 0 25 30"><path d="M2 2 22 17 12 18 7 27Z" fill="#FF5031"/></svg><b>любовь</b></span></span> с&nbsp;людьми</span> <span class="ln">через дизайн</span></h1>
+    <p class="hero-say">делаю сайты, айдентику, презентации и&nbsp;контент. начинаю с&nbsp;вопросов: зачем, для кого, почему. дизайн появляется из&nbsp;ответов.</p>
+    <canvas class="eat" id="heroPix" aria-hidden="true"></canvas>
+    <div class="bars">
+      <a class="bar ink go-cases" href="#cases">посмотреть кейсы</a>
+      <a class="bar" href="https://t.me/lyuba_rusanova" target="_blank" rel="noopener">обсудить проект <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a>
+    </div>
   </section>
 
-<section class="projects section-shell" id="projects" aria-labelledby="projects-heading">
-    <div class="section-heading reveal"><h2 id="projects-heading">Избранные проекты</h2></div>
-    <div class="project-grid">
-      <article class="project-card reveal" data-project="cybercore">
-        <img class="project-image" src="assets/cybercore-cover.png" alt="IT-компания CyberCore — превью проекта" width="754" height="494" loading="lazy">
-        <div class="project-copy"><div class="tags"><span>Сайт</span></div>
-        <h3>IT-компания CyberCore</h3><p>Дизайн отдельных блоков сайта и участие в развитии визуального направления проекта.</p><p class="project-note">Работа в команде под арт-дирекшеном.</p></div>
-        
-      <div class="project-actions"><a class="soft-button" href="https://www.behance.net/gallery/222934079/CYBER-CORE-Brand-identity-Web-design" target="_blank" rel="noopener noreferrer">Кейс</a></div></article>
-      <article class="project-card reveal" data-project="emirate">
-        <img class="project-image" src="assets/emirate.webp" alt="Аренда автомобилей в Дубае — превью проекта" width="754" height="494" loading="lazy">
-        <div class="project-copy"><div class="tags"><span>Сайт</span><span>Дизайн-система</span></div>
-        <h3>Emirate Rent</h3><p>Разработка дизайн-системы и отдельных блоков сайта сервиса аренды автомобилей.</p><p class="project-note">Работа в команде под арт-дирекшеном.</p></div>
-        
-      <div class="project-actions"><a class="soft-button" href="https://www.behance.net/gallery/212806997/Emiraterent-Car-Rental-Service-in-Dubai" target="_blank" rel="noopener noreferrer">Кейс</a><a class="soft-button" href="http://emiarate.rent/" target="_blank" rel="noopener noreferrer">Сайт</a></div></article>
-      <article class="project-card reveal" data-project="examus">
-        <img class="project-image" src="assets/examus-cover.png" alt="Прокторинг Examus — превью проекта" width="754" height="494" loading="lazy">
-        <div class="project-copy"><div class="tags"><span>Сайт</span><span>Фирстиль</span><span>Печать</span></div>
-        <h3>Прокторинг Examus</h3><p>Дизайн отдельных блоков сайта и участие в оформлении фирменных и печатных материалов.</p><p class="project-note">Работа в команде под арт-дирекшеном.</p></div>
-        
-      <div class="project-actions"><a class="soft-button" href="https://www.behance.net/gallery/212358379/sistema-proktoringa-ekzamus-rebrending" target="_blank" rel="noopener noreferrer">Кейс</a><a class="soft-button" href="https://ru.examus.net/" target="_blank" rel="noopener noreferrer">Сайт</a></div></article>
-      <article class="project-card reveal" data-project="nura">
-        <img class="project-image" src="assets/nura.webp" alt="Nura — устройства для умного дома — превью проекта" width="754" height="494" loading="lazy">
-        <div class="project-copy"><div class="tags"><span>Личный проект</span><span>В работе</span></div>
-        <h3>Nura — устройства для умного дома</h3><p>Концепт бренда и сайта для экосистемы устройств умного дома.</p></div>
-        
-      </article>
-      <article class="project-card reveal" data-project="enerjew"><img class="project-image" src="assets/enerjew-cover.png" alt="Сайт молодёжного еврейского движения EnerJew" loading="lazy"><div class="project-copy"><div class="tags"><span>Сайт</span><span class="tag-accent">Tilda</span></div><h3>EnerJew</h3><p>Сайт молодёжного еврейского движения. Полная разработка и поддержка сайта.</p></div><div class="project-actions"><a class="soft-button" href="https://enerjew.org" target="_blank" rel="noopener noreferrer">Сайт</a></div></article>
-<article class="project-card project-invite reveal">
-        <div class="project-question" aria-hidden="true"><div class="floating-symbol"><span class="question-symbol">?</span><span class="heart-symbol"></span></div></div>
-        <div class="invite-copy"><div class="project-copy"><h3>Ваш проект</h3><p>Есть задача или идея? Давайте разберёмся, каким должен быть её дизайн.</p></div><a class="glow-button" href="https://t.me/lyubakravchuk" target="_blank" rel="noopener noreferrer">Обсудить проект</a></div>
-      </article>
+  <!-- 2. кейсы -->
+  <section class="block" id="cases" aria-labelledby="h-cases">
+    <div class="bhead">
+      <span class="tag">кейсы</span>
+      <h2 id="h-cases">найдите задачу, похожую на&nbsp;вашу</h2>
     </div>
-  </section>
-
-<section class="services section-shell" id="services" aria-labelledby="services-heading">
-    <div class="section-heading reveal"><h2 id="services-heading">С&nbsp;чем могу помочь</h2></div>
-    <div class="service-bento">
-      <article class="service-tile service-web reveal" tabindex="0" aria-labelledby="service-web-title">
-        <div class="service-wash" aria-hidden="true"></div>
-        <div class="service-text"><h3 id="service-web-title">Сайты</h3><p>Лендинги, корпоративные сайты и&nbsp;digital-интерфейсы. От&nbsp;структуры и&nbsp;визуальной концепции до&nbsp;адаптивного дизайна.</p></div>
-        <div class="laptop-scene" aria-hidden="true">
-          <div class="laptop">
-            <div class="laptop-lid"><i class="laptop-camera"></i><div class="laptop-screen">
-              <div class="mini-nav"><img src="assets/LK.svg" alt=""><span></span><span></span><i></i></div>
-              <div class="mini-layout"><div class="mini-hero"><span>Идея становится<br>реальностью.</span><i></i><b></b></div><div class="mini-orb"></div><div class="mini-small"><i></i><i></i></div><div class="mini-wide"><i></i><i></i><i></i></div></div>
-              <span class="laptop-cursor"><svg viewBox="0 0 25 30" aria-hidden="true"><path d="M2 2 22 17 12 18 7 27Z" fill="currentColor" stroke="white" stroke-width="1.2" stroke-linejoin="round"/></svg><span>Любовь</span></span>
-            </div></div>
-            <div class="laptop-base"><i></i></div>
+    <div class="stage" id="stage">
+      <div class="seg bleed" id="filters" role="group" aria-label="Фильтр кейсов">
+        <button type="button" data-f="all" aria-pressed="true">все <i class="num">5</i></button>
+        <button type="button" data-f="site" aria-pressed="false">сайты <i class="num">5</i></button>
+        <button type="button" data-f="identity" aria-pressed="false">фирстиль и&nbsp;печать <i class="num">1</i></button>
+        <button type="button" data-f="content" aria-pressed="false">контент <i class="num">2</i></button>
+      </div>
+      <div class="mosaic" id="mosaic">
+        <article class="case" data-type="site">
+          <div class="cover"><img src="assets/v2/cybercore.webp" alt="CyberCore: обложка проекта" width="1400" height="864"><div class="tags"><span class="tag">сайт</span></div></div>
+          <div class="case-body"><h3>it-компания cybercore</h3><p>дизайн отдельных блоков сайта и&nbsp;участие в&nbsp;развитии визуального направления проекта. работа в&nbsp;команде под арт-дирекшеном.</p></div>
+          <div class="bars flush row"><a class="bar ink sm" href="https://www.behance.net/gallery/222934079/CYBER-CORE-Brand-identity-Web-design" target="_blank" rel="noopener">кейс <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
+        </article>
+        <article class="case" data-type="site">
+          <div class="cover"><img src="assets/v2/emirate.webp" alt="Emirate Rent: сайт на экране ноутбука" width="706" height="442" loading="lazy"><div class="tags"><span class="tag">сайт</span><span class="tag">дизайн-система</span></div></div>
+          <div class="case-body"><h3>emirate rent</h3><p>разработка дизайн-системы и&nbsp;отдельных блоков сайта сервиса аренды автомобилей. работа в&nbsp;команде под арт-дирекшеном.</p></div>
+          <div class="bars flush row"><a class="bar ink sm" href="https://www.behance.net/gallery/212806997/Emiraterent-Car-Rental-Service-in-Dubai" target="_blank" rel="noopener">кейс <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a><a class="bar ink sm" href="http://emiarate.rent/" target="_blank" rel="noopener">сайт <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
+        </article>
+        <article class="case" data-type="site identity content">
+          <div class="cover"><img src="assets/v2/examus.webp" alt="Examus: сайт на экране ноутбука" width="1200" height="673" loading="lazy"><div class="tags"><span class="tag">сайт</span><span class="tag">фирстиль</span><span class="tag">печать</span><span class="tag">контент</span></div></div>
+          <div class="case-body"><h3>прокторинг examus</h3><p>дизайн отдельных блоков сайта, фирменных и&nbsp;печатных материалов, контент. работа в&nbsp;команде под арт-дирекшеном.</p></div>
+          <div class="bars flush row"><a class="bar ink sm" href="https://www.behance.net/gallery/212358379/sistema-proktoringa-ekzamus-rebrending" target="_blank" rel="noopener">кейс <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a><a class="bar ink sm" href="https://ru.examus.net/" target="_blank" rel="noopener">сайт <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
+        </article>
+        <article class="case" data-type="site">
+          <div class="cover"><img src="assets/v2/nura.webp" alt="Nura: первый экран сайта" width="706" height="439" loading="lazy" style="object-position:left top"><div class="tags"><span class="tag">личный проект</span><span class="tag">в&nbsp;работе</span></div></div>
+          <div class="case-body"><h3>nura</h3><p>концепт бренда и&nbsp;сайта для экосистемы устройств умного дома.</p></div>
+        </article>
+        <article class="case" data-type="site content">
+          <div class="cover"><img src="assets/v2/enerjew.webp" alt="EnerJew: главная страница сайта" width="1200" height="785" loading="lazy" style="object-position:center 12%"><div class="tags"><span class="tag">сайт</span><span class="tag">tilda</span><span class="tag">контент</span></div></div>
+          <div class="case-body"><h3>enerjew</h3><p>сайт молодёжного еврейского движения. полная разработка и&nbsp;поддержка сайта, контент.</p></div>
+          <div class="bars flush row"><a class="bar ink sm" href="https://enerjew.org" target="_blank" rel="noopener">сайт <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
+        </article>
+        <article class="case invite" id="invite">
+          <div class="invite-in">
+            <canvas id="invitePix" role="img" aria-label="Вопрос из пикселей превращается в сердце"></canvas>
+            <div><h3>ваш проект</h3><p>есть задача или идея? давайте разберёмся, каким должен быть её дизайн.</p></div>
           </div>
-          <div class="laptop-shadow"></div>
-        </div>
-        <span class="visitor-cursor" aria-hidden="true"><svg viewBox="0 0 25 30" aria-hidden="true"><path d="M2 2 22 17 12 18 7 27Z" fill="currentColor" stroke="white" stroke-width="1.2" stroke-linejoin="round"/></svg><span>Вы</span></span>
-      </article>
-      <article class="service-tile service-brand reveal" tabindex="0" aria-labelledby="service-brand-title">
-        <div class="service-wash" aria-hidden="true"></div>
-        <div class="service-text"><h3 id="service-brand-title">Визуальная система</h3><p>Типографика, цвет и&nbsp;графические приёмы — цельный визуальный язык вашего бренда.</p></div>
-        <div class="brand-illustration service-art" aria-hidden="true"><div class="brand-sheet"><span>Aa</span><i></i><i></i></div><div class="brand-palette"><i></i><i></i><i></i></div><span class="brand-dot"></span></div>
-      </article>
-      <article class="service-tile service-graphic reveal" tabindex="0" aria-labelledby="service-graphic-title">
-        <div class="service-wash" aria-hidden="true"></div>
-        <div class="service-text"><h3 id="service-graphic-title">Графический дизайн</h3><p>Презентации, рекламные материалы, соцсети и&nbsp;печатные носители.</p></div>
-        <div class="graphic-illustration service-art" aria-hidden="true"><div class="graphic-paper paper-back"></div><div class="graphic-paper paper-front"><span>Форма<br>и&nbsp;смысл</span><i></i><b></b></div><svg class="graphic-seal" viewBox="0 0 44 44" aria-hidden="true" focusable="false"><path d="M22 4v36M4 22h36M9.3 9.3l25.4 25.4M9.3 34.7 34.7 9.3" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></div>
-      </article>
-      <article class="service-tile service-custom reveal" tabindex="0" aria-labelledby="service-custom-title">
-        <div class="service-wash" aria-hidden="true"></div>
-        <div class="service-text"><h3 id="service-custom-title">Индивидуальный запрос</h3><p>Задача на&nbsp;стыке направлений? Расскажите о&nbsp;ней — найдём подходящее решение.</p></div>
-        <div class="custom-illustration service-art" aria-hidden="true"><div class="custom-bubble bubble-back"><i></i><i></i><i></i></div><div class="custom-bubble bubble-front"><span></span></div><i class="custom-spark">+</i></div>
-      </article>
-    </div>
-  </section>
-
-<section class="work-phases section-shell" id="process" aria-labelledby="phases-heading">
- <div class="phases-heading-row"><h2 id="phases-heading">Этапы работы</h2><div class="phase-controls"><button class="phase-prev" type="button" aria-label="Предыдущий этап"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></button><button class="phase-next" type="button" aria-label="Следующий этап"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></button></div></div>
- <p class="phases-intro">От&nbsp;первого знакомства до&nbsp;запуска на&nbsp;Tilda. Если нужен только дизайн — подготовлю макеты для&nbsp;передачи вашему разработчику.</p>
- <div class="phases-viewport" tabindex="0" role="region" aria-roledescription="карусель" aria-label="Этапы работы над проектом"><div class="phases-track"><article class="phase-card phase-1" role="group" aria-roledescription="слайд" aria-label="1 из 14: Знакомство и брифинг">
- <div class="phase-picture" ><div class="phase-gradient"></div><div class="phase-glass phase-call"><div class="call-photo"><img src="assets/process/briefing.jpg" alt="Любовь Русанова на видеозвонке" loading="lazy"></div><span class="call-name">Любовь Русанова</span><div class="call-controls"><i><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M6 11v1a6 6 0 0 0 12 0v-1M12 18v3M9 21h6"/></svg></i><i><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="12" height="12" rx="3"/><path d="m15 10 6-3v10l-6-3z"/></svg></i><i><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c4-7 12-7 16 0l-3 3-3-3v-2h-4v2l-3 3z"/></svg></i></div></div></div>
- <div class="phase-copy"><div class="phase-title"><h3>Знакомство и&nbsp;брифинг</h3></div><p>Знакомимся, обсуждаем задачу, ваши идеи и&nbsp;ожидания. Можем созвониться на&nbsp;10–15 минут или просто пообщаться по&nbsp;переписке — как вам удобнее. Я&nbsp;заполняю бриф сама, но&nbsp;могу вернуться к&nbsp;вам с&nbsp;уточнениями. Задам все нужные вопросы и&nbsp;помогу сформулировать задачу, даже если пока не&nbsp;всё ясно.</p></div>
-</article><article class="phase-card phase-2" role="group" aria-roledescription="слайд" aria-label="2 из 14: Коммерческое предложение">
- <div class="phase-picture stage-motion" aria-hidden="true"><div class="phase-gradient"></div><div class="pdf-file phase-glass"><i class="pdf-fold"></i><span>PDF</span><small>Предложение<br>для вашего проекта</small></div><div class="proposal-reader"><img class="" src="assets/process/proposal-preview.jpg" alt="" loading="lazy" decoding="async"></div><span class="stage-cursor visitor-cursor"><svg viewBox="0 0 32 38"><path d="M3 2 28 22 17 24 11 35Z"/></svg><span>Вы</span></span></div>
-
- <div class="phase-copy"><div class="phase-title"><h3>Коммерческое предложение</h3><div class="phase-video-tip"><button class="phase-video-button" type="button" aria-label="Формат презентации: Коммерческое предложение" aria-expanded="false" aria-describedby="phase-tip-1"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="12" height="12" rx="3"/><path d="m15 10 6-3v10l-6-3z"/></svg></button><span class="phase-tooltip" role="tooltip" id="phase-tip-1" hidden>Видеопрезентация или созвон</span></div></div><p>Готовлю персональное предложение с&nbsp;процессом работы, чёткими сроками и&nbsp;стоимостью. Рассчитываю для&nbsp;вас несколько тарифов, чтобы вы могли выбрать подходящий.<br>Записываю пояснительную <strong>видеопрезентацию.</strong></p></div>
-</article><article class="phase-card phase-3" role="group" aria-roledescription="слайд" aria-label="3 из 14: Подписание договора">
- <div class="phase-picture stage-motion" aria-hidden="true"><div class="phase-gradient"></div><div class="phase-glass phase-document"><span class="visual-caption">Договор</span><i class="phase-line"></i><i class="phase-line short"></i><i class="phase-line"></i><i class="phase-line short"></i><svg class="signature" viewBox="0 0 140 45" fill="none"><path pathLength="1" d="M8 32C60-20 30 60 24 31S76-6 54 23s25 12 30-6-14 15 4 9 23-13 15-1 20-5 29-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div></div>
- <div class="phase-copy"><div class="phase-title"><h3>Подписание договора</h3></div><p>Фиксируем всё в&nbsp;договоре, чтобы вы чувствовали себя спокойно и&nbsp;защищённо. После предоплаты я&nbsp;начинаю работать над&nbsp;проектом.</p></div>
-</article><article class="phase-card phase-4" role="group" aria-roledescription="слайд" aria-label="4 из 14: Анализ">
- <div class="phase-picture stage-motion" aria-hidden="true"><div class="phase-gradient"></div><div class="analysis-window phase-glass"><span class="analysis-caption">Volt · анализ конкурентов</span><div class="analysis-crop"><img class="" src="assets/process/volt-analysis.png" alt="" loading="lazy" decoding="async"></div></div></div>
-
- <div class="phase-copy"><div class="phase-title"><h3>Анализ</h3></div><p>Анализирую бизнес, нишу, ЦА, конкурентов и&nbsp;задачи, чтобы предложить продуманные решения, которые будут работать на&nbsp;результат.</p></div>
-</article><article class="phase-card phase-5" role="group" aria-roledescription="слайд" aria-label="5 из 14: Разработка прототипа">
- <div class="phase-picture stage-motion" aria-hidden="true"><div class="phase-gradient"></div><div class="wire-pieces"><div class="wire-piece wire-content"><i></i><i></i><i></i></div><div class="wire-piece wire-square square-one"></div><div class="wire-piece wire-square square-two"></div><div class="wire-piece wire-square square-three"></div></div><span class="stage-cursor "><svg viewBox="0 0 32 38"><path d="M3 2 28 22 17 24 11 35Z"/></svg><span>Любовь</span></span></div>
-
- <div class="phase-copy"><div class="phase-title"><h3>Разработка прототипа</h3><div class="phase-video-tip"><button class="phase-video-button" type="button" aria-label="Формат презентации: Разработка прототипа" aria-expanded="false" aria-describedby="phase-tip-4"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="12" height="12" rx="3"/><path d="m15 10 6-3v10l-6-3z"/></svg></button><span class="phase-tooltip" role="tooltip" id="phase-tip-4" hidden>Видеопрезентация или созвон</span></div></div><p>Продумываю структуру сайта и&nbsp;логику пользовательского пути.<br>В&nbsp;видео объясняю каждое решение.</p><p class="phase-revision"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 3 6 0-1 6 4 4v2H6v-2l4-4zM12 15v6"/></svg><span>1 раунд правок, если захочется что-то скорректировать</span></p></div>
-</article><article class="phase-card phase-6" role="group" aria-roledescription="слайд" aria-label="6 из 14: Мудборд">
- <div class="phase-picture stage-motion" aria-hidden="true"><div class="phase-gradient"></div><div class="mood-collage"><i class="mood-piece mood-piece-1" style="background-size:491.379% 791.209%;background-position:5.213% 5.644%"></i><i class="mood-piece mood-piece-2" style="background-size:595.819% 277.457%;background-position:32.677% 0.000%"></i><i class="mood-piece mood-piece-3" style="background-size:802.817% 1152.000%;background-position:54.709% 4.791%"></i><i class="mood-piece mood-piece-4" style="background-size:795.349% 478.405%;background-position:65.886% 25.110%"></i><i class="mood-piece mood-piece-5" style="background-size:494.220% 281.800%;background-position:90.762% 17.546%"></i><i class="mood-piece mood-piece-6" style="background-size:806.604% 510.638%;background-position:18.558% 47.064%"></i><i class="mood-piece mood-piece-7" style="background-size:494.220% 553.846%;background-position:99.927% 64.661%"></i></div></div>
-
- <div class="phase-copy"><div class="phase-title"><h3>Мудборд</h3><div class="phase-video-tip"><button class="phase-video-button" type="button" aria-label="Формат презентации: Мудборд" aria-expanded="false" aria-describedby="phase-tip-5"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="12" height="12" rx="3"/><path d="m15 10 6-3v10l-6-3z"/></svg></button><span class="phase-tooltip" role="tooltip" id="phase-tip-5" hidden>Видеопрезентация или созвон</span></div></div><p>На&nbsp;данном этапе я&nbsp;предлагаю визуальное направление и&nbsp;объясняю, почему оно подходит именно вашему проекту и&nbsp;задаче. Подбираю шрифты и&nbsp;цвета. Здесь важно словить общую волну, чтобы будущие результаты оправдали ожидания.</p></div>
-</article><article class="phase-card phase-7" role="group" aria-roledescription="слайд" aria-label="7 из 14: Дизайн-концепт нескольких блоков">
- <div class="phase-picture stage-motion" aria-hidden="true"><div class="phase-gradient"></div><i class="concept-plus plus-one">+</i><i class="concept-plus plus-two">+</i><div class="concept-shot shot-one"><img class="" src="assets/process/concept-1.jpg" alt="" loading="lazy" decoding="async"></div><div class="concept-shot shot-two"><img class="" src="assets/process/concept-2.jpg" alt="" loading="lazy" decoding="async"></div><span class="stage-cursor "><svg viewBox="0 0 32 38"><path d="M3 2 28 22 17 24 11 35Z"/></svg><span>Любовь</span></span></div>
-
- <div class="phase-copy"><div class="phase-title"><h3>Дизайн-концепт нескольких блоков</h3><div class="phase-video-tip"><button class="phase-video-button" type="button" aria-label="Формат презентации: Дизайн-концепт нескольких блоков" aria-expanded="false" aria-describedby="phase-tip-6"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="12" height="12" rx="3"/><path d="m15 10 6-3v10l-6-3z"/></svg></button><span class="phase-tooltip" role="tooltip" id="phase-tip-6" hidden>Видеопрезентация или созвон</span></div></div><p>Показываю, как сайт будет выглядеть визуально, и&nbsp;подробно рассказываю о&nbsp;решениях.</p><p class="phase-revision"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 3 6 0-1 6 4 4v2H6v-2l4-4zM12 15v6"/></svg><span>До&nbsp;2-х раундов правок</span></p></div>
-</article><article class="phase-card phase-8" role="group" aria-roledescription="слайд" aria-label="8 из 14: Полный дизайн сайта">
- <div class="phase-picture stage-motion" aria-hidden="true"><div class="phase-gradient"></div><div class="full-design-browser phase-glass"><div class="browser-dots"><i></i><i></i><i></i></div><div class="full-design-scroll"><img class="" src="assets/process/full-design.jpg" alt="" loading="lazy" decoding="async"></div><i class="design-scroll-thumb"></i></div></div>
-
- <div class="phase-copy"><div class="phase-title"><h3>Полный дизайн сайта</h3><div class="phase-video-tip"><button class="phase-video-button" type="button" aria-label="Формат презентации: Полный дизайн сайта" aria-expanded="false" aria-describedby="phase-tip-7"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="12" height="12" rx="3"/><path d="m15 10 6-3v10l-6-3z"/></svg></button><span class="phase-tooltip" role="tooltip" id="phase-tip-7" hidden>Видеопрезентация или созвон</span></div></div><p>Разрабатываю дизайн всего сайта и&nbsp;презентую его в&nbsp;видеоформате.</p><p class="phase-revision"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 3 6 0-1 6 4 4v2H6v-2l4-4zM12 15v6"/></svg><span>До&nbsp;2-х раундов правок</span></p></div>
-</article><article class="phase-card phase-9" role="group" aria-roledescription="слайд" aria-label="9 из 14: Верстка на Tilda">
- <div class="phase-picture stage-motion" aria-hidden="true"><div class="phase-gradient"></div><div class="phase-glass phase-tilda"><span class="tilda-mark">T</span><div class="tilda-layout"><i></i><i></i><i></i></div><span class="visual-pill">Desktop · Tablet · Mobile</span></div></div>
- <div class="phase-copy"><div class="phase-title"><h3>Верстка на&nbsp;Tilda</h3></div><p>Перенос и&nbsp;адаптация дизайна под&nbsp;все устройства + анимация.</p><p class="phase-revision"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 3 6 0-1 6 4 4v2H6v-2l4-4zM12 15v6"/></svg><span>1 раунд правок</span></p><p class="phase-alternative">Если верстку делает ваш разработчик, вместо этапов на&nbsp;Tilda подготовлю и&nbsp;передам макеты, компоненты и&nbsp;пояснения к&nbsp;ним.</p></div>
-</article><article class="phase-card phase-10" role="group" aria-roledescription="слайд" aria-label="10 из 14: Техническая настройка">
- <div class="phase-picture stage-motion" aria-hidden="true"><div class="phase-gradient"></div><div class="setup-list"><div class="setup-item phase-glass"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="m5 12 4 4L19 6"/></svg></i><span>Подключение домена</span></div><div class="setup-item phase-glass"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="m5 12 4 4L19 6"/></svg></i><span>Базовая настройка SEO</span></div><div class="setup-item phase-glass"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="m5 12 4 4L19 6"/></svg></i><span>Проверка форм</span></div></div><span class="stage-cursor "><svg viewBox="0 0 32 38"><path d="M3 2 28 22 17 24 11 35Z"/></svg><span>Любовь</span></span></div>
-
- <div class="phase-copy"><div class="phase-title"><h3>Техническая настройка</h3></div><p>Подключаю домен, настраиваю технические моменты и&nbsp;базовое SEO, чтобы сайт был готов к&nbsp;запуску.</p></div>
-</article><article class="phase-card phase-11" role="group" aria-roledescription="слайд" aria-label="11 из 14: Передача сайта">
- <div class="phase-picture stage-motion" aria-hidden="true"><div class="phase-gradient"></div><div class="handoff-person person-designer"><img src="assets/portrait.png" alt=""><span>Любовь</span></div><div class="handoff-person person-client"><i><svg viewBox="0 0 40 40" fill="currentColor"><circle cx="20" cy="14" r="7"/><path d="M7 35c0-15 26-15 26 0"/></svg></i><span>Вы</span></div><div class="handoff-path"></div><div class="handoff-site phase-glass"><i class="handoff-folder-tab"></i><span class="tilda-mark">T</span></div><span class="stage-cursor "><svg viewBox="0 0 32 38"><path d="M3 2 28 22 17 24 11 35Z"/></svg><span>Любовь</span></span></div>
-
- <div class="phase-copy"><div class="phase-title"><h3>Передача сайта</h3></div><p>Проверяем сайт и&nbsp;я&nbsp;передаю его на&nbsp;ваш аккаунт.</p></div>
-</article><article class="phase-card phase-12 phase-optional" role="group" aria-roledescription="слайд" aria-label="12 из 14: Видео-инструкция">
- <div class="phase-picture stage-motion" aria-hidden="true"><div class="phase-gradient"></div><span class="phase-optional-label">Опционально</span><div class="instruction-player phase-glass"><div class="instruction-screen"><img class="" src="assets/process/full-design.jpg" alt="" loading="lazy" decoding="async"><span class="speaker-avatar"><img src="assets/portrait.png" alt=""></span><i class="instruction-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m9 5 10 7-10 7z"/></svg></i></div><div class="instruction-controls"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM14 5h4v14h-4z"/></svg><i><b></b></i></div></div></div>
-
- <div class="phase-copy"><div class="phase-title"><h3>Видео-инструкция</h3><div class="phase-video-tip"><button class="phase-video-button" type="button" aria-label="Формат презентации: Видео-инструкция" aria-expanded="false" aria-describedby="phase-tip-11"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="12" height="12" rx="3"/><path d="m15 10 6-3v10l-6-3z"/></svg></button><span class="phase-tooltip" role="tooltip" id="phase-tip-11" hidden>Видеопрезентация или созвон</span></div></div><p>Записываю видеоинструкцию, чтобы вы могли уверенно управлять сайтом самостоятельно.</p></div>
-</article><article class="phase-card phase-13 phase-optional" role="group" aria-roledescription="слайд" aria-label="13 из 14: Поддержка">
- <div class="phase-picture stage-motion" aria-hidden="true"><div class="phase-gradient"></div><span class="phase-optional-label">Опционально</span><div class="phase-glass phase-support"><span>Я на связи</span><i class="support-heart"></i></div><div class="phase-glass support-dots"><i></i><i></i><i></i></div></div>
- <div class="phase-copy"><div class="phase-title"><h3>Поддержка</h3></div><p>После запуска я&nbsp;остаюсь на&nbsp;связи и&nbsp;помогаю, если что-то нужно поправить или уточнить.</p></div>
-</article><article class="phase-card phase-14 phase-invite" role="group" aria-roledescription="слайд" aria-label="14 из 14: Давайте поработаем вместе">
- <div class="phase-picture" aria-hidden="true"><div class="phase-gradient"></div><div class="phase-cta-heart"></div></div>
- <div class="phase-copy"><div class="phase-title"><h3>Давайте поработаем вместе</h3></div><p>Задам вопросы, помогу сформулировать задачу и&nbsp;предложу оптимальный формат работы.</p><a class="phase-contact" href="https://t.me/lyubakravchuk" target="_blank" rel="noopener noreferrer">Обсудить проект</a></div>
-</article></div></div>
- <div class="phases-bottom"><span class="phase-position" aria-live="off">01 / 14</span><div class="phase-progress" aria-hidden="true"><i></i></div></div>
- <span class="phase-announcement" role="status" aria-live="polite"></span>
-</section>
-
-<section class="approach section-shell" id="approach" aria-labelledby="approach-heading"><div class="approach-stack"><div class="reveal"><h2 id="approach-heading">Хороший дизайн<br>начинается<br><span class="muted">не с картинки</span></h2></div><div class="assembly" aria-label="От отдельных элементов к цельной визуальной системе"><div class="assembly-board" aria-hidden="true">
-          <div class="piece piece-a"><span>01 / Контекст</span><b>Зачем?</b></div>
-          <div class="piece piece-b"><span>02 / Аудитория</span><b>Для кого?</b></div>
-          <div class="piece piece-c"><span>03 / Идея</span><b>Смысл.</b><div class="type-line"></div></div>
-          <div class="piece piece-d"><span>04 / Визуальный язык</span><div class="swatches"><i></i><i></i><i></i></div><b>Aa</b></div>
-          <div class="piece piece-e"><span>05 / Цельная система</span><b>Всё связано <span>↗</span></b></div>
-        </div></div><div class="approach-copy reveal"><p>Сначала я разбираюсь, что именно нужно сказать, кому и зачем. Изучаю продукт, аудиторию, конкурентов и контекст, а затем ищу идею, вокруг которой можно построить цельную визуальную систему.</p></div></div></section>
-
-<section class="collaboration section-shell" id="collaboration" aria-labelledby="collaboration-heading">
-    <div class="section-heading reveal"><h2 id="collaboration-heading">Мои принципы в работе</h2></div>
-    <div class="collaboration-grid">
-      <div class="principles reveal">
-        <details class="principle" name="principles" open><summary><span class="row-number">01</span><h3>Аргументирую решения</h3><span class="expand-icon" aria-hidden="true">+</span></summary><p>Показываю не только что предлагаю, но и почему. Если вижу более сильный вариант — покажу его и объясню разницу.</p></details>
-        <details class="principle" name="principles"><summary><span class="row-number">02</span><h3>Предлагаю, а не жду готового решения</h3><span class="expand-icon" aria-hidden="true">+</span></summary><p>Ко мне необязательно приходить с идеальным ТЗ. Я задаю вопросы, помогаю собрать задачу и предлагаю варианты реализации.</p></details>
-        <details class="principle" name="principles"><summary><span class="row-number">03</span><h3>Думаю системой</h3><span class="expand-icon" aria-hidden="true">+</span></summary><p>Мне важно, чтобы шрифт, цвет, композиция, графика и взаимодействие пользователя говорили на одном визуальном языке.</p></details>
-        <details class="principle" name="principles"><summary><span class="row-number">04</span><h3>Подстраиваю процесс</h3><span class="expand-icon" aria-hidden="true">+</span></summary><p>Кому-то нужна максимальная прозрачность и регулярные созвоны, кому-то — короткие апдейты и минимум отвлечений. Формат коммуникации выбираем под проект.</p></details>
+          <div class="bars flush"><a class="bar" href="https://t.me/lyuba_rusanova" target="_blank" rel="noopener">обсудить проект <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
+        </article>
       </div>
     </div>
   </section>
 
-<section class="contact-section" id="contact" aria-labelledby="contact-heading"><div class="contact-glow" aria-hidden="true"></div><div class="contact-content reveal"><h2 id="contact-heading">Есть идея?<br><span>Давайте придадим<br>ей форму</span></h2><p>Расскажите о проекте в нескольких предложениях. Я задам уточняющие вопросы и предложу, с чего лучше начать.</p><a class="glow-button" href="https://t.me/lyubakravchuk" target="_blank" rel="noopener noreferrer">Обсудить проект</a><p class="contact-note">Сроки и стоимость обсуждаются индивидуально после знакомства с задачей.</p></div></section>
-  </main>
+</main>
 
-<footer class="site-footer"><div class="footer-main"><div class="footer-brand"><a href="/" aria-label="На главную"><img src="/assets/LK.svg" width="35" height="40" alt="LK"></a><p>Любовь Русанова<br>Веб и графический дизайнер</p></div><nav class="footer-home" aria-label="Разделы главной"><a class="footer-heading" href="/">Главная</a><a href="/#home">Первый экран</a><a href="/#projects">Избранные проекты</a><a href="/#services">С чем могу помочь</a><a href="/#process">Этапы работы</a><a href="/#approach">Подход</a><a href="/#collaboration">Принципы работы</a><a href="/#contact">Контакты</a></nav><div class="footer-other"><a class="portfolio-nav" href="/#projects">Портфолио <span class="portfolio-arrow" aria-hidden="true">→</span></a><a href="/blog/">Блог</a><div class="nav-socials" aria-label="Социальные сети"><a class="social-circle" href="https://www.instagram.com/lyubakravchuk" target="_blank" rel="noopener noreferrer" aria-label="Instagram*"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13.0281 2.00073C14.1535 2.00259 14.7238 2.00855 15.2166 2.02322L15.4107 2.02956C15.6349 2.03753 15.8561 2.04753 16.1228 2.06003C17.1869 2.1092 17.9128 2.27753 18.5503 2.52503C19.2094 2.7792 19.7661 3.12253 20.3219 3.67837C20.8769 4.2342 21.2203 4.79253 21.4753 5.45003C21.7219 6.0867 21.8903 6.81337 21.9403 7.87753C21.9522 8.1442 21.9618 8.3654 21.9697 8.58964L21.976 8.78373C21.9906 9.27647 21.9973 9.84686 21.9994 10.9723L22.0002 11.7179C22.0003 11.809 22.0003 11.903 22.0003 12L22.0002 12.2821L21.9996 13.0278C21.9977 14.1532 21.9918 14.7236 21.9771 15.2163L21.9707 15.4104C21.9628 15.6347 21.9528 15.8559 21.9403 16.1225C21.8911 17.1867 21.7219 17.9125 21.4753 18.55C21.2211 19.2092 20.8769 19.7659 20.3219 20.3217C19.7661 20.8767 19.2069 21.22 18.5503 21.475C17.9128 21.7217 17.1869 21.89 16.1228 21.94C15.8561 21.9519 15.6349 21.9616 15.4107 21.9694L15.2166 21.9757C14.7238 21.9904 14.1535 21.997 13.0281 21.9992L12.2824 22C12.1913 22 12.0973 22 12.0003 22L11.7182 22L10.9725 21.9993C9.8471 21.9975 9.27672 21.9915 8.78397 21.9768L8.58989 21.9705C8.36564 21.9625 8.14444 21.9525 7.87778 21.94C6.81361 21.8909 6.08861 21.7217 5.45028 21.475C4.79194 21.2209 4.23444 20.8767 3.67861 20.3217C3.12278 19.7659 2.78028 19.2067 2.52528 18.55C2.27778 17.9125 2.11028 17.1867 2.06028 16.1225C2.0484 15.8559 2.03871 15.6347 2.03086 15.4104L2.02457 15.2163C2.00994 14.7236 2.00327 14.1532 2.00111 13.0278L2.00098 10.9723C2.00284 9.84686 2.00879 9.27647 2.02346 8.78373L2.02981 8.58964C2.03778 8.3654 2.04778 8.1442 2.06028 7.87753C2.10944 6.81253 2.27778 6.08753 2.52528 5.45003C2.77944 4.7917 3.12278 4.2342 3.67861 3.67837C4.23444 3.12253 4.79278 2.78003 5.45028 2.52503C6.08778 2.27753 6.81278 2.11003 7.87778 2.06003C8.14444 2.04816 8.36564 2.03847 8.58989 2.03062L8.78397 2.02433C9.27672 2.00969 9.8471 2.00302 10.9725 2.00086L13.0281 2.00073ZM12.0003 7.00003C9.23738 7.00003 7.00028 9.23956 7.00028 12C7.00028 14.7629 9.23981 17 12.0003 17C14.7632 17 17.0003 14.7605 17.0003 12C17.0003 9.23713 14.7607 7.00003 12.0003 7.00003ZM12.0003 9.00003C13.6572 9.00003 15.0003 10.3427 15.0003 12C15.0003 13.6569 13.6576 15 12.0003 15C10.3434 15 9.00028 13.6574 9.00028 12C9.00028 10.3431 10.3429 9.00003 12.0003 9.00003ZM17.2503 5.50003C16.561 5.50003 16.0003 6.05994 16.0003 6.74918C16.0003 7.43843 16.5602 7.9992 17.2503 7.9992C17.9395 7.9992 18.5003 7.4393 18.5003 6.74918C18.5003 6.05994 17.9386 5.49917 17.2503 5.50003Z"/></svg><sup aria-hidden="true">*</sup></a><a class="social-circle" href="https://t.me/lyubakravchuk" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM12.3584 9.38246C11.3857 9.78702 9.4418 10.6244 6.5266 11.8945C6.05321 12.0827 5.80524 12.2669 5.78266 12.4469C5.74451 12.7513 6.12561 12.8711 6.64458 13.0343C6.71517 13.0565 6.78832 13.0795 6.8633 13.1039C7.37388 13.2698 8.06071 13.464 8.41776 13.4717C8.74164 13.4787 9.10313 13.3452 9.50222 13.0711C12.226 11.2325 13.632 10.3032 13.7203 10.2832C13.7826 10.269 13.8689 10.2513 13.9273 10.3032C13.9858 10.3552 13.98 10.4536 13.9739 10.48C13.9361 10.641 12.4401 12.0318 11.666 12.7515C11.4351 12.9661 11.2101 13.1853 10.9833 13.4039C10.509 13.8611 10.1533 14.204 11.003 14.764C11.8644 15.3317 12.7323 15.8982 13.5724 16.4971C13.9867 16.7925 14.359 17.0579 14.8188 17.0156C15.0861 16.991 15.3621 16.7397 15.5022 15.9903C15.8335 14.2193 16.4847 10.3821 16.6352 8.80083C16.6484 8.6623 16.6318 8.485 16.6185 8.40717C16.6052 8.32934 16.5773 8.21844 16.4762 8.13635C16.3563 8.03913 16.1714 8.01863 16.0887 8.02009C15.7125 8.02672 15.1355 8.22737 12.3584 9.38246Z"/></svg></a><a class="social-circle" href="https://wa.me/77751026931?text=" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.001 2C17.5238 2 22.001 6.47715 22.001 12C22.001 17.5228 17.5238 22 12.001 22C10.1671 22 8.44851 21.5064 6.97086 20.6447L2.00516 22L3.35712 17.0315C2.49494 15.5536 2.00098 13.8345 2.00098 12C2.00098 6.47715 6.47813 2 12.001 2ZM8.59339 7.30019L8.39232 7.30833C8.26293 7.31742 8.13607 7.34902 8.02057 7.40811C7.93392 7.45244 7.85348 7.51651 7.72709 7.63586C7.60774 7.74855 7.53857 7.84697 7.46569 7.94186C7.09599 8.4232 6.89729 9.01405 6.90098 9.62098C6.90299 10.1116 7.03043 10.5884 7.23169 11.0336C7.63982 11.9364 8.31288 12.8908 9.20194 13.7759C9.4155 13.9885 9.62473 14.2034 9.85034 14.402C10.9538 15.3736 12.2688 16.0742 13.6907 16.4482C13.6907 16.4482 14.2507 16.5342 14.2589 16.5347C14.4444 16.5447 14.6296 16.5313 14.8153 16.5218C15.1066 16.5068 15.391 16.428 15.6484 16.2909C15.8139 16.2028 15.8922 16.159 16.0311 16.0714C16.0311 16.0714 16.0737 16.0426 16.1559 15.9814C16.2909 15.8808 16.3743 15.81 16.4866 15.6934C16.5694 15.6074 16.6406 15.5058 16.6956 15.3913C16.7738 15.2281 16.8525 14.9166 16.8838 14.6579C16.9077 14.4603 16.9005 14.3523 16.8979 14.2854C16.8936 14.1778 16.8047 14.0671 16.7073 14.0201L16.1258 13.7587C16.1258 13.7587 15.2563 13.3803 14.7245 13.1377C14.6691 13.1124 14.6085 13.1007 14.5476 13.097C14.4142 13.0888 14.2647 13.1236 14.1696 13.2238C14.1646 13.2218 14.0984 13.279 13.3749 14.1555C13.335 14.2032 13.2415 14.3069 13.0798 14.2972C13.0554 14.2955 13.0311 14.292 13.0074 14.2858C12.9419 14.2685 12.8781 14.2457 12.8157 14.2193C12.692 14.1668 12.6486 14.1469 12.5641 14.1105C11.9868 13.8583 11.457 13.5209 10.9887 13.108C10.8631 12.9974 10.7463 12.8783 10.6259 12.7616C10.2057 12.3543 9.86169 11.9211 9.60577 11.4938C9.5918 11.4705 9.57027 11.4368 9.54708 11.3991C9.50521 11.331 9.45903 11.25 9.44455 11.1944C9.40738 11.0473 9.50599 10.9291 9.50599 10.9291C9.50599 10.9291 9.74939 10.663 9.86248 10.5183C9.97128 10.379 10.0652 10.2428 10.125 10.1457C10.2428 9.95633 10.2801 9.76062 10.2182 9.60963C9.93764 8.92565 9.64818 8.24536 9.34986 7.56894C9.29098 7.43545 9.11585 7.33846 8.95659 7.32007C8.90265 7.31384 8.84875 7.30758 8.79459 7.30402C8.66053 7.29748 8.5262 7.29892 8.39232 7.30833L8.59339 7.30019Z"/></svg></a><a class="social-circle" href="https://ru.pinterest.com/lubovwebdesign/" target="_blank" rel="noopener noreferrer" aria-label="Pinterest"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13.3717 2.09442C8.42512 1.41268 3.73383 4.48505 2.38064 9.29256C1.02745 14.1001 3.42711 19.1692 8.00271 21.1689C7.94264 20.4008 7.99735 19.628 8.16502 18.8761C8.34964 18.0374 9.46121 13.4132 9.46121 13.4132C9.23971 12.9173 9.12893 12.379 9.13659 11.8359C9.13659 10.3509 9.99353 9.24295 11.0597 9.24295C11.4472 9.23718 11.8181 9.40028 12.0758 9.68981C12.3335 9.97934 12.4526 10.3667 12.402 10.751C12.402 11.6512 11.8236 13.0131 11.5228 14.2903C11.4014 14.7656 11.5131 15.2703 11.8237 15.65C12.1343 16.0296 12.6069 16.2389 13.0967 16.2139C14.9944 16.2139 16.2675 13.7825 16.2675 10.9126C16.2675 8.71205 14.8098 7.0655 12.1243 7.0655C10.826 7.01531 9.56388 7.4996 8.63223 8.40543C7.70057 9.31126 7.18084 10.5595 7.19423 11.859C7.16563 12.5722 7.39566 13.2717 7.84194 13.8287C8.01361 13.9564 8.07985 14.1825 8.00425 14.3827C7.9581 14.5673 7.84194 15.0059 7.79578 15.1675C7.77632 15.278 7.70559 15.3728 7.60516 15.4228C7.50473 15.4729 7.38651 15.4724 7.28654 15.4214C5.9019 14.8674 5.24957 13.3439 5.24957 11.6051C5.24957 8.75822 7.63424 5.3497 12.4036 5.3497C16.1998 5.3497 18.723 8.1273 18.723 11.0972C18.723 15.0059 16.5468 17.9451 13.3298 17.9451C12.3526 17.9761 11.4273 17.5061 10.8759 16.6986C10.8759 16.6986 10.2974 19.0146 10.1835 19.4531C9.95101 20.2099 9.60779 20.9281 9.16505 21.5844C10.0877 21.8643 11.0471 22.0044 12.0113 22C14.6636 22.0017 17.2078 20.9484 19.0829 19.072C20.958 17.1957 22.0099 14.6504 22.0069 11.9975C22.004 7.00306 18.3183 2.77616 13.3717 2.09442Z"/></svg></a><a class="social-circle" href="https://www.behance.net/lyubakravchuk" target="_blank" rel="noopener noreferrer" aria-label="Behance"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7.44262 5.34998C8.08197 5.34998 8.67213 5.39945 9.21311 5.54786C9.7541 5.6468 10.1967 5.84468 10.5902 6.09203C10.9836 6.33938 11.2787 6.68566 11.4754 7.13089C11.6721 7.57612 11.7705 8.12029 11.7705 8.71393C11.7705 9.40651 11.623 10.0002 11.2787 10.4454C10.9836 10.8906 10.4918 11.2864 9.90164 11.5832C10.7377 11.8305 11.377 12.2758 11.7705 12.8694C12.1639 13.463 12.4098 14.2051 12.4098 15.0461C12.4098 15.7387 12.2623 16.3323 12.0164 16.827C11.7705 17.3217 11.377 17.7669 10.9344 18.0638C10.4918 18.3606 9.95082 18.6079 9.36066 18.7563C8.77049 18.9047 8.18033 19.0037 7.59016 19.0037H1V5.34998H7.44262ZM7.04918 10.8906C7.59016 10.8906 8.03279 10.7422 8.37705 10.4949C8.72131 10.2475 8.86885 9.80227 8.86885 9.2581C8.86885 8.96128 8.81967 8.66446 8.72131 8.46658C8.62295 8.2687 8.47541 8.12029 8.27869 7.97188C8.08197 7.87294 7.88525 7.774 7.63934 7.72453C7.39344 7.67506 7.14754 7.67506 6.85246 7.67506H4V10.8906H7.04918ZM7.19672 16.7281C7.4918 16.7281 7.78689 16.6786 8.03279 16.6291C8.27869 16.5797 8.52459 16.4807 8.72131 16.3323C8.91803 16.1839 9.06557 16.0355 9.21311 15.7881C9.31148 15.5408 9.40984 15.244 9.40984 14.8977C9.40984 14.2051 9.21312 13.7104 8.81967 13.3641C8.42623 13.0673 7.88525 12.9189 7.2459 12.9189H4V16.7281H7.19672ZM16.6885 16.6786C17.082 17.0744 17.6721 17.2722 18.459 17.2722C19 17.2722 19.4918 17.1238 19.8852 16.8765C20.2787 16.5797 20.5246 16.2828 20.623 15.986H23.0328C22.6393 17.1733 22.0492 18.0143 21.2623 18.5585C20.4754 19.0532 19.541 19.35 18.4098 19.35C17.6229 19.35 16.9344 19.2016 16.2951 18.9542C15.6557 18.7069 15.1639 18.3606 14.7213 17.8659C14.2787 17.4206 13.9344 16.8765 13.7377 16.2334C13.4918 15.5903 13.3934 14.8977 13.3934 14.1062C13.3934 13.3641 13.4918 12.6715 13.7377 12.0284C13.9836 11.3853 14.3279 10.8411 14.7705 10.3464C15.2131 9.90121 15.7541 9.50545 16.3443 9.2581C16.9836 9.01075 17.6229 8.86234 18.4098 8.86234C19.2459 8.86234 19.9836 9.01075 20.623 9.35704C21.2623 9.70333 21.7541 10.0991 22.1475 10.6927C22.541 11.2369 22.8361 11.88 23.0328 12.5726C23.1311 13.2652 23.1803 13.9577 23.1311 14.7493H16C16 15.5408 16.2951 16.2828 16.6885 16.6786ZM19.7869 11.4843C19.4426 11.138 18.9016 10.9401 18.2623 10.9401C17.8197 10.9401 17.4754 11.039 17.1803 11.1874C16.8852 11.3358 16.6885 11.5337 16.4918 11.7316C16.2951 11.9295 16.1967 12.1768 16.1475 12.4242C16.0984 12.6715 16.0492 12.8694 16.0492 13.0673H20.4754C20.3771 12.3252 20.1311 11.8305 19.7869 11.4843ZM15.459 6.2899H20.9672V7.62559H15.459V6.2899Z"/></svg></a></div></div></div><p class="legal-note">*компания Meta Platforms Inc. (а также ее продукты) признана экстремистской организацией на территории РФ.</p></footer>
-  <script src="script.js"></script>
-  <script src="services.js?v=2"></script>
-  <script src="process.js?v=2"></script>
+<!-- 6. контакт -->
+<section class="block cta" id="contact" aria-labelledby="h-contact">
+  <div class="cta-txt">
+    <span class="tag">контакт</span>
+    <h2 id="h-contact">есть идея? давайте придадим ей&nbsp;форму</h2>
+    <p>расскажите о&nbsp;проекте в&nbsp;нескольких предложениях. я&nbsp;задам уточняющие вопросы и&nbsp;предложу, с&nbsp;чего лучше начать.</p>
+  </div>
+  <canvas class="dust" id="ctaPix" role="img" aria-label="Рассыпанные пиксели собираются в сердце"></canvas>
+  <p class="cta-note">сроки и&nbsp;стоимость обсуждаются индивидуально после знакомства с&nbsp;задачей</p>
+  <a class="bar white" href="https://t.me/lyuba_rusanova" target="_blank" rel="noopener">обсудить проект <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a>
+</section>
+
+<footer class="foot">
+  <div class="foot-top">
+    <div class="foot-me">
+      <a class="logo" href="#home" aria-label="Наверх"><svg aria-hidden="true"><use href="#lr"/></svg></a>
+      <div>
+        <div>любовь русанова</div>
+        <div class="small mute" style="color:#A3A3A3">веб и&nbsp;графический дизайнер</div>
+      </div>
+    </div>
+    <nav class="foot-nav" aria-label="Разделы в подвале">
+      <a href="#home">первый экран</a>
+      <a href="#cases">кейсы</a>
+                  <a href="#contact">контакт</a>
+    </nav>
+  </div>
+  <div class="soc-row"><a href="https://t.me/lyuba_rusanova" target="_blank" rel="noopener" aria-label="Telegram"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM12.3584 9.38246C11.3857 9.78702 9.4418 10.6244 6.5266 11.8945C6.05321 12.0827 5.80524 12.2669 5.78266 12.4469C5.74451 12.7513 6.12561 12.8711 6.64458 13.0343C6.71517 13.0565 6.78832 13.0795 6.8633 13.1039C7.37388 13.2698 8.06071 13.464 8.41776 13.4717C8.74164 13.4787 9.10313 13.3452 9.50222 13.0711C12.226 11.2325 13.632 10.3032 13.7203 10.2832C13.7826 10.269 13.8689 10.2513 13.9273 10.3032C13.9858 10.3552 13.98 10.4536 13.9739 10.48C13.9361 10.641 12.4401 12.0318 11.666 12.7515C11.4351 12.9661 11.2101 13.1853 10.9833 13.4039C10.509 13.8611 10.1533 14.204 11.003 14.764C11.8644 15.3317 12.7323 15.8982 13.5724 16.4971C13.9867 16.7925 14.359 17.0579 14.8188 17.0156C15.0861 16.991 15.3621 16.7397 15.5022 15.9903C15.8335 14.2193 16.4847 10.3821 16.6352 8.80083C16.6484 8.6623 16.6318 8.485 16.6185 8.40717C16.6052 8.32934 16.5773 8.21844 16.4762 8.13635C16.3563 8.03913 16.1714 8.01863 16.0887 8.02009C15.7125 8.02672 15.1355 8.22737 12.3584 9.38246Z"/></svg></a><a href="https://wa.me/77751026931?text=" target="_blank" rel="noopener" aria-label="WhatsApp"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.001 2C17.5238 2 22.001 6.47715 22.001 12C22.001 17.5228 17.5238 22 12.001 22C10.1671 22 8.44851 21.5064 6.97086 20.6447L2.00516 22L3.35712 17.0315C2.49494 15.5536 2.00098 13.8345 2.00098 12C2.00098 6.47715 6.47813 2 12.001 2ZM8.59339 7.30019L8.39232 7.30833C8.26293 7.31742 8.13607 7.34902 8.02057 7.40811C7.93392 7.45244 7.85348 7.51651 7.72709 7.63586C7.60774 7.74855 7.53857 7.84697 7.46569 7.94186C7.09599 8.4232 6.89729 9.01405 6.90098 9.62098C6.90299 10.1116 7.03043 10.5884 7.23169 11.0336C7.63982 11.9364 8.31288 12.8908 9.20194 13.7759C9.4155 13.9885 9.62473 14.2034 9.85034 14.402C10.9538 15.3736 12.2688 16.0742 13.6907 16.4482C13.6907 16.4482 14.2507 16.5342 14.2589 16.5347C14.4444 16.5447 14.6296 16.5313 14.8153 16.5218C15.1066 16.5068 15.391 16.428 15.6484 16.2909C15.8139 16.2028 15.8922 16.159 16.0311 16.0714C16.0311 16.0714 16.0737 16.0426 16.1559 15.9814C16.2909 15.8808 16.3743 15.81 16.4866 15.6934C16.5694 15.6074 16.6406 15.5058 16.6956 15.3913C16.7738 15.2281 16.8525 14.9166 16.8838 14.6579C16.9077 14.4603 16.9005 14.3523 16.8979 14.2854C16.8936 14.1778 16.8047 14.0671 16.7073 14.0201L16.1258 13.7587C16.1258 13.7587 15.2563 13.3803 14.7245 13.1377C14.6691 13.1124 14.6085 13.1007 14.5476 13.097C14.4142 13.0888 14.2647 13.1236 14.1696 13.2238C14.1646 13.2218 14.0984 13.279 13.3749 14.1555C13.335 14.2032 13.2415 14.3069 13.0798 14.2972C13.0554 14.2955 13.0311 14.292 13.0074 14.2858C12.9419 14.2685 12.8781 14.2457 12.8157 14.2193C12.692 14.1668 12.6486 14.1469 12.5641 14.1105C11.9868 13.8583 11.457 13.5209 10.9887 13.108C10.8631 12.9974 10.7463 12.8783 10.6259 12.7616C10.2057 12.3543 9.86169 11.9211 9.60577 11.4938C9.5918 11.4705 9.57027 11.4368 9.54708 11.3991C9.50521 11.331 9.45903 11.25 9.44455 11.1944C9.40738 11.0473 9.50599 10.9291 9.50599 10.9291C9.50599 10.9291 9.74939 10.663 9.86248 10.5183C9.97128 10.379 10.0652 10.2428 10.125 10.1457C10.2428 9.95633 10.2801 9.76062 10.2182 9.60963C9.93764 8.92565 9.64818 8.24536 9.34986 7.56894C9.29098 7.43545 9.11585 7.33846 8.95659 7.32007C8.90265 7.31384 8.84875 7.30758 8.79459 7.30402C8.66053 7.29748 8.5262 7.29892 8.39232 7.30833L8.59339 7.30019Z"/></svg></a><a href="https://www.behance.net/lyubakravchuk" target="_blank" rel="noopener" aria-label="Behance"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7.44262 5.34998C8.08197 5.34998 8.67213 5.39945 9.21311 5.54786C9.7541 5.6468 10.1967 5.84468 10.5902 6.09203C10.9836 6.33938 11.2787 6.68566 11.4754 7.13089C11.6721 7.57612 11.7705 8.12029 11.7705 8.71393C11.7705 9.40651 11.623 10.0002 11.2787 10.4454C10.9836 10.8906 10.4918 11.2864 9.90164 11.5832C10.7377 11.8305 11.377 12.2758 11.7705 12.8694C12.1639 13.463 12.4098 14.2051 12.4098 15.0461C12.4098 15.7387 12.2623 16.3323 12.0164 16.827C11.7705 17.3217 11.377 17.7669 10.9344 18.0638C10.4918 18.3606 9.95082 18.6079 9.36066 18.7563C8.77049 18.9047 8.18033 19.0037 7.59016 19.0037H1V5.34998H7.44262ZM7.04918 10.8906C7.59016 10.8906 8.03279 10.7422 8.37705 10.4949C8.72131 10.2475 8.86885 9.80227 8.86885 9.2581C8.86885 8.96128 8.81967 8.66446 8.72131 8.46658C8.62295 8.2687 8.47541 8.12029 8.27869 7.97188C8.08197 7.87294 7.88525 7.774 7.63934 7.72453C7.39344 7.67506 7.14754 7.67506 6.85246 7.67506H4V10.8906H7.04918ZM7.19672 16.7281C7.4918 16.7281 7.78689 16.6786 8.03279 16.6291C8.27869 16.5797 8.52459 16.4807 8.72131 16.3323C8.91803 16.1839 9.06557 16.0355 9.21311 15.7881C9.31148 15.5408 9.40984 15.244 9.40984 14.8977C9.40984 14.2051 9.21312 13.7104 8.81967 13.3641C8.42623 13.0673 7.88525 12.9189 7.2459 12.9189H4V16.7281H7.19672ZM16.6885 16.6786C17.082 17.0744 17.6721 17.2722 18.459 17.2722C19 17.2722 19.4918 17.1238 19.8852 16.8765C20.2787 16.5797 20.5246 16.2828 20.623 15.986H23.0328C22.6393 17.1733 22.0492 18.0143 21.2623 18.5585C20.4754 19.0532 19.541 19.35 18.4098 19.35C17.6229 19.35 16.9344 19.2016 16.2951 18.9542C15.6557 18.7069 15.1639 18.3606 14.7213 17.8659C14.2787 17.4206 13.9344 16.8765 13.7377 16.2334C13.4918 15.5903 13.3934 14.8977 13.3934 14.1062C13.3934 13.3641 13.4918 12.6715 13.7377 12.0284C13.9836 11.3853 14.3279 10.8411 14.7705 10.3464C15.2131 9.90121 15.7541 9.50545 16.3443 9.2581C16.9836 9.01075 17.6229 8.86234 18.4098 8.86234C19.2459 8.86234 19.9836 9.01075 20.623 9.35704C21.2623 9.70333 21.7541 10.0991 22.1475 10.6927C22.541 11.2369 22.8361 11.88 23.0328 12.5726C23.1311 13.2652 23.1803 13.9577 23.1311 14.7493H16C16 15.5408 16.2951 16.2828 16.6885 16.6786ZM19.7869 11.4843C19.4426 11.138 18.9016 10.9401 18.2623 10.9401C17.8197 10.9401 17.4754 11.039 17.1803 11.1874C16.8852 11.3358 16.6885 11.5337 16.4918 11.7316C16.2951 11.9295 16.1967 12.1768 16.1475 12.4242C16.0984 12.6715 16.0492 12.8694 16.0492 13.0673H20.4754C20.3771 12.3252 20.1311 11.8305 19.7869 11.4843ZM15.459 6.2899H20.9672V7.62559H15.459V6.2899Z"/></svg></a><a href="https://ru.pinterest.com/lubovwebdesign/" target="_blank" rel="noopener" aria-label="Pinterest"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13.3717 2.09442C8.42512 1.41268 3.73383 4.48505 2.38064 9.29256C1.02745 14.1001 3.42711 19.1692 8.00271 21.1689C7.94264 20.4008 7.99735 19.628 8.16502 18.8761C8.34964 18.0374 9.46121 13.4132 9.46121 13.4132C9.23971 12.9173 9.12893 12.379 9.13659 11.8359C9.13659 10.3509 9.99353 9.24295 11.0597 9.24295C11.4472 9.23718 11.8181 9.40028 12.0758 9.68981C12.3335 9.97934 12.4526 10.3667 12.402 10.751C12.402 11.6512 11.8236 13.0131 11.5228 14.2903C11.4014 14.7656 11.5131 15.2703 11.8237 15.65C12.1343 16.0296 12.6069 16.2389 13.0967 16.2139C14.9944 16.2139 16.2675 13.7825 16.2675 10.9126C16.2675 8.71205 14.8098 7.0655 12.1243 7.0655C10.826 7.01531 9.56388 7.4996 8.63223 8.40543C7.70057 9.31126 7.18084 10.5595 7.19423 11.859C7.16563 12.5722 7.39566 13.2717 7.84194 13.8287C8.01361 13.9564 8.07985 14.1825 8.00425 14.3827C7.9581 14.5673 7.84194 15.0059 7.79578 15.1675C7.77632 15.278 7.70559 15.3728 7.60516 15.4228C7.50473 15.4729 7.38651 15.4724 7.28654 15.4214C5.9019 14.8674 5.24957 13.3439 5.24957 11.6051C5.24957 8.75822 7.63424 5.3497 12.4036 5.3497C16.1998 5.3497 18.723 8.1273 18.723 11.0972C18.723 15.0059 16.5468 17.9451 13.3298 17.9451C12.3526 17.9761 11.4273 17.5061 10.8759 16.6986C10.8759 16.6986 10.2974 19.0146 10.1835 19.4531C9.95101 20.2099 9.60779 20.9281 9.16505 21.5844C10.0877 21.8643 11.0471 22.0044 12.0113 22C14.6636 22.0017 17.2078 20.9484 19.0829 19.072C20.958 17.1957 22.0099 14.6504 22.0069 11.9975C22.004 7.00306 18.3183 2.77616 13.3717 2.09442Z"/></svg></a><a href="https://www.instagram.com/lyubakravchuk" target="_blank" rel="noopener" aria-label="Instagram*"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13.0281 2.00073C14.1535 2.00259 14.7238 2.00855 15.2166 2.02322L15.4107 2.02956C15.6349 2.03753 15.8561 2.04753 16.1228 2.06003C17.1869 2.1092 17.9128 2.27753 18.5503 2.52503C19.2094 2.7792 19.7661 3.12253 20.3219 3.67837C20.8769 4.2342 21.2203 4.79253 21.4753 5.45003C21.7219 6.0867 21.8903 6.81337 21.9403 7.87753C21.9522 8.1442 21.9618 8.3654 21.9697 8.58964L21.976 8.78373C21.9906 9.27647 21.9973 9.84686 21.9994 10.9723L22.0002 11.7179C22.0003 11.809 22.0003 11.903 22.0003 12L22.0002 12.2821L21.9996 13.0278C21.9977 14.1532 21.9918 14.7236 21.9771 15.2163L21.9707 15.4104C21.9628 15.6347 21.9528 15.8559 21.9403 16.1225C21.8911 17.1867 21.7219 17.9125 21.4753 18.55C21.2211 19.2092 20.8769 19.7659 20.3219 20.3217C19.7661 20.8767 19.2069 21.22 18.5503 21.475C17.9128 21.7217 17.1869 21.89 16.1228 21.94C15.8561 21.9519 15.6349 21.9616 15.4107 21.9694L15.2166 21.9757C14.7238 21.9904 14.1535 21.997 13.0281 21.9992L12.2824 22C12.1913 22 12.0973 22 12.0003 22L11.7182 22L10.9725 21.9993C9.8471 21.9975 9.27672 21.9915 8.78397 21.9768L8.58989 21.9705C8.36564 21.9625 8.14444 21.9525 7.87778 21.94C6.81361 21.8909 6.08861 21.7217 5.45028 21.475C4.79194 21.2209 4.23444 20.8767 3.67861 20.3217C3.12278 19.7659 2.78028 19.2067 2.52528 18.55C2.27778 17.9125 2.11028 17.1867 2.06028 16.1225C2.0484 15.8559 2.03871 15.6347 2.03086 15.4104L2.02457 15.2163C2.00994 14.7236 2.00327 14.1532 2.00111 13.0278L2.00098 10.9723C2.00284 9.84686 2.00879 9.27647 2.02346 8.78373L2.02981 8.58964C2.03778 8.3654 2.04778 8.1442 2.06028 7.87753C2.10944 6.81253 2.27778 6.08753 2.52528 5.45003C2.77944 4.7917 3.12278 4.2342 3.67861 3.67837C4.23444 3.12253 4.79278 2.78003 5.45028 2.52503C6.08778 2.27753 6.81278 2.11003 7.87778 2.06003C8.14444 2.04816 8.36564 2.03847 8.58989 2.03062L8.78397 2.02433C9.27672 2.00969 9.8471 2.00302 10.9725 2.00086L13.0281 2.00073ZM12.0003 7.00003C9.23738 7.00003 7.00028 9.23956 7.00028 12C7.00028 14.7629 9.23981 17 12.0003 17C14.7632 17 17.0003 14.7605 17.0003 12C17.0003 9.23713 14.7607 7.00003 12.0003 7.00003ZM12.0003 9.00003C13.6572 9.00003 15.0003 10.3427 15.0003 12C15.0003 13.6569 13.6576 15 12.0003 15C10.3434 15 9.00028 13.6574 9.00028 12C9.00028 10.3431 10.3429 9.00003 12.0003 9.00003ZM17.2503 5.50003C16.561 5.50003 16.0003 6.05994 16.0003 6.74918C16.0003 7.43843 16.5602 7.9992 17.2503 7.9992C17.9395 7.9992 18.5003 7.4393 18.5003 6.74918C18.5003 6.05994 17.9386 5.49917 17.2503 5.50003Z"/></svg><sup aria-hidden="true">*</sup></a></div>
+  <a class="bar" href="https://t.me/lyuba_rusanova" target="_blank" rel="noopener">написать в&nbsp;телеграм <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a>
+  <p class="star">*компания Meta Platforms Inc. (а также её продукты) признана экстремистской организацией на территории РФ.</p>
+</footer>
+
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canHover = window.matchMedia('(hover: hover)').matches;
+  function $(id){ return document.getElementById(id); }
+  function all(s, r){ return [].slice.call((r || document).querySelectorAll(s)); }
+  function esc(s){ return s.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  /* висящие предлоги и союзы привязываем к следующему слову */
+  function nb(s){ return esc(s).replace(/(^|[\s(«])([а-яёa-z]{1,2})\s+/gi, '$1$2&nbsp;').replace(/(^|[\s(«]|&nbsp;)([а-яёa-z]{1,2})\s+/gi, '$1$2&nbsp;'); }
+  var AR = '<svg class="ar" aria-hidden="true"><use href="#ar"/></svg>';
+  var TG = 'https://t.me/lyuba_rusanova';
+  function onSeen(el, fn, th){
+    if (!('IntersectionObserver' in window)) { fn(true); return; }
+    new IntersectionObserver(function(e){ fn(e[0].isIntersecting); }, {threshold: th || 0}).observe(el);
+  }
+
+  /* ---------- выделение, которое рисует курсор ---------- */
+  setTimeout(function(){ $('heroSel').classList.add('go'); }, 500);
+
+  /* ---------- логотип: короткий сбой раз в 5 секунд ---------- */
+  var logo = $('logo');
+  if (!reduce) setInterval(function(){
+    if (document.hidden) return;
+    logo.classList.add('glitch'); setTimeout(function(){ logo.classList.remove('glitch'); }, 240);
+  }, 5000);
+
+  /* ---------- пиксели ---------- */
+  var C = {ink:'#0D0D0D', acc:'#FF5031', lil:'#D0BEF3', lime:'#CBDB9A', white:'#FFFFFF'};
+  var HEART = ['.XX.XX.','XXXXXXX','XXXXXXX','.XXXXX.','..XXX..','...X...'];
+  var QMARK = ['.XXXXX.','XXXXXXX','XX...XX','....XXX','...XXX.','..XXX..','..XX...','.......','..XX...'];
+  function hash(x, y, k){ var s = Math.sin(x * 127.1 + y * 311.7 + k * 74.7) * 43758.5453; return s - Math.floor(s); }
+  function rnd(i){ var s = Math.sin(i * 12.9898 + 4.1414) * 43758.5453; return s - Math.floor(s); }
+  function bmp(rows, x, y, u, c){
+    var out = [];
+    rows.forEach(function(r, j){ for (var i = 0; i < r.length; i++) if (r[i] === 'X') for (var b = 0; b < u; b++) for (var a = 0; a < u; a++) out.push({x: x + i * u + a, y: y + j * u + b, c: c}); });
+    return out;
+  }
+
+  /* первый экран: мелкие квадраты поднимаются от кнопок и понемногу переставляются */
+  (function(cv){
+    var ctx = cv.getContext('2d'), seen = true;
+    function draw(t){
+      var W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (!W || !H) return;
+      if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+      var c = W < 520 ? 6 : 7, cols = Math.ceil(W / c), rows = Math.ceil(H / c);
+      for (var y = 0; y < rows; y++) for (var x = 0; x < cols; x++) {
+        var nx = (x + 1) / cols, ny = (y + 1) / rows, r = hash(x, y, 1);
+        var v = nx * .34 + ny * .82 + r * .5 + .07 * Math.sin(t * .0011 + hash(x, y, 3) * 6.283);
+        if (v < 1) continue;
+        var q = Math.sin(t * .0007 + hash(x, y, 2) * 6.283 + (x - y) * .3);
+        ctx.fillStyle = q > .8 ? C.lil : q < -.84 ? C.lime : q > .62 ? C.ink : C.acc;
+        ctx.fillRect(W - (cols - x) * c, H - (rows - y) * c, c - 1, c - 1);
+      }
+    }
+    draw(0);
+    onSeen(cv, function(v){ seen = v; });
+    window.addEventListener('resize', function(){ draw(performance.now()); });
+    if (!reduce) setInterval(function(){ if (seen && !document.hidden) draw(performance.now()); }, 140);
+  })($('heroPix'));
+
+  /* частицы, которые собираются из одной формы в другую */
+  function Morph(cv, cfg){
+    var ctx = cv.getContext('2d'), W = 0, H = 0, dpr = 1, cell = 5, cols = 0, rows = 0;
+    var sets = [], P = [], idx = 0, t0 = 0, busy = false, timer = null, seen = false, gen = 0, want = null, DUR = cfg.dur || 1500;
+    function layout(){
+      W = cv.clientWidth; H = cv.clientHeight; if (!W || !H) return false;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      cell = cfg.cell(W); cols = Math.floor(W / cell); rows = Math.floor(H / cell);
+      sets = cfg.shapes(cols, rows);
+      var n = 0; sets.forEach(function(s){ n = Math.max(n, s.length); });
+      if (reduce) idx = sets.length - 1;
+      var s = sets[idx]; P = [];
+      for (var i = 0; i < n; i++) { var t = s[i % s.length]; P.push({x: t.x, y: t.y, c: t.c, sx: t.x, sy: t.y, sc: t.c, tx: t.x, ty: t.y, tc: t.c, d: 0, jx: 0, jy: 0, ox: 0, oy: 0}); }
+      return true;
+    }
+    function draw(){
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+      var ox = W - cols * cell, oy = H - rows * cell, s = cell - 1, last = '';
+      for (var i = 0; i < P.length; i++) { var p = P[i]; if (p.c !== last) { ctx.fillStyle = p.c; last = p.c; } ctx.fillRect(ox + (Math.round(p.x) + p.ox) * cell, oy + (Math.round(p.y) + p.oy) * cell, s, s); }
+    }
+    function start(next){
+      if (busy || !P.length) return;
+      idx = next == null ? (idx + 1) % sets.length : next;
+      var s = sets[idx].slice(), i, j, t;
+      for (i = s.length - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = s[i]; s[i] = s[j]; s[j] = t; }
+      for (i = 0; i < P.length; i++) { var p = P[i]; t = s[i % s.length]; p.ox = p.oy = 0; p.sx = p.x; p.sy = p.y; p.sc = p.c; p.tx = t.x; p.ty = t.y; p.tc = t.c; p.d = Math.random() * .35; p.jx = (Math.random() - .5) * 16; p.jy = (Math.random() - .5) * 12; }
+      busy = true; t0 = 0; var g = gen;
+      requestAnimationFrame(function step(now){
+        if (g !== gen) return;
+        if (!t0) t0 = now;
+        var k = (now - t0) / DUR;
+        for (var i = 0; i < P.length; i++) {
+          var p = P[i], u = Math.max(0, Math.min(1, (k - p.d) / .65)), e = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2, w = Math.sin(Math.PI * e);
+          p.x = p.sx + (p.tx - p.sx) * e + w * p.jx; p.y = p.sy + (p.ty - p.sy) * e + w * p.jy; p.c = e < .5 ? p.sc : p.tc;
+        }
+        draw();
+        if (k < 1) requestAnimationFrame(step);
+        else { busy = false; if (want != null && want !== idx) { var w2 = want; want = null; start(w2); } else { want = null; plan(); } }
+      });
+    }
+    function plan(){
+      clearTimeout(timer);
+      if (reduce || !seen) return;
+      if (cfg.manual) {
+        timer = setTimeout(function tick(){
+          if (busy || !seen) return;
+          if (!document.hidden) { for (var i = 0; i < P.length; i++) { var on = Math.random() < .06; P[i].ox = on ? Math.round(Math.random() * 2 - 1) : 0; P[i].oy = on ? Math.round(Math.random() * 2 - 1) : 0; } draw(); }
+          timer = setTimeout(tick, 190);
+        }, 190);
+        return;
+      }
+      timer = setTimeout(function(){ if (document.hidden) { plan(); return; } start(); }, cfg.hold[idx] || 2400);
+    }
+    function reset(){ gen++; busy = false; clearTimeout(timer); if (layout()) { draw(); plan(); } }
+    reset();
+    onSeen(cv, function(v){ seen = v; if (seen && !busy) plan(); else clearTimeout(timer); }, .2);
+    var rt; window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(reset, 180); });
+    this.to = function(i){ if (reduce) return; if (busy) { want = i; return; } if (i === idx) return; clearTimeout(timer); start(i); };
+  }
+  function inviteShapes(cols, rows){
+    var uq = Math.max(1, Math.floor(Math.min(cols / 7, rows / 9))), uh = Math.max(1, Math.floor(Math.min(cols / 7, rows / 6)));
+    return [bmp(QMARK, 0, Math.floor((rows - 9 * uq) / 2), uq, C.acc), bmp(HEART, 0, Math.floor((rows - 6 * uh) / 2), uh, C.acc)];
+  }
+  function ctaShapes(cols, rows){
+    var u = Math.max(2, Math.min(7, Math.floor(Math.min(cols / 9, rows / 8))));
+    var heart = bmp(HEART, Math.floor((cols - 7 * u) / 2), Math.floor((rows - 6 * u) / 2), u, C.white);
+    var dust = heart.map(function(p, i){ return {x: Math.floor(rnd(i * 2 + 1) * cols), y: Math.floor(rnd(i * 2 + 2) * rows), c: rnd(i + 99) > .86 ? C.ink : C.white}; });
+    return [dust, heart];
+  }
+  var inv = new Morph($('invitePix'), {cell: function(){ return 4; }, shapes: inviteShapes, hold: [2400, 2600], dur: 1100, manual: canHover});
+  if (canHover) { $('invite').addEventListener('mouseenter', function(){ inv.to(1); }); $('invite').addEventListener('mouseleave', function(){ inv.to(0); }); }
+  new Morph($('ctaPix'), {cell: function(w){ return w < 420 ? 5 : 6; }, shapes: ctaShapes, hold: [1500, 3600]});
+
+  /* ---------- меню: экран заполняется крупными пикселями сверху вниз ---------- */
+  var menu = $('menu'), mo = $('menuOpen'), mc = $('menuClose'), mpx = $('menuPx');
+  function buildPx(){
+    var W = window.innerWidth, H = window.innerHeight, cols = W < 640 ? 6 : 10, size = Math.ceil(W / cols), rows = Math.ceil(H / size), h = '';
+    for (var r = 0; r < rows; r++) for (var c = 0; c < cols; c++)
+      h += '<i style="left:' + c * size + 'px;top:' + r * size + 'px;width:' + (size + 1) + 'px;height:' + (size + 1) + 'px;--d:' + Math.round(r / rows * 430 + Math.random() * 230) + 'ms"></i>';
+    mpx.innerHTML = h;
+  }
+  function setMenu(open, focus){
+    if (open) { buildPx(); void mpx.offsetWidth; }
+    menu.classList.toggle('open', open); document.body.classList.toggle('lock', open);
+    mo.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (focus !== false) (open ? mc : mo).focus();
+  }
+  mo.addEventListener('click', function(){ setMenu(true); });
+  mc.addEventListener('click', function(){ setMenu(false); });
+  all('a', menu).forEach(function(a){ a.addEventListener('click', function(){ setMenu(false, false); }); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && menu.classList.contains('open')) setMenu(false); });
+
+  /* ---------- кейсы: по бейджу остаются только подходящие карточки ---------- */
+  var SPANS = {1:[12], 2:[8,4], 3:[5,4,3], 4:[7,5,5,7], 5:[5,4,3,7,5], 6:[5,4,3,4,5,3]};
+  var chips = all('#filters button'), cards = all('#mosaic .case'), mosaic = $('mosaic');
+  function filter(f, animate){
+    var vis = cards.filter(function(c){
+      var ok = f === 'all' || !c.dataset.type || c.dataset.type.split(' ').indexOf(f) >= 0;
+      c.hidden = !ok; return ok;
+    });
+    var sp = SPANS[vis.length] || SPANS[6];
+    vis.forEach(function(c, i){
+      c.style.setProperty('--span', sp[i]);
+      if (animate) { c.classList.remove('in'); void c.offsetWidth; c.classList.add('in'); }
+    });
+    mosaic.style.gridTemplateRows = 'repeat(' + (vis.length > 3 ? 2 : 1) + ',minmax(0,1fr))';
+    $('stage').classList.toggle('one', vis.length <= 3);
+  }
+  chips.forEach(function(ch){
+    ch.addEventListener('click', function(){
+      chips.forEach(function(c){ c.setAttribute('aria-pressed', c === ch ? 'true' : 'false'); });
+      filter(ch.dataset.f, true);
+    });
+  });
+  filter('all', false);
+
+})();
+</script>
 </body>
 </html>
