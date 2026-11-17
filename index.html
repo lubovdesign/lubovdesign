@@ -148,26 +148,40 @@ h3{font-size:clamp(1.45rem,2.3vw,2.3rem);line-height:1;letter-spacing:-.04em}
 .hero{display:flex;flex-direction:column;margin:calc(-1*var(--edge)) calc(-1*var(--edge)) 0;padding:var(--edge) var(--edge) 0;min-height:calc(100svh - var(--head));overflow:hidden}
 .hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
 .hero h1{padding-bottom:.14em}
-.hero-say{max-width:46ch;margin-top:14px;font-size:16px}
+.hero-say{max-width:64ch;margin-top:14px;font-size:16px;text-wrap:balance}
 canvas.eat{display:block;margin:auto calc(-1*var(--edge)) 0;width:calc(100% + 2*var(--edge));height:clamp(130px,22vh,250px);flex:none}
 
 /* 2. кейсы: бейджи и сетка в одном экране */
-.stage{display:flex;flex-direction:column;gap:var(--gap);height:clamp(560px,calc(100svh - var(--head) - var(--edge)),860px);scroll-margin-top:var(--head)}
-.mosaic{flex:1;min-height:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:var(--gap)}
-.stage.one{height:auto}
-.stage.one .mosaic{flex:none;height:clamp(340px,calc((100svh - var(--head) - var(--edge)) * .6),520px)}
-.case{grid-column:span var(--span,4);background:var(--card);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;min-width:0;min-height:0}
+.stage{scroll-margin-top:var(--head)}
+#filters{position:sticky;top:var(--head);z-index:30;background:#D4D4D4;border-bottom:1px solid #D4D4D4;transition:transform .3s ease,opacity .3s ease}
+#filters.gone{transform:translateY(-100%);opacity:0;pointer-events:none}
+#filters button[data-f="site"][aria-pressed="true"]{background:var(--accent);color:#fff}
+#filters button[data-f="site"][aria-pressed="true"] i{color:rgb(255 255 255 / .75)}
+#filters button[data-f="identity"][aria-pressed="true"]{background:var(--lil);color:var(--ink)}
+#filters button[data-f="content"][aria-pressed="true"]{background:var(--lime);color:var(--ink)}
+#filters button[data-f="identity"][aria-pressed="true"] i,#filters button[data-f="content"][aria-pressed="true"] i{color:rgb(13 13 13 / .6)}
+.panel{background:var(--card);margin:0 calc(-1*var(--edge));padding:28px var(--edge) calc(var(--edge) + 40px)}
+#contact{margin-top:0}
+.mosaic{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}
+.case{grid-column:span var(--span,4);background:var(--bg);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;min-width:0;padding:4px}
 .case[hidden]{display:none}
 .case.in{animation:stepin .4s ease both}
 @keyframes stepin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.cover{position:relative;flex:1;min-height:70px;margin:4px 4px 0;border-radius:4px;overflow:hidden;background:var(--bg)}
+.cover{position:relative;aspect-ratio:16/9;border-radius:4px;overflow:hidden;background:var(--ph)}
 .cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
 .cover .tags{position:absolute;left:8px;top:8px;right:8px}
-.case-body{padding:12px var(--tp) 14px;display:flex;flex-direction:column;gap:6px}
-.case h3{font-size:clamp(1.2rem,1.7vw,1.6rem);letter-spacing:-.04em}
+.case-body{flex:1;padding:12px 12px 16px;display:flex;flex-direction:column;gap:6px}
+.case h3{font-size:clamp(1.25rem,1.8vw,1.75rem);letter-spacing:-.04em}
 .case-body p{font-size:13px;line-height:1.4;color:var(--mute);max-width:52ch}
+.case .bars{border-radius:0 0 4px 4px;overflow:hidden}
+.case .bars.row{background:var(--line);gap:1px}
+.bar.cb{background:#fff;color:var(--ink);padding:14px 12px;font-size:14px;transition:color var(--ease)}
+.bar.wip{background:var(--bg);color:var(--mute);box-shadow:inset 0 0 0 1px #C8C8C8;border-radius:0 0 4px 4px;cursor:default;justify-content:center;transition:none}
+.case .bars.row:has(.wip){background:transparent}
 .invite{background:var(--ink);color:#fff}
-.invite-in{flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;padding:var(--tp)}
+.invite-in{flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:20px;padding:12px}
+.invite.wide .invite-in{flex-direction:row;justify-content:space-between;align-items:flex-end;gap:32px;min-height:220px}
+.invite.wide .invite-in > div{max-width:36em}
 .invite canvas{display:block;width:132px;height:120px;flex:none}
 .invite h3{font-size:clamp(1.6rem,2.4vw,2.4rem);letter-spacing:-.045em}
 .invite p{font-size:14px;max-width:34ch;color:var(--mute-dark);margin-top:8px}
@@ -253,8 +267,8 @@ canvas.dust{grid-area:pix;display:block;width:100%;height:100%;min-height:260px}
 .foot-top{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px 24px;padding:32px var(--gx) 36px}
 .foot .logo{color:#fff;width:28px;height:28px;align-self:auto;flex:none}
 .foot-me{display:flex;gap:14px;align-items:center}
-.foot-nav{display:grid;grid-template-columns:auto auto;justify-content:start;gap:0 44px;font-size:15px}
-.foot-nav a{padding:9px 0;text-decoration:none;transition:color var(--ease)}
+.foot-up{justify-self:end;align-self:center;display:inline-flex;align-items:center;gap:8px;padding:10px 0;font-size:15px;text-decoration:none;transition:color var(--ease)}
+.foot-up .ar{width:16px;height:16px}
 .foot .bar,.menu .bar{padding-left:var(--gx);padding-right:var(--gx)}
 
 /* заметки: не часть сайта */
@@ -267,12 +281,15 @@ canvas.dust{grid-area:pix;display:block;width:100%;height:100%;min-height:260px}
 @media (hover:hover){
   .bar:hover{background:var(--ink)}
   .bar.ink:hover{background:var(--accent)}
+  .hero .bar:not(.ink):hover{background:#fff;color:var(--accent)}
+  .bar.cb:not(.wip):hover{background:#fff;color:var(--accent)}
+  .bar.wip:hover{background:var(--bg);color:var(--mute)}
   .bar.go-cases:hover{background:var(--lil);color:var(--ink)}
   .bar.white:hover{background:var(--ink);color:#fff}
   .dark .bar:not(.ink):not(.white):hover,.foot .bar:hover,.menu .bar:hover{background:#fff;color:var(--ink)}
   .seg button:hover{background:var(--ink);color:#fff}
   .seg button:hover i{color:var(--mute-dark)}
-  .top nav a:hover,.menu-links a:hover,.foot-nav a:hover{color:var(--accent)}
+  .top nav a:hover,.menu-links a:hover,.foot-up:hover{color:var(--accent)}
   .hb.ink:hover{background:var(--accent)}
   .hb.menu-btn:hover{background:var(--accent);color:#fff}
   .soc-row a:hover{background:var(--accent)}
@@ -284,10 +301,9 @@ canvas.dust{grid-area:pix;display:block;width:100%;height:100%;min-height:260px}
 @media (max-width:1000px){
   .top nav{display:none}
   .hb.menu-btn{display:flex}
-  .stage{height:auto}
-  .mosaic,.stage.one .mosaic{grid-template-columns:1fr 1fr;grid-template-rows:none !important;height:auto}
-  .case{grid-column:auto}
-  .cover{flex:none;aspect-ratio:16/9}
+  .mosaic{grid-template-columns:1fr 1fr}
+  .case{grid-column:auto !important}
+  .case.odd-last{grid-column:1/-1 !important}
   .sv-body{grid-template-columns:1fr;gap:36px;min-height:0}
   .car{min-height:380px}
   .cta{grid-template-columns:1fr;grid-template-areas:"txt" "pix" "note" "bar";grid-template-rows:auto;min-height:0}
@@ -305,10 +321,12 @@ canvas.dust{grid-area:pix;display:block;width:100%;height:100%;min-height:260px}
   .seg{grid-auto-flow:row;grid-template-columns:1fr 1fr}
   .seg button{padding-top:14px;padding-bottom:14px;justify-content:space-between}
   .seg.main button{padding-top:18px;padding-bottom:18px;font-size:1.15rem}
-  .mosaic{display:flex;flex-direction:column}
+  .panel{padding:20px var(--edge) calc(var(--edge) + 20px)}
+  .mosaic{display:flex;flex-direction:column;gap:12px}
+  .invite.wide .invite-in{flex-direction:column;align-items:flex-start;min-height:0;gap:12px}
   .case h3{font-size:1.5rem}
   .case-body p{font-size:14px}
-  .bar.sm{padding:15px var(--tp);font-size:15px}
+  .bar.sm,.bar.cb{padding:15px 12px;font-size:15px}
   .say-t{font-size:calc((100vw - 2*var(--edge)) / 9.75);gap:.12em}
   .say-t .s1{white-space:normal}
   .say-t .s2,.say-t .s3,.say-t .s4{margin-left:0}
@@ -323,8 +341,7 @@ canvas.dust{grid-area:pix;display:block;width:100%;height:100%;min-height:260px}
   .pr-shape{order:-1;min-height:120px}
   .pr-item h3{font-size:calc((100vw - 2*var(--edge) - 2*var(--tp)) / 8.5)}
   .foot-top{grid-template-columns:1fr;padding-bottom:28px}
-  .foot-nav{grid-template-columns:1fr 1fr;gap:0 16px}
-  .foot-nav a{padding:12px 0}
+  .foot-up{justify-self:start}
   .cur b{left:auto;right:6px;top:22px;font-size:12px;padding:5px 7px}
 }
 @media (prefers-reduced-motion:reduce){
@@ -343,6 +360,7 @@ canvas.dust{grid-area:pix;display:block;width:100%;height:100%;min-height:260px}
   <symbol id="lr" viewBox="0 0 20 20"><path fill="currentColor" d="M3.10845 17.5H12.4347V20H0V0H3.10845V17.5ZM20 20H16.8504V15H20V20ZM16.8504 2.5H10.5512V7.5H16.8504V15H13.7008V10H10.5512V10.0039H7.40157V0H16.8504V2.5ZM20 7.5H16.8504V2.5H20V7.5Z"/></symbol>
   <symbol id="ar" viewBox="0 0 16 16"><path d="M4.2 11.8 11.6 4.4M5.6 4.2h6.2v6.2" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
   <symbol id="al" viewBox="0 0 16 16"><path d="M13 8H3.4M7.4 3.8 3.2 8l4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+  <symbol id="au" viewBox="0 0 16 16"><path d="M8 13V3.4M3.8 7.4 8 3.2l4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
   <symbol id="arr" viewBox="0 0 16 16"><path d="M3 8h9.6M8.6 3.8 12.8 8l-4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
 </svg>
 
@@ -406,42 +424,38 @@ canvas.dust{grid-area:pix;display:block;width:100%;height:100%;min-height:260px}
       <div class="seg bleed" id="filters" role="group" aria-label="Фильтр кейсов">
         <button type="button" data-f="all" aria-pressed="true">все <i class="num">5</i></button>
         <button type="button" data-f="site" aria-pressed="false">сайты <i class="num">5</i></button>
-        <button type="button" data-f="identity" aria-pressed="false">фирстиль и&nbsp;печать <i class="num">1</i></button>
-        <button type="button" data-f="content" aria-pressed="false">контент <i class="num">2</i></button>
+        <button type="button" data-f="identity" aria-pressed="false">фирстиль и&nbsp;печать <i class="num">2</i></button>
+        <button type="button" data-f="content" aria-pressed="false">контент <i class="num">3</i></button>
       </div>
+      <div class="panel">
       <div class="mosaic" id="mosaic">
         <article class="case" data-type="site">
           <div class="cover"><img src="assets/v2/cybercore.webp" alt="CyberCore: обложка проекта" width="1400" height="864"><div class="tags"><span class="tag">сайт</span></div></div>
           <div class="case-body"><h3>it-компания cybercore</h3><p>дизайн отдельных блоков сайта и&nbsp;участие в&nbsp;развитии визуального направления проекта. работа в&nbsp;команде под арт-дирекшеном.</p></div>
-          <div class="bars flush row"><a class="bar ink sm" href="https://www.behance.net/gallery/222934079/CYBER-CORE-Brand-identity-Web-design" target="_blank" rel="noopener">кейс <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
+          <div class="bars flush row"><a class="bar cb" href="https://www.behance.net/gallery/222934079/CYBER-CORE-Brand-identity-Web-design" target="_blank" rel="noopener">кейс <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
         </article>
         <article class="case" data-type="site">
           <div class="cover"><img src="assets/v2/emirate.webp" alt="Emirate Rent: сайт на экране ноутбука" width="706" height="442" loading="lazy"><div class="tags"><span class="tag">сайт</span><span class="tag">дизайн-система</span></div></div>
           <div class="case-body"><h3>emirate rent</h3><p>разработка дизайн-системы и&nbsp;отдельных блоков сайта сервиса аренды автомобилей. работа в&nbsp;команде под арт-дирекшеном.</p></div>
-          <div class="bars flush row"><a class="bar ink sm" href="https://www.behance.net/gallery/212806997/Emiraterent-Car-Rental-Service-in-Dubai" target="_blank" rel="noopener">кейс <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a><a class="bar ink sm" href="http://emiarate.rent/" target="_blank" rel="noopener">сайт <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
+          <div class="bars flush row"><a class="bar cb" href="https://www.behance.net/gallery/212806997/Emiraterent-Car-Rental-Service-in-Dubai" target="_blank" rel="noopener">кейс <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a><a class="bar cb" href="http://emiarate.rent/" target="_blank" rel="noopener">сайт <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
         </article>
         <article class="case" data-type="site identity content">
           <div class="cover"><img src="assets/v2/examus.webp" alt="Examus: сайт на экране ноутбука" width="1200" height="673" loading="lazy"><div class="tags"><span class="tag">сайт</span><span class="tag">фирстиль</span><span class="tag">печать</span><span class="tag">контент</span></div></div>
           <div class="case-body"><h3>прокторинг examus</h3><p>дизайн отдельных блоков сайта, фирменных и&nbsp;печатных материалов, контент. работа в&nbsp;команде под арт-дирекшеном.</p></div>
-          <div class="bars flush row"><a class="bar ink sm" href="https://www.behance.net/gallery/212358379/sistema-proktoringa-ekzamus-rebrending" target="_blank" rel="noopener">кейс <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a><a class="bar ink sm" href="https://ru.examus.net/" target="_blank" rel="noopener">сайт <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
+          <div class="bars flush row"><a class="bar cb" href="https://www.behance.net/gallery/212358379/sistema-proktoringa-ekzamus-rebrending" target="_blank" rel="noopener">кейс <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a><a class="bar cb" href="https://ru.examus.net/" target="_blank" rel="noopener">сайт <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
         </article>
-        <article class="case" data-type="site">
-          <div class="cover"><img src="assets/v2/nura.webp" alt="Nura: первый экран сайта" width="706" height="439" loading="lazy" style="object-position:left top"><div class="tags"><span class="tag">личный проект</span><span class="tag">в&nbsp;работе</span></div></div>
-          <div class="case-body"><h3>nura</h3><p>концепт бренда и&nbsp;сайта для экосистемы устройств умного дома.</p></div>
+        <article class="case" data-type="site identity content">
+          <div class="cover"><img src="assets/v2/nura.webp" alt="Nura: первый экран сайта" width="706" height="439" loading="lazy" style="object-position:left top"><div class="tags"><span class="tag">сайт</span><span class="tag">фирстиль</span><span class="tag">контент</span><span class="tag">концепт</span></div></div>
+          <div class="case-body"><h3>nura</h3><p>бренд и&nbsp;сайт экосистемы устройств умного дома, которые заботятся о&nbsp;комфорте.</p></div>
+          <div class="bars flush row"><span class="bar cb wip">в&nbsp;работе</span></div>
         </article>
         <article class="case" data-type="site content">
           <div class="cover"><img src="assets/v2/enerjew.webp" alt="EnerJew: главная страница сайта" width="1200" height="785" loading="lazy" style="object-position:center 12%"><div class="tags"><span class="tag">сайт</span><span class="tag">tilda</span><span class="tag">контент</span></div></div>
           <div class="case-body"><h3>enerjew</h3><p>сайт молодёжного еврейского движения. полная разработка и&nbsp;поддержка сайта, контент.</p></div>
-          <div class="bars flush row"><a class="bar ink sm" href="https://enerjew.org" target="_blank" rel="noopener">сайт <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
-        </article>
-        <article class="case invite" id="invite">
-          <div class="invite-in">
-            <canvas id="invitePix" role="img" aria-label="Вопрос из пикселей превращается в сердце"></canvas>
-            <div><h3>ваш проект</h3><p>есть задача или идея? давайте разберёмся, каким должен быть её дизайн.</p></div>
-          </div>
-          <div class="bars flush"><a class="bar" href="https://t.me/lyuba_rusanova" target="_blank" rel="noopener">обсудить проект <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
+          <div class="bars flush row"><a class="bar cb" href="https://enerjew.org" target="_blank" rel="noopener">сайт <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a></div>
         </article>
       </div>
+    </div>
     </div>
   </section>
 
@@ -468,11 +482,7 @@ canvas.dust{grid-area:pix;display:block;width:100%;height:100%;min-height:260px}
         <div class="small mute" style="color:#A3A3A3">веб и&nbsp;графический дизайнер</div>
       </div>
     </div>
-    <nav class="foot-nav" aria-label="Разделы в подвале">
-      <a href="#home">первый экран</a>
-      <a href="#cases">кейсы</a>
-                  <a href="#contact">контакт</a>
-    </nav>
+    <a class="foot-up" href="#home">наверх <svg class="ar" aria-hidden="true"><use href="#au"/></svg></a>
   </div>
   <div class="soc-row"><a href="https://t.me/lyuba_rusanova" target="_blank" rel="noopener" aria-label="Telegram"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM12.3584 9.38246C11.3857 9.78702 9.4418 10.6244 6.5266 11.8945C6.05321 12.0827 5.80524 12.2669 5.78266 12.4469C5.74451 12.7513 6.12561 12.8711 6.64458 13.0343C6.71517 13.0565 6.78832 13.0795 6.8633 13.1039C7.37388 13.2698 8.06071 13.464 8.41776 13.4717C8.74164 13.4787 9.10313 13.3452 9.50222 13.0711C12.226 11.2325 13.632 10.3032 13.7203 10.2832C13.7826 10.269 13.8689 10.2513 13.9273 10.3032C13.9858 10.3552 13.98 10.4536 13.9739 10.48C13.9361 10.641 12.4401 12.0318 11.666 12.7515C11.4351 12.9661 11.2101 13.1853 10.9833 13.4039C10.509 13.8611 10.1533 14.204 11.003 14.764C11.8644 15.3317 12.7323 15.8982 13.5724 16.4971C13.9867 16.7925 14.359 17.0579 14.8188 17.0156C15.0861 16.991 15.3621 16.7397 15.5022 15.9903C15.8335 14.2193 16.4847 10.3821 16.6352 8.80083C16.6484 8.6623 16.6318 8.485 16.6185 8.40717C16.6052 8.32934 16.5773 8.21844 16.4762 8.13635C16.3563 8.03913 16.1714 8.01863 16.0887 8.02009C15.7125 8.02672 15.1355 8.22737 12.3584 9.38246Z"/></svg></a><a href="https://wa.me/77751026931?text=" target="_blank" rel="noopener" aria-label="WhatsApp"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.001 2C17.5238 2 22.001 6.47715 22.001 12C22.001 17.5228 17.5238 22 12.001 22C10.1671 22 8.44851 21.5064 6.97086 20.6447L2.00516 22L3.35712 17.0315C2.49494 15.5536 2.00098 13.8345 2.00098 12C2.00098 6.47715 6.47813 2 12.001 2ZM8.59339 7.30019L8.39232 7.30833C8.26293 7.31742 8.13607 7.34902 8.02057 7.40811C7.93392 7.45244 7.85348 7.51651 7.72709 7.63586C7.60774 7.74855 7.53857 7.84697 7.46569 7.94186C7.09599 8.4232 6.89729 9.01405 6.90098 9.62098C6.90299 10.1116 7.03043 10.5884 7.23169 11.0336C7.63982 11.9364 8.31288 12.8908 9.20194 13.7759C9.4155 13.9885 9.62473 14.2034 9.85034 14.402C10.9538 15.3736 12.2688 16.0742 13.6907 16.4482C13.6907 16.4482 14.2507 16.5342 14.2589 16.5347C14.4444 16.5447 14.6296 16.5313 14.8153 16.5218C15.1066 16.5068 15.391 16.428 15.6484 16.2909C15.8139 16.2028 15.8922 16.159 16.0311 16.0714C16.0311 16.0714 16.0737 16.0426 16.1559 15.9814C16.2909 15.8808 16.3743 15.81 16.4866 15.6934C16.5694 15.6074 16.6406 15.5058 16.6956 15.3913C16.7738 15.2281 16.8525 14.9166 16.8838 14.6579C16.9077 14.4603 16.9005 14.3523 16.8979 14.2854C16.8936 14.1778 16.8047 14.0671 16.7073 14.0201L16.1258 13.7587C16.1258 13.7587 15.2563 13.3803 14.7245 13.1377C14.6691 13.1124 14.6085 13.1007 14.5476 13.097C14.4142 13.0888 14.2647 13.1236 14.1696 13.2238C14.1646 13.2218 14.0984 13.279 13.3749 14.1555C13.335 14.2032 13.2415 14.3069 13.0798 14.2972C13.0554 14.2955 13.0311 14.292 13.0074 14.2858C12.9419 14.2685 12.8781 14.2457 12.8157 14.2193C12.692 14.1668 12.6486 14.1469 12.5641 14.1105C11.9868 13.8583 11.457 13.5209 10.9887 13.108C10.8631 12.9974 10.7463 12.8783 10.6259 12.7616C10.2057 12.3543 9.86169 11.9211 9.60577 11.4938C9.5918 11.4705 9.57027 11.4368 9.54708 11.3991C9.50521 11.331 9.45903 11.25 9.44455 11.1944C9.40738 11.0473 9.50599 10.9291 9.50599 10.9291C9.50599 10.9291 9.74939 10.663 9.86248 10.5183C9.97128 10.379 10.0652 10.2428 10.125 10.1457C10.2428 9.95633 10.2801 9.76062 10.2182 9.60963C9.93764 8.92565 9.64818 8.24536 9.34986 7.56894C9.29098 7.43545 9.11585 7.33846 8.95659 7.32007C8.90265 7.31384 8.84875 7.30758 8.79459 7.30402C8.66053 7.29748 8.5262 7.29892 8.39232 7.30833L8.59339 7.30019Z"/></svg></a><a href="https://www.behance.net/lyubakravchuk" target="_blank" rel="noopener" aria-label="Behance"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7.44262 5.34998C8.08197 5.34998 8.67213 5.39945 9.21311 5.54786C9.7541 5.6468 10.1967 5.84468 10.5902 6.09203C10.9836 6.33938 11.2787 6.68566 11.4754 7.13089C11.6721 7.57612 11.7705 8.12029 11.7705 8.71393C11.7705 9.40651 11.623 10.0002 11.2787 10.4454C10.9836 10.8906 10.4918 11.2864 9.90164 11.5832C10.7377 11.8305 11.377 12.2758 11.7705 12.8694C12.1639 13.463 12.4098 14.2051 12.4098 15.0461C12.4098 15.7387 12.2623 16.3323 12.0164 16.827C11.7705 17.3217 11.377 17.7669 10.9344 18.0638C10.4918 18.3606 9.95082 18.6079 9.36066 18.7563C8.77049 18.9047 8.18033 19.0037 7.59016 19.0037H1V5.34998H7.44262ZM7.04918 10.8906C7.59016 10.8906 8.03279 10.7422 8.37705 10.4949C8.72131 10.2475 8.86885 9.80227 8.86885 9.2581C8.86885 8.96128 8.81967 8.66446 8.72131 8.46658C8.62295 8.2687 8.47541 8.12029 8.27869 7.97188C8.08197 7.87294 7.88525 7.774 7.63934 7.72453C7.39344 7.67506 7.14754 7.67506 6.85246 7.67506H4V10.8906H7.04918ZM7.19672 16.7281C7.4918 16.7281 7.78689 16.6786 8.03279 16.6291C8.27869 16.5797 8.52459 16.4807 8.72131 16.3323C8.91803 16.1839 9.06557 16.0355 9.21311 15.7881C9.31148 15.5408 9.40984 15.244 9.40984 14.8977C9.40984 14.2051 9.21312 13.7104 8.81967 13.3641C8.42623 13.0673 7.88525 12.9189 7.2459 12.9189H4V16.7281H7.19672ZM16.6885 16.6786C17.082 17.0744 17.6721 17.2722 18.459 17.2722C19 17.2722 19.4918 17.1238 19.8852 16.8765C20.2787 16.5797 20.5246 16.2828 20.623 15.986H23.0328C22.6393 17.1733 22.0492 18.0143 21.2623 18.5585C20.4754 19.0532 19.541 19.35 18.4098 19.35C17.6229 19.35 16.9344 19.2016 16.2951 18.9542C15.6557 18.7069 15.1639 18.3606 14.7213 17.8659C14.2787 17.4206 13.9344 16.8765 13.7377 16.2334C13.4918 15.5903 13.3934 14.8977 13.3934 14.1062C13.3934 13.3641 13.4918 12.6715 13.7377 12.0284C13.9836 11.3853 14.3279 10.8411 14.7705 10.3464C15.2131 9.90121 15.7541 9.50545 16.3443 9.2581C16.9836 9.01075 17.6229 8.86234 18.4098 8.86234C19.2459 8.86234 19.9836 9.01075 20.623 9.35704C21.2623 9.70333 21.7541 10.0991 22.1475 10.6927C22.541 11.2369 22.8361 11.88 23.0328 12.5726C23.1311 13.2652 23.1803 13.9577 23.1311 14.7493H16C16 15.5408 16.2951 16.2828 16.6885 16.6786ZM19.7869 11.4843C19.4426 11.138 18.9016 10.9401 18.2623 10.9401C17.8197 10.9401 17.4754 11.039 17.1803 11.1874C16.8852 11.3358 16.6885 11.5337 16.4918 11.7316C16.2951 11.9295 16.1967 12.1768 16.1475 12.4242C16.0984 12.6715 16.0492 12.8694 16.0492 13.0673H20.4754C20.3771 12.3252 20.1311 11.8305 19.7869 11.4843ZM15.459 6.2899H20.9672V7.62559H15.459V6.2899Z"/></svg></a><a href="https://ru.pinterest.com/lubovwebdesign/" target="_blank" rel="noopener" aria-label="Pinterest"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13.3717 2.09442C8.42512 1.41268 3.73383 4.48505 2.38064 9.29256C1.02745 14.1001 3.42711 19.1692 8.00271 21.1689C7.94264 20.4008 7.99735 19.628 8.16502 18.8761C8.34964 18.0374 9.46121 13.4132 9.46121 13.4132C9.23971 12.9173 9.12893 12.379 9.13659 11.8359C9.13659 10.3509 9.99353 9.24295 11.0597 9.24295C11.4472 9.23718 11.8181 9.40028 12.0758 9.68981C12.3335 9.97934 12.4526 10.3667 12.402 10.751C12.402 11.6512 11.8236 13.0131 11.5228 14.2903C11.4014 14.7656 11.5131 15.2703 11.8237 15.65C12.1343 16.0296 12.6069 16.2389 13.0967 16.2139C14.9944 16.2139 16.2675 13.7825 16.2675 10.9126C16.2675 8.71205 14.8098 7.0655 12.1243 7.0655C10.826 7.01531 9.56388 7.4996 8.63223 8.40543C7.70057 9.31126 7.18084 10.5595 7.19423 11.859C7.16563 12.5722 7.39566 13.2717 7.84194 13.8287C8.01361 13.9564 8.07985 14.1825 8.00425 14.3827C7.9581 14.5673 7.84194 15.0059 7.79578 15.1675C7.77632 15.278 7.70559 15.3728 7.60516 15.4228C7.50473 15.4729 7.38651 15.4724 7.28654 15.4214C5.9019 14.8674 5.24957 13.3439 5.24957 11.6051C5.24957 8.75822 7.63424 5.3497 12.4036 5.3497C16.1998 5.3497 18.723 8.1273 18.723 11.0972C18.723 15.0059 16.5468 17.9451 13.3298 17.9451C12.3526 17.9761 11.4273 17.5061 10.8759 16.6986C10.8759 16.6986 10.2974 19.0146 10.1835 19.4531C9.95101 20.2099 9.60779 20.9281 9.16505 21.5844C10.0877 21.8643 11.0471 22.0044 12.0113 22C14.6636 22.0017 17.2078 20.9484 19.0829 19.072C20.958 17.1957 22.0099 14.6504 22.0069 11.9975C22.004 7.00306 18.3183 2.77616 13.3717 2.09442Z"/></svg></a><a href="https://www.instagram.com/lyubakravchuk" target="_blank" rel="noopener" aria-label="Instagram*"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13.0281 2.00073C14.1535 2.00259 14.7238 2.00855 15.2166 2.02322L15.4107 2.02956C15.6349 2.03753 15.8561 2.04753 16.1228 2.06003C17.1869 2.1092 17.9128 2.27753 18.5503 2.52503C19.2094 2.7792 19.7661 3.12253 20.3219 3.67837C20.8769 4.2342 21.2203 4.79253 21.4753 5.45003C21.7219 6.0867 21.8903 6.81337 21.9403 7.87753C21.9522 8.1442 21.9618 8.3654 21.9697 8.58964L21.976 8.78373C21.9906 9.27647 21.9973 9.84686 21.9994 10.9723L22.0002 11.7179C22.0003 11.809 22.0003 11.903 22.0003 12L22.0002 12.2821L21.9996 13.0278C21.9977 14.1532 21.9918 14.7236 21.9771 15.2163L21.9707 15.4104C21.9628 15.6347 21.9528 15.8559 21.9403 16.1225C21.8911 17.1867 21.7219 17.9125 21.4753 18.55C21.2211 19.2092 20.8769 19.7659 20.3219 20.3217C19.7661 20.8767 19.2069 21.22 18.5503 21.475C17.9128 21.7217 17.1869 21.89 16.1228 21.94C15.8561 21.9519 15.6349 21.9616 15.4107 21.9694L15.2166 21.9757C14.7238 21.9904 14.1535 21.997 13.0281 21.9992L12.2824 22C12.1913 22 12.0973 22 12.0003 22L11.7182 22L10.9725 21.9993C9.8471 21.9975 9.27672 21.9915 8.78397 21.9768L8.58989 21.9705C8.36564 21.9625 8.14444 21.9525 7.87778 21.94C6.81361 21.8909 6.08861 21.7217 5.45028 21.475C4.79194 21.2209 4.23444 20.8767 3.67861 20.3217C3.12278 19.7659 2.78028 19.2067 2.52528 18.55C2.27778 17.9125 2.11028 17.1867 2.06028 16.1225C2.0484 15.8559 2.03871 15.6347 2.03086 15.4104L2.02457 15.2163C2.00994 14.7236 2.00327 14.1532 2.00111 13.0278L2.00098 10.9723C2.00284 9.84686 2.00879 9.27647 2.02346 8.78373L2.02981 8.58964C2.03778 8.3654 2.04778 8.1442 2.06028 7.87753C2.10944 6.81253 2.27778 6.08753 2.52528 5.45003C2.77944 4.7917 3.12278 4.2342 3.67861 3.67837C4.23444 3.12253 4.79278 2.78003 5.45028 2.52503C6.08778 2.27753 6.81278 2.11003 7.87778 2.06003C8.14444 2.04816 8.36564 2.03847 8.58989 2.03062L8.78397 2.02433C9.27672 2.00969 9.8471 2.00302 10.9725 2.00086L13.0281 2.00073ZM12.0003 7.00003C9.23738 7.00003 7.00028 9.23956 7.00028 12C7.00028 14.7629 9.23981 17 12.0003 17C14.7632 17 17.0003 14.7605 17.0003 12C17.0003 9.23713 14.7607 7.00003 12.0003 7.00003ZM12.0003 9.00003C13.6572 9.00003 15.0003 10.3427 15.0003 12C15.0003 13.6569 13.6576 15 12.0003 15C10.3434 15 9.00028 13.6574 9.00028 12C9.00028 10.3431 10.3429 9.00003 12.0003 9.00003ZM17.2503 5.50003C16.561 5.50003 16.0003 6.05994 16.0003 6.74918C16.0003 7.43843 16.5602 7.9992 17.2503 7.9992C17.9395 7.9992 18.5003 7.4393 18.5003 6.74918C18.5003 6.05994 17.9386 5.49917 17.2503 5.50003Z"/></svg><sup aria-hidden="true">*</sup></a></div>
   <a class="bar" href="https://t.me/lyuba_rusanova" target="_blank" rel="noopener">написать в&nbsp;телеграм <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></a>
@@ -612,8 +622,6 @@ canvas.dust{grid-area:pix;display:block;width:100%;height:100%;min-height:260px}
     var dust = heart.map(function(p, i){ return {x: Math.floor(rnd(i * 2 + 1) * cols), y: Math.floor(rnd(i * 2 + 2) * rows), c: rnd(i + 99) > .86 ? C.ink : C.white}; });
     return [dust, heart];
   }
-  var inv = new Morph($('invitePix'), {cell: function(){ return 4; }, shapes: inviteShapes, hold: [2400, 2600], dur: 1100, manual: canHover});
-  if (canHover) { $('invite').addEventListener('mouseenter', function(){ inv.to(1); }); $('invite').addEventListener('mouseleave', function(){ inv.to(0); }); }
   new Morph($('ctaPix'), {cell: function(w){ return w < 420 ? 5 : 6; }, shapes: ctaShapes, hold: [1500, 3600]});
 
   /* ---------- меню: экран заполняется крупными пикселями сверху вниз ---------- */
@@ -636,28 +644,46 @@ canvas.dust{grid-area:pix;display:block;width:100%;height:100%;min-height:260px}
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && menu.classList.contains('open')) setMenu(false); });
 
   /* ---------- кейсы: по бейджу остаются только подходящие карточки ---------- */
-  var SPANS = {1:[12], 2:[8,4], 3:[5,4,3], 4:[7,5,5,7], 5:[5,4,3,7,5], 6:[5,4,3,4,5,3]};
-  var chips = all('#filters button'), cards = all('#mosaic .case'), mosaic = $('mosaic');
+  /* сетка без пустот: ряды по 2 или 3 кейса, обложки 16:9 */
+  var chips = all('#filters button'), cards = all('#mosaic .case[data-type]'), stage = $('stage');
+  var SPANS = {1:[6], 2:[6,6], 3:[4,4,4], 4:[6,6,6,6], 5:[6,6,4,4,4], 6:[4,4,4,4,4,4]};
   function filter(f, animate){
     var vis = cards.filter(function(c){
-      var ok = f === 'all' || !c.dataset.type || c.dataset.type.split(' ').indexOf(f) >= 0;
-      c.hidden = !ok; return ok;
+      var ok = f === 'all' || c.dataset.type.split(' ').indexOf(f) >= 0;
+      c.hidden = !ok; c.classList.remove('odd-last'); return ok;
     });
-    var sp = SPANS[vis.length] || SPANS[6];
+    var sp = SPANS[vis.length] || [];
     vis.forEach(function(c, i){
-      c.style.setProperty('--span', sp[i]);
+      c.style.setProperty('--span', sp[i] || 4);
       if (animate) { c.classList.remove('in'); void c.offsetWidth; c.classList.add('in'); }
     });
-    mosaic.style.gridTemplateRows = 'repeat(' + (vis.length > 3 ? 2 : 1) + ',minmax(0,1fr))';
-    $('stage').classList.toggle('one', vis.length <= 3);
+    if (vis.length % 2) vis[vis.length - 1].classList.add('odd-last');
   }
   chips.forEach(function(ch){
     ch.addEventListener('click', function(){
       chips.forEach(function(c){ c.setAttribute('aria-pressed', c === ch ? 'true' : 'false'); });
       filter(ch.dataset.f, true);
+      var top = stage.getBoundingClientRect().top, head = document.querySelector('.top').offsetHeight;
+      if (top < head - 2) window.scrollTo({top: window.scrollY + top - head, behavior: reduce ? 'auto' : 'smooth'});
     });
   });
   filter('all', false);
+
+  /* бейджи прилипают под шапкой и уходят, когда середина последнего кейса уже прошла под ними */
+  (function(){
+    var bar = $('filters'), tick = false;
+    function upd(){
+      tick = false;
+      var vis = cards.filter(function(c){ return !c.hidden; }), last = vis[vis.length - 1];
+      if (!last) return;
+      var r = last.getBoundingClientRect(), line = document.querySelector('.top').offsetHeight + bar.offsetHeight;
+      bar.classList.toggle('gone', r.top + r.height / 2 < line);
+    }
+    window.addEventListener('scroll', function(){ if (!tick) { tick = true; requestAnimationFrame(upd); } }, {passive: true});
+    window.addEventListener('resize', upd);
+    chips.forEach(function(ch){ ch.addEventListener('click', function(){ setTimeout(upd, 450); }); });
+    upd();
+  })();
 
 })();
 </script>
