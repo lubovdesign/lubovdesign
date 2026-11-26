@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'none'">
+<title>Вставка в мокап</title>
+<style>
+/* Layout: инструмент — слева панель шагов, справа сцена с мокапом; на телефоне всё в одну колонку */
+:root {
+  --bg: #eceef2;
+  --panel: #ffffff;
+  --ink: #15171c;
+  --muted: #5b6270;
+  --line: #d6dae2;
+  --accent: #b8185a;      /* маджента: дополнительный цвет к хромакею */
+  --accent-ink: #ffffff;
+  --accent-soft: #f7e3ec;
+  --stage: #d3d7de;
+  --ok: #1f7a4d;
+  --warn: #a35a00;
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-num: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121418; --panel: #1b1e24; --ink: #e7e9ee; --muted: #9aa1ae; --line: #2c3039;
+    --accent: #ff5c9d; --accent-ink: #1a0610; --accent-soft: #3a1726; --stage: #0b0c0f;
+    --ok: #4cc58a; --warn: #f0a641; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121418; --panel: #1b1e24; --ink: #e7e9ee; --muted: #9aa1ae; --line: #2c3039;
+  --accent: #ff5c9d; --accent-ink: #1a0610; --accent-soft: #3a1726; --stage: #0b0c0f;
+  --ok: #4cc58a; --warn: #f0a641; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink); font: 14px/1.45 var(--font-ui);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 32px;
+}
+.app { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 16px; max-width: 1500px; margin: 0 auto; align-items: start; }
+@media (max-width: 880px) { .app { grid-template-columns: minmax(0, 1fr); } .stage-wrap { order: -1; } }
+header.top { max-width: 1500px; margin: 0 auto 14px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+header.top h1 { font-size: 20px; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+header.top p { margin: 0; color: var(--muted); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); display: flex; flex-direction: column; }
+.sec { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); }
+.sec:first-child { border-top: 0; }
+.sec h2 { margin: 0; font-size: 11px; font-weight: 650; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+.sec h2 .n { font-family: var(--font-num); color: var(--accent); }
+.drop { position: relative; display: flex; gap: 10px; align-items: center; padding: 8px; border: 1px dashed var(--line); border-radius: 8px; cursor: pointer; }
+.drop:hover, .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+.drop:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.drop canvas { width: 64px; height: 44px; border-radius: 4px; background: var(--stage); flex: none; object-fit: contain; }
+.drop .meta { min-width: 0; display: flex; flex-direction: column; }
+.drop .fname { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.drop .hint { color: var(--muted); font-size: 12px; }
+.badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); margin-left: 4px; vertical-align: 1px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field .lab { display: flex; justify-content: space-between; gap: 8px; }
+.field .val { font-family: var(--font-num); font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+label.chk { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; }
+label.chk input { accent-color: var(--accent); margin-top: 3px; }
+label.chk small { display: block; color: var(--muted); }
+button { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 7px; padding: 6px 11px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 650; padding: 10px 14px; width: 100%; }
+button.primary:disabled { opacity: 0.5; cursor: progress; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; }
+.seg button + button { border-left: 1px solid var(--line); }
+.swatch { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--line); flex: none; }
+.mono { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 12px; }
+.status { font-size: 12.5px; color: var(--muted); min-height: 1.4em; }
+.status.ok { color: var(--ok); } .status.warn { color: var(--warn); }
+.note { font-size: 12px; color: var(--muted); margin: 0; }
+.stage-wrap { display: flex; flex-direction: column; gap: 8px; min-width: 0; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); }
+@media (max-width: 880px) { .stage-wrap { position: static; } }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; }
+.stage { position: relative; background: var(--stage); border-radius: var(--r); border: 1px solid var(--line); display: flex; justify-content: center; align-items: center; padding: 12px; min-height: 240px; overflow: hidden; }
+.canv { position: relative; max-width: 100%; }
+.canv canvas { display: block; max-width: 100%; }
+#ui { position: absolute; inset: 0; touch-action: none; cursor: crosshair; }
+#ui.pick { cursor: copy; }
+#ui:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.busy { position: absolute; inset: auto 12px 12px auto; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; font-size: 12px; }
+@media (prefers-reduced-motion: no-preference) { button, .drop { transition: border-color .12s, background-color .12s; } }
+</style>
+</head>
+<body>
+
+
+<header class="top">
+  <h1>Вставка в мокап</h1>
+  <p>Загрузите фото с зелёной зоной и свой дизайн. Обработка идёт только в этом браузере, файлы никуда не отправляются.</p>
+</header>
+
+<div class="app">
+  <aside class="panel" aria-label="Настройки">
+    <section class="sec">
+      <h2><span class="n">1</span> Мокап с зелёной зоной</h2>
+      <label class="drop" id="dropMock">
+        <input type="file" id="fileMock" accept="image/*" aria-label="Загрузить мокап">
+        <canvas id="thumbMock" width="128" height="88"></canvas>
+        <span class="meta"><span class="fname" id="nameMock">—</span><span class="hint">Нажмите или перетащите файл</span></span>
+      </label>
+    </section>
+
+    <section class="sec">
+      <h2><span class="n">2</span> Ваш дизайн</h2>
+      <label class="drop" id="dropDesign">
+        <input type="file" id="fileDesign" accept="image/*" aria-label="Загрузить дизайн">
+        <canvas id="thumbDesign" width="128" height="88"></canvas>
+        <span class="meta"><span class="fname" id="nameDesign">—</span><span class="hint">PNG, JPG, WebP</span></span>
+      </label>
+      <div class="row">
+        <div class="seg" role="group" aria-label="Как вписать дизайн">
+          <button type="button" id="fitFill" aria-pressed="true">Заполнить</button>
+          <button type="button" id="fitStretch" aria-pressed="false">Растянуть</button>
+        </div>
+        <button type="button" id="btnRot" title="Повернуть дизайн на 90°">↻ 90°</button>
+        <button type="button" id="btnFlip" title="Отразить по горизонтали">⇋</button>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2><span class="n">3</span> Зелёный и углы</h2>
+      <div class="row">
+        <span class="swatch" id="keySwatch"></span>
+        <span class="mono" id="keyText">оттенок —</span>
+        <button type="button" id="btnPick" aria-pressed="false">Пипетка</button>
+        <button type="button" id="btnAutoKey">Авто</button>
+      </div>
+      <div class="field">
+        <span class="lab"><label for="tol">Допуск по цвету</label><span class="val" id="tolVal"></span></span>
+        <input type="range" id="tol" min="0" max="100" value="40">
+      </div>
+      <label class="chk"><input type="checkbox" id="showMask"><span>Показать маску<small>Найденный зелёный подсветится розовым</small></span></label>
+      <button type="button" id="btnDetect">Найти углы заново</button>
+      <p class="note">Тяните за угол, чтобы поправить. Тяните внутри зоны, чтобы сдвинуть её целиком. Выбранный угол двигается стрелками: на 1 px, с Shift на 10 px.</p>
+    </section>
+
+    <section class="sec">
+      <h2><span class="n">4</span> Края и свет</h2>
+      <div class="field">
+        <span class="lab"><label for="expand">Захват края</label><span class="val" id="expandVal"></span></span>
+        <input type="range" id="expand" min="-3" max="8" step="0.5" value="1">
+      </div>
+      <div class="field">
+        <span class="lab"><label for="despill">Подавление зелёной каймы</label><span class="val" id="despillVal"></span></span>
+        <input type="range" id="despill" min="0" max="30" step="1" value="8">
+      </div>
+      <div class="field">
+        <span class="lab"><label for="shade">Блики и тени из оригинала</label><span class="val" id="shadeVal"></span></span>
+        <input type="range" id="shade" min="0" max="100" step="1" value="70">
+      </div>
+      <label class="chk"><input type="checkbox" id="keepOcc"><span>Оставить предметы поверх зоны<small>Рука, кабель, отражение: всё не зелёное внутри зоны останется сверху</small></span></label>
+    </section>
+
+    <section class="sec">
+      <button type="button" class="primary" id="btnExport">Скачать PNG</button>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+    </section>
+  </aside>
+
+  <main class="stage-wrap">
+    <div class="toolbar">
+      <label class="chk"><input type="checkbox" id="showOrig"><span>Показать оригинал</span></label>
+      <span class="mono" id="dims"></span>
+    </div>
+    <div class="stage" id="stage">
+      <div class="canv" id="canv">
+        <canvas id="view"></canvas>
+        <canvas id="ui" tabindex="0" aria-label="Мокап. Тяните углы зоны, стрелки сдвигают выбранный угол"></canvas>
+      </div>
+      <div class="busy" id="busy" hidden>Считаю…</div>
+    </div>
+  </main>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+
+const S = {
+  mockCanvas: null, mockName: '', mockFull: null,
+  designSrc: null, designName: '', designOriented: null,
+  quad: null, sel: -1,
+  keyHue: 120, tol: 40, expand: 1, despill: 8, shade: 70,
+  fit: 'fill', rot: 0, flip: false, keepOcc: false, showMask: false, showOrig: false,
+  pick: false,
+  preview: { scale: 1, src: null, out: null },
+  sampleCache: { key: '', data: null },
+};
+window.__mockTool = S;
+
+/* ---------- цвет ---------- */
+function tolParams() {
+  const t = S.tol;
+  return { hueTol: 8 + t * 0.7, minDom: Math.round(40 - t * 0.3) };
+}
+// пиксель «наш зелёный»: зелёный канал доминирует, оттенок рядом с ключом
+function makeKeyTest() {
+  const { hueTol, minDom } = tolParams();
+  const kh = S.keyHue;
+  return (r, g, b) => {
+    const m = r > b ? r : b;
+    const dom = g - m;
+    if (dom < minDom) return false;
+    const mn = r < b ? r : b;
+    const hue = 120 + 60 * (b - r) / (g - mn);
+    return Math.abs(hue - kh) <= hueTol;
+  };
+}
+function hueToRgb(h) {
+  const c = document.createElement('canvas').getContext('2d');
+  c.fillStyle = `hsl(${h} 90% 45%)`; return c.fillStyle;
+}
+function autoKey(data) {
+  const d = data.data, hist = new Float64Array(181);
+  const step = Math.max(1, Math.floor(Math.sqrt(data.width * data.height / 250000)));
+  for (let y = 0; y < data.height; y += step) for (let x = 0; x < data.width; x += step) {
+    const i = (y * data.width + x) * 4, r = d[i], g = d[i + 1], b = d[i + 2];
+    const m = r > b ? r : b; const dom = g - m;
+    if (dom < 45) continue;
+    const mn = r < b ? r : b;
+    const hue = Math.round(120 + 60 * (b - r) / (g - mn));
+    hist[clamp(hue, 0, 180)] += dom;
+  }
+  let best = -1, bh = 120;
+  for (let h = 62; h <= 178; h++) {
+    let s = 0; for (let k = -4; k <= 4; k++) s += hist[clamp(h + k, 0, 180)];
+    if (s > best) { best = s; bh = h; }
+  }
+  return best > 0 ? bh : null;
+}
+
+/* ---------- геометрия ---------- */
+function convexHull(pts) {
+  pts = pts.slice().sort((a, b) => a.x - b.x || a.y - b.y);
+  const cr = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+  const lo = [], up = [];
+  for (const p of pts) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+  for (let i = pts.length - 1; i >= 0; i--) { const p = pts[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
+  up.pop(); lo.pop(); return lo.concat(up);
+}
+const triArea = (a, b, c) => Math.abs((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) / 2;
+function simplify(poly, maxN) {
+  poly = poly.slice();
+  while (poly.length > maxN) {
+    let mi = 0, ma = Infinity;
+    for (let i = 0; i < poly.length; i++) {
+      const a = triArea(poly[(i - 1 + poly.length) % poly.length], poly[i], poly[(i + 1) % poly.length]);
+      if (a < ma) { ma = a; mi = i; }
+    }
+    poly.splice(mi, 1);
+  }
+  return poly;
+}
+function maxQuad(h) {
+  const n = h.length; let best = -1, q = null;
+  const area4 = (a, b, c, d) => Math.abs((a.x * b.y - b.x * a.y) + (b.x * c.y - c.x * b.y) + (c.x * d.y - d.x * c.y) + (d.x * a.y - a.x * d.y)) / 2;
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) for (let k = j + 1; k < n; k++) for (let l = k + 1; l < n; l++) {
+    const a = area4(h[i], h[j], h[k], h[l]); if (a > best) { best = a; q = [h[i], h[j], h[k], h[l]]; }
+  }
+  return q;
+}
+function orderQuad(q) {
+  const cx = q.reduce((s, p) => s + p.x, 0) / 4, cy = q.reduce((s, p) => s + p.y, 0) / 4;
+  const s = q.slice().sort((a, b) => Math.atan2(a.y - cy, a.x - cx) - Math.atan2(b.y - cy, b.x - cx));
+  let st = 0; for (let i = 1; i < 4; i++) if (s[i].x + s[i].y < s[st].x + s[st].y) st = i;
+  return [0, 1, 2, 3].map(i => s[(st + i) % 4]);
+}
+function fitLine(pts) {
+  let mx = 0, my = 0; for (const p of pts) { mx += p.x; my += p.y; } mx /= pts.length; my /= pts.length;
+  let sxx = 0, syy = 0, sxy = 0; for (const p of pts) { const dx = p.x - mx, dy = p.y - my; sxx += dx * dx; syy += dy * dy; sxy += dx * dy; }
+  const th = 0.5 * Math.atan2(2 * sxy, sxx - syy);
+  return { px: mx, py: my, dx: Math.cos(th), dy: Math.sin(th) };
+}
+function intersect(L1, L2) {
+  const den = L1.dx * L2.dy - L1.dy * L2.dx; if (Math.abs(den) < 1e-9) return null;
+  const t = ((L2.px - L1.px) * L2.dy - (L2.py - L1.py) * L2.dx) / den;
+  return { x: L1.px + t * L1.dx, y: L1.py + t * L1.dy };
+}
+// уточняем стороны по точкам границы: так скруглённые и размытые углы не «съедают» зону
+function refineQuad(q, bpts) {
+  const diag = Math.hypot(q[2].x - q[0].x, q[2].y - q[0].y);
+  const groups = [[], [], [], []];
+  for (const p of bpts) {
+    let bk = -1, bd = Infinity;
+    for (let k = 0; k < 4; k++) {
+      const a = q[k], b = q[(k + 1) % 4], ex = b.x - a.x, ey = b.y - a.y, len2 = ex * ex + ey * ey;
+      const t = ((p.x - a.x) * ex + (p.y - a.y) * ey) / len2;
+      if (t < 0.12 || t > 0.88) continue;
+      const d = Math.abs((p.x - a.x) * ey - (p.y - a.y) * ex) / Math.sqrt(len2);
+      if (d < bd) { bd = d; bk = k; }
+    }
+    if (bk >= 0 && bd < diag * 0.04) groups[bk].push(p);
+  }
+  const lines = groups.map((g, k) => {
+    const a = q[k], b = q[(k + 1) % 4];
+    const fallback = { px: a.x, py: a.y, dx: (b.x - a.x), dy: (b.y - a.y) };
+    if (g.length < 10) return fallback;
+    let L = fitLine(g);
+    const res = g.map(p => Math.abs((p.x - L.px) * L.dy - (p.y - L.py) * L.dx));
+    const med = res.slice().sort((x, y) => x - y)[res.length >> 1];
+    const keep = g.filter((p, i) => res[i] <= Math.max(1.5, med * 2.5));
+    if (keep.length >= 10) L = fitLine(keep);
+    return L;
+  });
+  const out = [];
+  for (let k = 0; k < 4; k++) {
+    const p = intersect(lines[(k + 3) % 4], lines[k]);
+    if (!p || Math.hypot(p.x - q[k].x, p.y - q[k].y) > diag * 0.12) return q;
+    out.push(p);
+  }
+  return out;
+}
+
+/* ---------- поиск зоны ---------- */
+function detect() {
+  if (!S.mockCanvas) return;
+  const W = S.mockCanvas.width, H = S.mockCanvas.height;
+  const ws = Math.min(1, 1000 / Math.max(W, H));
+  const w = Math.max(2, Math.round(W * ws)), h = Math.max(2, Math.round(H * ws));
+  const c = mk(w, h), cx = c.getContext('2d', { willReadFrequently: true });
+  cx.imageSmoothingQuality = 'high'; cx.drawImage(S.mockCanvas, 0, 0, w, h);
+  const d = cx.getImageData(0, 0, w, h).data;
+  const test = makeKeyTest();
+  const mask = new Uint8Array(w * h);
+  for (let i = 0, j = 0; j < w * h; i += 4, j++) mask[j] = test(d[i], d[i + 1], d[i + 2]) ? 1 : 0;
+  // самая большая связная область
+  const lab = new Int32Array(w * h); let cur = 0, bestL = 0, bestN = 0; const stack = new Int32Array(w * h);
+  for (let s0 = 0; s0 < w * h; s0++) {
+    if (!mask[s0] || lab[s0]) continue;
+    cur++; let sp = 0, n = 0; stack[sp++] = s0; lab[s0] = cur;
+    while (sp) {
+      const p = stack[--sp]; n++; const x = p % w, y = (p / w) | 0;
+      if (x > 0 && mask[p - 1] && !lab[p - 1]) { lab[p - 1] = cur; stack[sp++] = p - 1; }
+      if (x < w - 1 && mask[p + 1] && !lab[p + 1]) { lab[p + 1] = cur; stack[sp++] = p + 1; }
+      if (y > 0 && mask[p - w] && !lab[p - w]) { lab[p - w] = cur; stack[sp++] = p - w; }
+      if (y < h - 1 && mask[p + w] && !lab[p + w]) { lab[p + w] = cur; stack[sp++] = p + w; }
+    }
+    if (n > bestN) { bestN = n; bestL = cur; }
+  }
+  if (bestN < w * h * 0.002) {
+    setStatus('Зелёная зона не найдена. Попробуйте пипетку или увеличьте допуск, либо расставьте углы вручную.', 'warn');
+    if (!S.quad) S.quad = defaultQuad();
+    scheduleRender(); return false;
+  }
+  const bpts = [];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const p = y * w + x; if (lab[p] !== bestL) continue;
+    if (x === 0 || x === w - 1 || y === 0 || y === h - 1 || lab[p - 1] !== bestL || lab[p + 1] !== bestL || lab[p - w] !== bestL || lab[p + w] !== bestL)
+      bpts.push({ x: x + 0.5, y: y + 0.5 });
+  }
+  const hull = convexHull(bpts);
+  const q0 = orderQuad(maxQuad(simplify(hull, 36)));
+  const q1 = orderQuad(refineQuad(q0, bpts));
+  // половина пикселя наружу: граница проходит по краю пикселей
+  const cxm = q1.reduce((s, p) => s + p.x, 0) / 4, cym = q1.reduce((s, p) => s + p.y, 0) / 4;
+  S.quad = q1.map(p => {
+    const dx = p.x - cxm, dy = p.y - cym, l = Math.hypot(dx, dy) || 1;
+    return { x: (p.x + dx / l * 0.5) / ws, y: (p.y + dy / l * 0.5) / ws };
+  });
+  const pct = (bestN / (w * h) * 100).toFixed(1).replace('.', ',');
+  setStatus(`Зона найдена: ${pct}% кадра. Проверьте углы и при необходимости поправьте.`, 'ok');
+  scheduleRender(); return true;
+}
+function defaultQuad() {
+  const W = S.mockCanvas.width, H = S.mockCanvas.height;
+  return [{ x: W * .3, y: H * .3 }, { x: W * .7, y: H * .3 }, { x: W * .7, y: H * .7 }, { x: W * .3, y: H * .7 }];
+}
+
+/* ---------- дизайн ---------- */
+function buildOriented() {
+  if (!S.designSrc) { S.designOriented = null; return; }
+  const s = S.designSrc, odd = S.rot % 2 === 1;
+  const c = mk(odd ? s.height : s.width, odd ? s.width : s.height), x = c.getContext('2d');
+  x.translate(c.width / 2, c.height / 2); x.rotate(S.rot * Math.PI / 2); if (S.flip) x.scale(-1, 1);
+  x.drawImage(s, -s.width / 2, -s.height / 2);
+  S.designOriented = c; S.sampleCache.key = '';
+}
+function designSample(q) {
+  const od = S.designOriented; if (!od) return null;
+  const dist = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
+  const top = dist(q[0], q[1]), bot = dist(q[3], q[2]), lef = dist(q[0], q[3]), rig = dist(q[1], q[2]);
+  let sx = 0, sy = 0, sw = od.width, sh = od.height;
+  if (S.fit === 'fill') {
+    const A = ((top + bot) / 2) / Math.max(1, (lef + rig) / 2);
+    if (sw / sh > A) { const nw = sh * A; sx = (sw - nw) / 2; sw = nw; } else { const nh = sw / A; sy = (sh - nh) / 2; sh = nh; }
+  }
+  const tw = Math.max(2, Math.round(Math.min(Math.max(top, bot), sw)));
+  const th = Math.max(2, Math.round(Math.min(Math.max(lef, rig), sh)));
+  const key = [tw, th, sx | 0, sy | 0, sw | 0, sh | 0, S.rot, S.flip].join(',');
+  if (S.sampleCache.key === key) return S.sampleCache.data;
+  let cur = od, cx0 = sx, cy0 = sy, cw = sw, ch = sh;
+  while (cw / 2 > tw && ch / 2 > th) {
+    const nw = Math.ceil(cw / 2), nh = Math.ceil(ch / 2), c = mk(nw, nh), x = c.getContext('2d');
+    x.imageSmoothingQuality = 'high'; x.drawImage(cur, cx0, cy0, cw, ch, 0, 0, nw, nh);
+    cur = c; cx0 = 0; cy0 = 0; cw = nw; ch = nh;
+  }
+  const f = mk(tw, th), fx = f.getContext('2d', { willReadFrequently: true });
+  fx.imageSmoothingQuality = 'high'; fx.drawImage(cur, cx0, cy0, cw, ch, 0, 0, tw, th);
+  const data = fx.getImageData(0, 0, tw, th);
+  S.sampleCache = { key, data }; return data;
+}
+
+/* ---------- перспектива ---------- */
+function squareToQuad(q) {
+  const [x0, y0, x1, y1, x2, y2, x3, y3] = [q[0].x, q[0].y, q[1].x, q[1].y, q[2].x, q[2].y, q[3].x, q[3].y];
+  const dx1 = x1 - x2, dx2 = x3 - x2, dx3 = x0 - x1 + x2 - x3, dy1 = y1 - y2, dy2 = y3 - y2, dy3 = y0 - y1 + y2 - y3;
+  let a, b, c, d, e, f, g, h;
+  if (Math.abs(dx3) < 1e-9 && Math.abs(dy3) < 1e-9) { a = x1 - x0; b = x2 - x1; c = x0; d = y1 - y0; e = y2 - y1; f = y0; g = 0; h = 0; }
+  else {
+    const den = dx1 * dy2 - dx2 * dy1;
+    g = (dx3 * dy2 - dx2 * dy3) / den; h = (dx1 * dy3 - dx3 * dy1) / den;
+    a = x1 - x0 + g * x1; b = x3 - x0 + h * x3; c = x0; d = y1 - y0 + g * y1; e = y3 - y0 + h * y3; f = y0;
+  }
+  return [a, b, c, d, e, f, g, h, 1];
+}
+function inv3(m) {
+  const [a, b, c, d, e, f, g, h, i] = m;
+  const A = e * i - f * h, B = -(d * i - f * g), C = d * h - e * g;
+  const det = a * A + b * B + c * C; if (Math.abs(det) < 1e-12) return null;
+  return [A / det, -(b * i - c * h) / det, (b * f - c * e) / det, B / det, (a * i - c * g) / det, -(a * f - c * d) / det, C / det, -(a * h - b * g) / det, (a * e - b * d) / det];
+}
+
+/* ---------- сборка ---------- */
+function composite(src, scale, out, withMask) {
+  const W = src.width, H = src.height, s = src.data, o = out.data;
+  o.set(s);
+  if (!S.quad) return;
+  const q = S.quad.map(p => ({ x: p.x * scale, y: p.y * scale }));
+  const cxm = (q[0].x + q[1].x + q[2].x + q[3].x) / 4, cym = (q[0].y + q[1].y + q[2].y + q[3].y) / 4;
+  const E = [];
+  for (let k = 0; k < 4; k++) {
+    const a = q[k], b = q[(k + 1) % 4]; const ex = b.x - a.x, ey = b.y - a.y, len = Math.hypot(ex, ey) || 1;
+    let nx = -ey / len, ny = ex / len, c = -(nx * a.x + ny * a.y);
+    if (nx * cxm + ny * cym + c < 0) { nx = -nx; ny = -ny; c = -c; }
+    E.push(nx, ny, c);
+  }
+  const [n0x, n0y, c0, n1x, n1y, c1, n2x, n2y, c2, n3x, n3y, c3] = E;
+  const band = S.despill * scale, expand = S.expand * scale;
+  const pad = Math.max(band, expand, 0) + 2;
+  const x0 = clamp(Math.floor(Math.min(...q.map(p => p.x)) - pad), 0, W), x1 = clamp(Math.ceil(Math.max(...q.map(p => p.x)) + pad), 0, W);
+  const y0 = clamp(Math.floor(Math.min(...q.map(p => p.y)) - pad), 0, H), y1 = clamp(Math.ceil(Math.max(...q.map(p => p.y)) + pad), 0, H);
+  const test = makeKeyTest(); const { minDom, hueTol } = tolParams();
+
+  // опорная яркость зелёного внутри зоны (медиана)
+  const hist = new Uint32Array(256); let cnt = 0;
+  const st = Math.max(1, Math.floor(Math.sqrt((x1 - x0) * (y1 - y0) / 60000)));
+  for (let y = y0; y < y1; y += st) for (let x = x0; x < x1; x += st) {
+    const px = x + .5, py = y + .5;
+    const dm = Math.min(n0x * px + n0y * py + c0, n1x * px + n1y * py + c1, n2x * px + n2y * py + c2, n3x * px + n3y * py + c3);
+    if (dm < 2) continue;
+    const i = (y * W + x) * 4; if (!test(s[i], s[i + 1], s[i + 2])) continue;
+    hist[(0.299 * s[i] + 0.587 * s[i + 1] + 0.114 * s[i + 2]) | 0]++; cnt++;
+  }
+  let Lref = 0;
+  if (cnt > 30) { let acc = 0; for (let v = 0; v < 256; v++) { acc += hist[v]; if (acc >= cnt / 2) { Lref = Math.max(8, v); break; } } }
+  const shadeK = S.shade / 100;
+  const hiSpan = Lref ? Math.max(0.05, 255 / Lref - 1) : 1;
+
+  const ds = designSample(q);
+  let M = null, tw = 0, th = 0, dd = null;
+  if (ds) { M = inv3(squareToQuad(q)); tw = ds.width; th = ds.height; dd = ds.data; }
+  const keepOcc = S.keepOcc;
+
+  for (let y = y0; y < y1; y++) {
+    const py = y + .5;
+    for (let x = x0; x < x1; x++) {
+      const px = x + .5;
+      const dm = Math.min(n0x * px + n0y * py + c0, n1x * px + n1y * py + c1, n2x * px + n2y * py + c2, n3x * px + n3y * py + c3);
+      if (dm < -pad) continue;
+      const i = (y * W + x) * 4;
+      const r = s[i], g = s[i + 1], b = s[i + 2];
+      let rr = r, gg = g, bb = b;
+      // подавление зелёной каймы вокруг зоны
+      if (band > 0 && dm > -band) { const m = r > b ? r : b; if (g > m) gg = m; }
+      let cov = dm + expand + 0.5; cov = cov < 0 ? 0 : cov > 1 ? 1 : cov;
+      if (cov > 0 && keepOcc) {
+        const m = r > b ? r : b, dom = g - m;
+        let mt = 0;
+        if (dom > 0) {
+          const mn = r < b ? r : b, hue = 120 + 60 * (b - r) / (g - mn);
+          if (Math.abs(hue - S.keyHue) <= hueTol + 10) mt = clamp((dom - minDom * 0.5) / (minDom * 0.8 + 1), 0, 1);
+        }
+        cov *= mt;
+      }
+      if (cov > 0 && M) {
+        const w = M[6] * px + M[7] * py + M[8];
+        let u = (M[0] * px + M[1] * py + M[2]) / w, v = (M[3] * px + M[4] * py + M[5]) / w;
+        let fx = u * tw - 0.5, fy = v * th - 0.5;
+        fx = fx < 0 ? 0 : fx > tw - 1 ? tw - 1 : fx; fy = fy < 0 ? 0 : fy > th - 1 ? th - 1 : fy;
+        const ix = fx | 0, iy = fy | 0, ax = fx - ix, ay = fy - iy;
+        const ix1 = ix + 1 < tw ? ix + 1 : ix, iy1 = iy + 1 < th ? iy + 1 : iy;
+        const p00 = (iy * tw + ix) * 4, p10 = (iy * tw + ix1) * 4, p01 = (iy1 * tw + ix) * 4, p11 = (iy1 * tw + ix1) * 4;
+        const w00 = (1 - ax) * (1 - ay), w10 = ax * (1 - ay), w01 = (1 - ax) * ay, w11 = ax * ay;
+        let dr = dd[p00] * w00 + dd[p10] * w10 + dd[p01] * w01 + dd[p11] * w11;
+        let dg = dd[p00 + 1] * w00 + dd[p10 + 1] * w10 + dd[p01 + 1] * w01 + dd[p11 + 1] * w11;
+        let db = dd[p00 + 2] * w00 + dd[p10 + 2] * w10 + dd[p01 + 2] * w01 + dd[p11 + 2] * w11;
+        if (Lref && shadeK > 0) {
+          const ratio = (0.299 * r + 0.587 * g + 0.114 * b) / Lref;
+          if (ratio < 1) { const f = 1 - (1 - ratio) * shadeK; dr *= f; dg *= f; db *= f; }
+          else { const hgt = Math.min(1, (ratio - 1) / hiSpan) * shadeK; dr += (255 - dr) * hgt; dg += (255 - dg) * hgt; db += (255 - db) * hgt; }
+        }
+        rr = rr * (1 - cov) + dr * cov; gg = gg * (1 - cov) + dg * cov; bb = bb * (1 - cov) + db * cov;
+      }
+      o[i] = rr; o[i + 1] = gg; o[i + 2] = bb;
+    }
+  }
+  if (withMask) {
+    for (let i = 0; i < o.length; i += 4) if (test(s[i], s[i + 1], s[i + 2])) { o[i] = (o[i] + 255) >> 1; o[i + 1] = o[i + 1] >> 1; o[i + 2] = (o[i + 2] + 160) >> 1; }
+  }
+}
+
+/* ---------- превью ---------- */
+const view = $('view'), ui = $('ui'), canv = $('canv'), stage = $('stage');
+let cssW = 0, cssH = 0;
+function layout() {
+  if (!S.mockCanvas) return;
+  const W = S.mockCanvas.width, H = S.mockCanvas.height;
+  const availW = stage.clientWidth - 24;
+  const availH = Math.max(260, Math.min(window.innerHeight * 0.8, 900));
+  const k = Math.min(availW / W, availH / H, 1.5);
+  cssW = Math.max(1, Math.floor(W * k)); cssH = Math.max(1, Math.floor(H * k));
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const ps = Math.min(1, cssW * dpr / W);
+  const pw = Math.max(1, Math.round(W * ps)), ph = Math.max(1, Math.round(H * ps));
+  view.width = pw; view.height = ph; view.style.width = cssW + 'px'; view.style.height = cssH + 'px';
+  ui.width = Math.round(cssW * dpr); ui.height = Math.round(cssH * dpr);
+  canv.style.width = cssW + 'px'; canv.style.height = cssH + 'px';
+  const c = mk(pw, ph), x = c.getContext('2d', { willReadFrequently: true });
+  x.imageSmoothingQuality = 'high'; x.drawImage(S.mockCanvas, 0, 0, pw, ph);
+  S.preview = { scale: pw / W, src: x.getImageData(0, 0, pw, ph), out: new ImageData(pw, ph) };
+  $('dims').textContent = `${W} × ${H} px`;
+  scheduleRender();
+}
+let raf = 0;
+function scheduleRender() { if (!raf) raf = requestAnimationFrame(() => { raf = 0; renderPreview(); }); }
+function renderPreview() {
+  const P = S.preview; if (!P.src) return;
+  const vx = view.getContext('2d');
+  if (S.showOrig) vx.putImageData(P.src, 0, 0);
+  else { composite(P.src, P.scale, P.out, S.showMask); vx.putImageData(P.out, 0, 0); }
+  drawUI();
+}
+let drag = null, hover = -1;
+function drawUI(loupe) {
+  const x = ui.getContext('2d'), dpr = ui.width / cssW;
+  x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, ui.width, ui.height);
+  if (!S.quad || S.showOrig) return;
+  x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const k = cssW / S.mockCanvas.width; const q = S.quad.map(p => ({ x: p.x * k, y: p.y * k }));
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#b8185a';
+  x.lineWidth = 1.5; x.strokeStyle = accent; x.setLineDash([5, 4]);
+  x.beginPath(); q.forEach((p, i) => i ? x.lineTo(p.x, p.y) : x.moveTo(p.x, p.y)); x.closePath(); x.stroke();
+  x.setLineDash([]);
+  // метка «верх дизайна»
+  const mx = (q[0].x + q[1].x) / 2, my = (q[0].y + q[1].y) / 2;
+  x.font = '600 11px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'bottom';
+  x.lineWidth = 3; x.strokeStyle = 'rgba(0,0,0,.55)'; x.strokeText('верх', mx, my - 6); x.fillStyle = '#fff'; x.fillText('верх', mx, my - 6);
+  q.forEach((p, i) => {
+    const on = i === S.sel || i === hover || (drag && drag.i === i);
+    x.beginPath(); x.arc(p.x, p.y, on ? 9 : 7, 0, Math.PI * 2);
+    x.fillStyle = on ? accent : 'rgba(255,255,255,.92)'; x.fill();
+    x.lineWidth = 2; x.strokeStyle = on ? '#fff' : accent; x.stroke();
+  });
+  if (loupe) drawLoupe(x, loupe);
+}
+function drawLoupe(x, L) {
+  const R = 64, zoom = 5, k = cssW / S.mockCanvas.width;
+  const p = S.quad[L.i]; const cx = p.x * k, cy = p.y * k;
+  let lx = cx - R - 26, ly = cy - R - 26;
+  if (lx - R < 0) lx = cx + R + 26; if (ly - R < 0) ly = cy + R + 26;
+  if (lx + R > cssW) lx = cssW - R - 2; if (ly + R > cssH) ly = cssH - R - 2;
+  const srcR = R / zoom;
+  x.save(); x.beginPath(); x.arc(lx, ly, R, 0, Math.PI * 2); x.clip();
+  x.imageSmoothingEnabled = false;
+  x.drawImage(S.mockCanvas, p.x - srcR, p.y - srcR, srcR * 2, srcR * 2, lx - R, ly - R, R * 2, R * 2);
+  x.restore();
+  x.beginPath(); x.arc(lx, ly, R, 0, Math.PI * 2); x.lineWidth = 2; x.strokeStyle = '#fff'; x.stroke();
+  x.beginPath(); x.moveTo(lx - 10, ly); x.lineTo(lx + 10, ly); x.moveTo(lx, ly - 10); x.lineTo(lx, ly + 10);
+  x.lineWidth = 1; x.strokeStyle = '#ff2d7a'; x.stroke();
+}
+function evtPos(e) { const r = ui.getBoundingClientRect(); return { x: (e.clientX - r.left) * cssW / r.width, y: (e.clientY - r.top) * cssH / r.height }; }
+function hit(pos) {
+  if (!S.quad) return -1; const k = cssW / S.mockCanvas.width; let bi = -1, bd = 22;
+  S.quad.forEach((p, i) => { const d = Math.hypot(p.x * k - pos.x, p.y * k - pos.y); if (d < bd) { bd = d; bi = i; } });
+  return bi;
+}
+function insideQuad(pos) {
+  const k = cssW / S.mockCanvas.width, q = S.quad.map(p => ({ x: p.x * k, y: p.y * k })); let sgn = 0;
+  for (let i = 0; i < 4; i++) { const a = q[i], b = q[(i + 1) % 4]; const c = (b.x - a.x) * (pos.y - a.y) - (b.y - a.y) * (pos.x - a.x); const s = Math.sign(c); if (s && sgn && s !== sgn) return false; if (s) sgn = s; }
+  return true;
+}
+ui.addEventListener('pointerdown', e => {
+  if (!S.mockCanvas) return;
+  const pos = evtPos(e);
+  if (S.pick) {
+    const k = S.mockCanvas.width / cssW, X = clamp(Math.floor(pos.x * k), 0, S.mockCanvas.width - 1), Y = clamp(Math.floor(pos.y * k), 0, S.mockCanvas.height - 1);
+    const [r, g, b] = S.mockCanvas.getContext('2d').getImageData(X, Y, 1, 1).data;
+    setPick(false);
+    if (!(g > r && g > b)) { setStatus('В этой точке нет зелёного. Кликните пипеткой по самой зелёной зоне.', 'warn'); return; }
+    const mn = Math.min(r, b); S.keyHue = Math.round(120 + 60 * (b - r) / (g - mn)); updateKey(); detect(); return;
+  }
+  if (!S.quad) return;
+  const i = hit(pos);
+  if (i >= 0) { drag = { i, start: pos, orig: S.quad.map(p => ({ ...p })) }; S.sel = i; }
+  else if (insideQuad(pos)) { drag = { i: -1, start: pos, orig: S.quad.map(p => ({ ...p })) }; }
+  else return;
+  ui.setPointerCapture(e.pointerId); e.preventDefault();
+  drawUI(drag.i >= 0 ? drag : null);
+});
+ui.addEventListener('pointermove', e => {
+  if (!S.mockCanvas || !S.quad) return;
+  const pos = evtPos(e);
+  if (!drag) { const h = hit(pos); if (h !== hover) { hover = h; drawUI(); } ui.style.cursor = S.pick ? 'copy' : h >= 0 ? 'grab' : insideQuad(pos) ? 'move' : 'crosshair'; return; }
+  const k = S.mockCanvas.width / cssW, dx = (pos.x - drag.start.x) * k, dy = (pos.y - drag.start.y) * k;
+  const W = S.mockCanvas.width, H = S.mockCanvas.height;
+  if (drag.i >= 0) S.quad[drag.i] = { x: clamp(drag.orig[drag.i].x + dx, -W * 0.5, W * 1.5), y: clamp(drag.orig[drag.i].y + dy, -H * 0.5, H * 1.5) };
+  else S.quad = drag.orig.map(p => ({ x: p.x + dx, y: p.y + dy }));
+  renderPreviewNow(drag.i >= 0 ? drag : null);
+});
+function renderPreviewNow(loupe) {
+  if (raf) { cancelAnimationFrame(raf); raf = 0; }
+  if (renderPreviewNow.pending) { renderPreviewNow.loupe = loupe; return; }
+  renderPreviewNow.pending = true; renderPreviewNow.loupe = loupe;
+  requestAnimationFrame(() => { renderPreviewNow.pending = false; renderPreview(); if (drag && renderPreviewNow.loupe) drawUI(renderPreviewNow.loupe); });
+}
+const endDrag = () => { if (drag) { drag = null; drawUI(); } };
+ui.addEventListener('pointerup', endDrag); ui.addEventListener('pointercancel', endDrag);
+ui.addEventListener('keydown', e => {
+  if (!S.quad) return;
+  if (e.key === 'Tab') return;
+  const step = e.shiftKey ? 10 : 1; let dx = 0, dy = 0;
+  if (e.key === 'ArrowLeft') dx = -step; else if (e.key === 'ArrowRight') dx = step; else if (e.key === 'ArrowUp') dy = -step; else if (e.key === 'ArrowDown') dy = step;
+  else if (['1', '2', '3', '4'].includes(e.key)) { S.sel = +e.key - 1; drawUI(); return; } else return;
+  e.preventDefault(); if (S.sel < 0) S.sel = 0;
+  S.quad[S.sel] = { x: S.quad[S.sel].x + dx, y: S.quad[S.sel].y + dy }; scheduleRender();
+});
+
+/* ---------- загрузка ---------- */
+function setStatus(t, cls) { const el = $('status'); el.textContent = t; el.className = 'status' + (cls ? ' ' + cls : ''); }
+function drawThumb(canvas, img) {
+  const x = canvas.getContext('2d'); x.clearRect(0, 0, canvas.width, canvas.height);
+  const k = Math.min(canvas.width / img.width, canvas.height / img.height), w = img.width * k, h = img.height * k;
+  x.imageSmoothingQuality = 'high'; x.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+}
+async function fileToCanvas(file) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image(); img.decoding = 'async'; img.src = url; await img.decode();
+    const c = mk(img.naturalWidth, img.naturalHeight); c.getContext('2d').drawImage(img, 0, 0); return c;
+  } finally { URL.revokeObjectURL(url); }
+}
+function setMock(canvas, name, sample) {
+  S.mockCanvas = canvas; S.mockName = name; S.mockFull = null; S.quad = null; S.sel = -1;
+  $('nameMock').innerHTML = ''; $('nameMock').append(document.createTextNode(name));
+  if (sample) { const b = document.createElement('span'); b.className = 'badge'; b.textContent = 'пример'; $('nameMock').append(b); }
+  drawThumb($('thumbMock'), canvas);
+  const pc = mk(Math.min(canvas.width, 1000), Math.round(canvas.height * Math.min(canvas.width, 1000) / canvas.width));
+  const px = pc.getContext('2d', { willReadFrequently: true }); px.drawImage(canvas, 0, 0, pc.width, pc.height);
+  const kh = autoKey(px.getImageData(0, 0, pc.width, pc.height)); if (kh) S.keyHue = kh;
+  updateKey(); layout(); detect();
+}
+function setDesign(canvas, name, sample) {
+  // прозрачные места дизайна заливаем белым, чтобы не просвечивал зелёный
+  const c = mk(canvas.width, canvas.height), x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(canvas, 0, 0);
+  S.designSrc = c; S.designName = name;
+  $('nameDesign').innerHTML = ''; $('nameDesign').append(document.createTextNode(name));
+  if (sample) { const b = document.createElement('span'); b.className = 'badge'; b.textContent = 'пример'; $('nameDesign').append(b); }
+  drawThumb($('thumbDesign'), c); buildOriented(); scheduleRender();
+}
+function wireDrop(dropId, inputId, onFile) {
+  const drop = $(dropId), input = $(inputId);
+  input.addEventListener('change', () => { if (input.files[0]) onFile(input.files[0]); input.value = ''; });
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) onFile(f); });
+}
+const loadFile = async (f, fn) => {
+  if (!f.type.startsWith('image/')) { setStatus('Это не картинка. Нужен PNG, JPG или WebP.', 'warn'); return; }
+  try { fn(await fileToCanvas(f), f.name); } catch (e) { setStatus('Не получилось открыть файл. Попробуйте сохранить его как PNG или JPG.', 'warn'); }
+};
+wireDrop('dropMock', 'fileMock', f => loadFile(f, (c, n) => setMock(c, n)));
+wireDrop('dropDesign', 'fileDesign', f => loadFile(f, (c, n) => setDesign(c, n)));
+
+/* ---------- контролы ---------- */
+function updateKey() {
+  $('keySwatch').style.background = hueToRgb(S.keyHue);
+  $('keyText').textContent = `оттенок ${S.keyHue}°`;
+}
+function syncVals() {
+  const { hueTol } = tolParams();
+  $('tolVal').textContent = `±${Math.round(hueTol)}°`;
+  $('expandVal').textContent = `${S.expand > 0 ? '+' : ''}${String(S.expand).replace('.', ',')} px`;
+  $('despillVal').textContent = S.despill ? `${S.despill} px` : 'выкл.';
+  $('shadeVal').textContent = `${S.shade}%`;
+}
+let detT = 0;
+$('tol').addEventListener('input', e => { S.tol = +e.target.value; syncVals(); scheduleRender(); clearTimeout(detT); detT = setTimeout(detect, 250); });
+$('expand').addEventListener('input', e => { S.expand = +e.target.value; syncVals(); scheduleRender(); });
+$('despill').addEventListener('input', e => { S.despill = +e.target.value; syncVals(); scheduleRender(); });
+$('shade').addEventListener('input', e => { S.shade = +e.target.value; syncVals(); scheduleRender(); });
+$('keepOcc').addEventListener('change', e => { S.keepOcc = e.target.checked; scheduleRender(); });
+$('showMask').addEventListener('change', e => { S.showMask = e.target.checked; scheduleRender(); });
+$('showOrig').addEventListener('change', e => { S.showOrig = e.target.checked; scheduleRender(); });
+$('btnDetect').addEventListener('click', () => detect());
+function setPick(on) { S.pick = on; $('btnPick').setAttribute('aria-pressed', on); ui.classList.toggle('pick', on); if (on) setStatus('Кликните по зелёной зоне на картинке.'); }
+$('btnPick').addEventListener('click', () => setPick(!S.pick));
+$('btnAutoKey').addEventListener('click', () => {
+  if (!S.preview.src) return; const kh = autoKey(S.preview.src);
+  if (kh) { S.keyHue = kh; updateKey(); detect(); } else setStatus('Зелёный не найден автоматически. Попробуйте пипетку.', 'warn');
+});
+function setFit(f) { S.fit = f; $('fitFill').setAttribute('aria-pressed', f === 'fill'); $('fitStretch').setAttribute('aria-pressed', f === 'stretch'); S.sampleCache.key = ''; scheduleRender(); }
+$('fitFill').addEventListener('click', () => setFit('fill'));
+$('fitStretch').addEventListener('click', () => setFit('stretch'));
+$('btnRot').addEventListener('click', () => { S.rot = (S.rot + 1) % 4; buildOriented(); scheduleRender(); });
+$('btnFlip').addEventListener('click', () => { S.flip = !S.flip; $('btnFlip').setAttribute('aria-pressed', S.flip); buildOriented(); scheduleRender(); });
+
+/* ---------- экспорт ---------- */
+$('btnExport').addEventListener('click', async () => {
+  if (!S.mockCanvas) return;
+  if (!S.designOriented) { setStatus('Сначала загрузите дизайн.', 'warn'); return; }
+  const btn = $('btnExport'); btn.disabled = true; $('busy').hidden = false; setStatus('Собираю PNG в полном размере…');
+  await new Promise(r => setTimeout(r, 30));
+  try {
+    const W = S.mockCanvas.width, H = S.mockCanvas.height;
+    if (!S.mockFull) S.mockFull = S.mockCanvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, W, H);
+    const out = new ImageData(W, H); S.sampleCache.key = '';
+    composite(S.mockFull, 1, out, false); S.sampleCache.key = '';
+    const c = mk(W, H); c.getContext('2d').putImageData(out, 0, 0);
+    const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+    const base = (S.designName || 'design').replace(/\.[^.]+$/, '').replace(/[^\p{L}\p{N}_-]+/gu, '-').slice(0, 60) || 'design';
+    const filename = `mockup-${base}.png`;
+    let done = false;
+    if (window.claude && typeof window.claude.use === 'function') {
+      const dl = await window.claude.use('downloads').catch(() => null);
+      if (dl) {
+        try { await dl.save({ filename, data: blob }); setStatus(`Готово: ${filename}`, 'ok'); }
+        catch (e) { setStatus(e && e.code === 'declined' ? 'Сохранение отменено.' : 'Сохранить файл здесь не получилось.', 'warn'); }
+        done = true;
+      }
+    }
+    if (!done) {
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename;
+      document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      setStatus(`Готово: ${filename}, ${W} × ${H} px`, 'ok');
+    }
+  } catch (e) { setStatus('Не получилось собрать PNG: ' + (e && e.message || e), 'warn'); }
+  finally { btn.disabled = false; $('busy').hidden = true; }
+});
+
+/* ---------- примеры, нарисованные кодом ---------- */
+function sampleMockup() {
+  const W = 1600, H = 1100, c = mk(W, H), x = c.getContext('2d');
+  let g = x.createLinearGradient(0, 0, 0, H * .62); g.addColorStop(0, '#c9ced6'); g.addColorStop(1, '#aeb4be');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  g = x.createLinearGradient(0, H * .62, 0, H); g.addColorStop(0, '#7b6656'); g.addColorStop(1, '#5a4a3e');
+  x.fillStyle = g; x.fillRect(0, H * .62, W, H * .38);
+  // окно-свет на стене
+  g = x.createRadialGradient(W * .18, H * .2, 10, W * .18, H * .2, W * .5); g.addColorStop(0, 'rgba(255,255,255,.35)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = g; x.fillRect(0, 0, W, H * .62);
+  const P = (a, b) => ({ x: a, y: b });
+  const scr = [P(452, 182), P(1148, 232), P(1118, 652), P(470, 676)];
+  const bez = [P(426, 156), P(1176, 208), P(1144, 676), P(446, 702)];
+  const base = [P(446, 702), P(1144, 676), P(1330, 860), P(300, 905)];
+  const poly = (pts) => { x.beginPath(); pts.forEach((p, i) => i ? x.lineTo(p.x, p.y) : x.moveTo(p.x, p.y)); x.closePath(); };
+  // тень на столе
+  x.save(); x.filter = 'blur(18px)'; x.fillStyle = 'rgba(20,12,6,.45)'; poly([P(330, 900), P(1320, 850), P(1380, 905), P(280, 950)]); x.fill(); x.restore();
+  g = x.createLinearGradient(0, 690, 0, 905); g.addColorStop(0, '#c7cad0'); g.addColorStop(1, '#8e939b'); x.fillStyle = g; poly(base); x.fill();
+  x.fillStyle = 'rgba(40,44,52,.55)';
+  for (let r = 0; r < 5; r++) for (let k = 0; k < 13; k++) {
+    const t0 = 0.08 + r * 0.075, t1 = t0 + 0.058, s0 = 0.1 + k * 0.062, s1 = s0 + 0.05;
+    const L = (t) => ({ a: P(base[0].x + (base[3].x - base[0].x) * t, base[0].y + (base[3].y - base[0].y) * t), b: P(base[1].x + (base[2].x - base[1].x) * t, base[1].y + (base[2].y - base[1].y) * t) });
+    const at = (l, s) => P(l.a.x + (l.b.x - l.a.x) * s, l.a.y + (l.b.y - l.a.y) * s);
+    const l0 = L(t0), l1 = L(t1); poly([at(l0, s0), at(l0, s1), at(l1, s1), at(l1, s0)]); x.fill();
+  }
+  x.lineJoin = 'round'; x.fillStyle = '#17181b'; poly(bez); x.fill(); x.strokeStyle = '#2a2c31'; x.lineWidth = 10; x.stroke();
+  // зелёный экран с мягким краем, как у сгенерированных картинок
+  x.save(); x.filter = 'blur(0.8px)'; x.fillStyle = '#12c94a'; poly(scr); x.fill(); x.restore();
+  x.save(); poly(scr); x.clip();
+  g = x.createLinearGradient(452, 182, 1118, 652); g.addColorStop(0, 'rgba(255,255,255,.10)'); g.addColorStop(1, 'rgba(0,0,0,.28)'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  g = x.createLinearGradient(560, 182, 860, 676); g.addColorStop(0.35, 'rgba(255,255,255,0)'); g.addColorStop(0.5, 'rgba(255,255,255,.22)'); g.addColorStop(0.62, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.restore();
+  // зерно
+  const id = x.getImageData(0, 0, W, H), d = id.data;
+  for (let i = 0; i < d.length; i += 4) { const n = (Math.random() - .5) * 10; d[i] += n; d[i + 1] += n; d[i + 2] += n; }
+  x.putImageData(id, 0, 0);
+  return c;
+}
+function sampleDesign() {
+  const W = 1440, H = 900, c = mk(W, H), x = c.getContext('2d');
+  x.fillStyle = '#f5f3ee'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#111'; x.font = '700 30px system-ui, sans-serif'; x.textBaseline = 'middle'; x.fillText('Студия', 72, 64);
+  x.font = '500 22px system-ui, sans-serif'; ['Проекты', 'Услуги', 'Контакты'].forEach((t, i) => x.fillText(t, 900 + i * 150, 64));
+  x.fillRect(72, 112, W - 144, 2);
+  x.font = '800 118px system-ui, sans-serif'; x.textBaseline = 'alphabetic';
+  x.fillText('Пиксель', 72, 300); x.fillStyle = '#e0245e'; x.fillText('в пиксель', 72, 420);
+  x.fillStyle = '#333'; x.font = '400 26px system-ui, sans-serif';
+  ['Мелкий текст и тонкие линии остаются чёткими,', 'потому что дизайн переносится математически,', 'без перерисовки нейросетью.'].forEach((t, i) => x.fillText(t, 76, 500 + i * 38));
+  const cols = ['#2f5bea', '#ffb703', '#e0245e', '#1b998b'];
+  cols.forEach((col, i) => { x.fillStyle = col; x.fillRect(900 + (i % 2) * 230, 200 + Math.floor(i / 2) * 230, 210, 210); });
+  x.strokeStyle = '#111'; x.lineWidth = 1;
+  for (let i = 0; i <= 24; i++) { x.beginPath(); x.moveTo(72 + i * 54, 700); x.lineTo(72 + i * 54, 840); x.stroke(); }
+  x.font = '600 16px ui-monospace, monospace'; x.fillStyle = '#111'; x.fillText('1440 × 900 · сетка 54 px', 76, 870);
+  return c;
+}
+
+syncVals();
+setDesign(sampleDesign(), 'design-example.png', true);
+setMock(sampleMockup(), 'laptop-green-example.png', true);
+let rt = 0; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(layout, 120); });
+if (window.ResizeObserver) new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(layout, 120); }).observe(stage);
+})();
+</script>
+
+</body>
+</html>
