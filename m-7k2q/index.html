@@ -128,6 +128,16 @@ input[type=range]:focus-visible::-moz-range-thumb{background:var(--accent);borde
 .key .seg{margin-left:auto}
 .key .seg button{padding:7px 10px;font-size:13px}
 
+/* эффекты экрана */
+.presets button{justify-content:center;text-align:center;padding:9px 6px;font-size:13px}
+.more{border-top:1px solid var(--line);padding-top:10px}
+.more summary{cursor:pointer;font-size:13.5px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.more summary::-webkit-details-marker{display:none}
+.more summary::after{content:"+";font-size:16px;line-height:1}
+.more[open] summary::after{content:"−"}
+.more-in{display:flex;flex-direction:column;gap:14px;padding-top:12px}
+.fx-note{font-size:12px;color:var(--mute);margin:0}
+
 /* низ левой колонки: статус и скачивание всегда на виду */
 .side-foot{padding:0;gap:0;overflow:hidden}
 .status{font-size:12.5px;color:var(--mute);min-height:1.45em;padding:12px var(--tp)}
@@ -324,6 +334,62 @@ input[type=range]:focus-visible::-moz-range-thumb{background:var(--accent);borde
         </div>
         <label class="chk"><input type="checkbox" id="keepOcc"><span>оставить предметы поверх зоны<small>рука, кабель, отражение: всё не&nbsp;зелёное внутри зоны останется сверху</small></span></label>
       </section>
+
+      <section class="tile opt" aria-label="Эффекты экрана">
+        <div class="th"><span class="tag">эффекты экрана</span><span class="n">поверх дизайна</span></div>
+        <p class="fx-note">если на&nbsp;зелёном нет бликов и&nbsp;теней, добавьте их здесь: так экран выглядит живым.</p>
+        <div class="seg presets" role="group" aria-label="Готовые эффекты">
+          <button type="button" data-preset="none" aria-pressed="false">нет</button>
+          <button type="button" data-preset="soft" aria-pressed="true">мягкий</button>
+          <button type="button" data-preset="gloss" aria-pressed="false">глянец</button>
+          <button type="button" data-preset="matte" aria-pressed="false">матовый</button>
+        </div>
+        <div class="field">
+          <span class="lab"><label for="fx_glare">блик на&nbsp;стекле</label><span class="val" id="fxv_glare"></span></span>
+          <input type="range" id="fx_glare" min="0" max="100" step="1" value="28">
+        </div>
+        <details class="more">
+          <summary>форма блика</summary>
+          <div class="more-in">
+            <div class="field">
+              <span class="lab"><label for="fx_angle">наклон</label><span class="val" id="fxv_angle"></span></span>
+              <input type="range" id="fx_angle" min="0" max="180" step="1" value="35">
+            </div>
+            <div class="field">
+              <span class="lab"><label for="fx_pos">положение</label><span class="val" id="fxv_pos"></span></span>
+              <input type="range" id="fx_pos" min="0" max="100" step="1" value="32">
+            </div>
+            <div class="field">
+              <span class="lab"><label for="fx_width">ширина</label><span class="val" id="fxv_width"></span></span>
+              <input type="range" id="fx_width" min="4" max="100" step="1" value="26">
+            </div>
+          </div>
+        </details>
+        <div class="field">
+          <span class="lab"><label for="fx_light">свет и&nbsp;тень сбоку</label><span class="val" id="fxv_light"></span></span>
+          <input type="range" id="fx_light" min="0" max="100" step="1" value="25">
+        </div>
+        <div class="field">
+          <span class="lab"><label for="fx_edge">тень у&nbsp;рамки</label><span class="val" id="fxv_edge"></span></span>
+          <input type="range" id="fx_edge" min="0" max="100" step="1" value="30">
+        </div>
+        <div class="field">
+          <span class="lab"><label for="fx_edgeW">ширина тени</label><span class="val" id="fxv_edgeW"></span></span>
+          <input type="range" id="fx_edgeW" min="4" max="80" step="1" value="24">
+        </div>
+        <div class="field">
+          <span class="lab"><label for="fx_haze">дымка стекла</label><span class="val" id="fxv_haze"></span></span>
+          <input type="range" id="fx_haze" min="0" max="100" step="1" value="8">
+        </div>
+        <div class="field">
+          <span class="lab"><label for="fx_grain">зерно как у&nbsp;фото</label><span class="val" id="fxv_grain"></span></span>
+          <input type="range" id="fx_grain" min="0" max="100" step="1" value="12">
+        </div>
+        <div class="field">
+          <span class="lab"><label for="fx_soft">мягкость дизайна</label><span class="val" id="fxv_soft"></span></span>
+          <input type="range" id="fx_soft" min="0" max="30" step="1" value="3">
+        </div>
+      </section>
     </div>
 
     <section class="tile side-foot" aria-label="Скачать">
@@ -402,12 +468,21 @@ const S = {
   designSrc: null, designName: '', designOriented: null,
   quad: null, sel: -1,
   keyHue: 120, tol: 40, expand: 1, despill: 8, shade: 70,
-  fit: 'fill', rot: 0, flip: false, shape: null, shapeMode: 'green', guides: true, keepOcc: false, showMask: false, showOrig: false,
+  fit: 'fill', rot: 0, flip: false, shape: null, shapeMode: 'green', guides: true, fx: null, fxPreset: 'soft', keepOcc: false, showMask: false, showOrig: false,
   pick: false,
   preview: { scale: 1, src: null, out: null },
   sampleCache: { key: '', data: null },
 };
 window.__mockTool = S;
+/* эффекты экрана: блик, свет, тень у рамки, дымка, зерно, мягкость */
+const FX_KEYS = ['glare', 'angle', 'pos', 'width', 'light', 'edge', 'edgeW', 'haze', 'grain', 'soft'];
+const FX_PRESETS = {
+  none:  { glare: 0,  angle: 35, pos: 35, width: 22, light: 0,  edge: 0,  edgeW: 24, haze: 0,  grain: 0,  soft: 0 },
+  soft:  { glare: 28, angle: 35, pos: 32, width: 26, light: 25, edge: 30, edgeW: 24, haze: 8,  grain: 12, soft: 3 },
+  gloss: { glare: 55, angle: 30, pos: 30, width: 12, light: 15, edge: 40, edgeW: 18, haze: 4,  grain: 8,  soft: 2 },
+  matte: { glare: 14, angle: 40, pos: 40, width: 50, light: 35, edge: 22, edgeW: 30, haze: 22, grain: 18, soft: 5 },
+};
+S.fx = Object.assign({}, FX_PRESETS.soft);
 
 /* ---------- цвет ---------- */
 function tolParams() {
@@ -653,7 +728,24 @@ function buildOriented() {
   x.drawImage(s, -s.width / 2, -s.height / 2);
   S.designOriented = c; S.sampleCache.key = '';
 }
-function designSample(q) {
+function gaussBlur(img, sigma) {
+  const w = img.width, h = img.height, d = img.data, r = Math.max(1, Math.ceil(sigma * 2.5));
+  const k = new Float32Array(r * 2 + 1); let sum = 0;
+  for (let i = -r; i <= r; i++) { k[i + r] = Math.exp(-(i * i) / (2 * sigma * sigma)); sum += k[i + r]; }
+  for (let i = 0; i < k.length; i++) k[i] /= sum;
+  const tmp = new Float32Array(w * h * 3);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let a = 0, b = 0, c = 0;
+    for (let i = -r; i <= r; i++) { const xx = x + i < 0 ? 0 : x + i >= w ? w - 1 : x + i, p = (y * w + xx) * 4, kk = k[i + r]; a += d[p] * kk; b += d[p + 1] * kk; c += d[p + 2] * kk; }
+    const t = (y * w + x) * 3; tmp[t] = a; tmp[t + 1] = b; tmp[t + 2] = c;
+  }
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let a = 0, b = 0, c = 0;
+    for (let i = -r; i <= r; i++) { const yy = y + i < 0 ? 0 : y + i >= h ? h - 1 : y + i, t = (yy * w + x) * 3, kk = k[i + r]; a += tmp[t] * kk; b += tmp[t + 1] * kk; c += tmp[t + 2] * kk; }
+    const p = (y * w + x) * 4; d[p] = a; d[p + 1] = b; d[p + 2] = c;
+  }
+}
+function designSample(q, scale) {
   const od = S.designOriented; if (!od) return null;
   const dist = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
   const top = dist(q[0], q[1]), bot = dist(q[3], q[2]), lef = dist(q[0], q[3]), rig = dist(q[1], q[2]);
@@ -664,7 +756,8 @@ function designSample(q) {
   }
   const tw = Math.max(2, Math.round(Math.min(Math.max(top, bot), sw)));
   const th = Math.max(2, Math.round(Math.min(Math.max(lef, rig), sh)));
-  const key = [tw, th, sx | 0, sy | 0, sw | 0, sh | 0, S.rot, S.flip].join(',');
+  const sigma = S.fx.soft / 10 * (scale || 1);
+  const key = [tw, th, sx | 0, sy | 0, sw | 0, sh | 0, S.rot, S.flip, sigma.toFixed(2)].join(',');
   if (S.sampleCache.key === key) return S.sampleCache.data;
   let cur = od, cx0 = sx, cy0 = sy, cw = sw, ch = sh;
   while (cw / 2 > tw && ch / 2 > th) {
@@ -675,6 +768,7 @@ function designSample(q) {
   const f = mk(tw, th), fx = f.getContext('2d', { willReadFrequently: true });
   fx.imageSmoothingQuality = 'high'; fx.drawImage(cur, cx0, cy0, cw, ch, 0, 0, tw, th);
   const data = fx.getImageData(0, 0, tw, th);
+  if (sigma >= 0.15) gaussBlur(data, sigma);
   S.sampleCache = { key, data }; return data;
 }
 
@@ -750,7 +844,14 @@ function composite(src, scale, out, withMask) {
   const shadeK = S.shade / 100;
   const hiSpan = Lref ? Math.max(0.05, 255 / Lref - 1) : 1;
 
-  const ds = designSample(q);
+  const ds = designSample(q, scale);
+  const F = S.fx;
+  const gK = F.glare / 100 * 0.85, aRad = F.angle * Math.PI / 180, ca = Math.cos(aRad), sa = Math.sin(aRad);
+  const gPos = (F.pos - 50) / 100 * 1.4, gW = Math.max(0.02, F.width / 100 * 0.6);
+  const lightK = F.light / 100 * 0.55, edgeK = F.edge / 100 * 0.65, hazeK = F.haze / 100 * 0.3, grainK = F.grain / 100 * 30;
+  const qSide = Math.min(...[0, 1, 2, 3].map(k => Math.hypot(q[(k + 1) % 4].x - q[k].x, q[(k + 1) % 4].y - q[k].y)));
+  const edgeW = Math.max(1, F.edgeW / 100 * qSide * 0.25);
+  const anyFx = gK > 0 || lightK > 0 || edgeK > 0 || hazeK > 0 || grainK > 0;
   let M = null, tw = 0, th = 0, dd = null;
   if (ds) { M = inv3(squareToQuad(q)); tw = ds.width; th = ds.height; dd = ds.data; }
   const keepOcc = S.keepOcc;
@@ -805,6 +906,20 @@ function composite(src, scale, out, withMask) {
           const ratio = (0.299 * r + 0.587 * g + 0.114 * b) / Lref;
           if (ratio < 1) { const f = 1 - (1 - ratio) * shadeK; dr *= f; dg *= f; db *= f; }
           else { const hgt = Math.min(1, (ratio - 1) / hiSpan) * shadeK; dr += (255 - dr) * hgt; dg += (255 - dg) * hgt; db += (255 - db) * hgt; }
+        }
+        if (anyFx) {
+          const t = (u - 0.5) * ca + (v - 0.5) * sa;
+          let f = 1;
+          if (lightK > 0) { const lt = (t + 0.7) / 1.4; f *= 1 - lightK * (lt < 0 ? 0 : lt > 1 ? 1 : lt); }
+          if (edgeK > 0 && dm < edgeW * 3) f *= 1 - edgeK * Math.exp(-Math.max(0, dm) / edgeW);
+          dr *= f; dg *= f; db *= f;
+          if (hazeK > 0) { dr += (232 - dr) * hazeK; dg += (234 - dg) * hazeK; db += (238 - db) * hazeK; }
+          if (gK > 0) { const z = (t - gPos) / gW, gl = gK * Math.exp(-z * z); dr = 255 - (255 - dr) * (1 - gl); dg = 255 - (255 - dg) * (1 - gl); db = 255 - (255 - db) * (1 - gl); }
+          if (grainK > 0) {
+            let hh = Math.imul((px / scale) | 0, 374761393) + Math.imul((py / scale) | 0, 668265263);
+            hh = Math.imul(hh ^ (hh >>> 13), 1274126177); hh ^= hh >>> 16;
+            const nz = ((hh & 1023) / 1023 - 0.5) * grainK; dr += nz; dg += nz; db += nz;
+          }
         }
         rr = rr * (1 - cov) + dr * cov; gg = gg * (1 - cov) + dg * cov; bb = bb * (1 - cov) + db * cov;
       }
@@ -1026,6 +1141,20 @@ $('btnDetect').addEventListener('click', () => detect());
 function setShapeMode(m) { S.shapeMode = m; $('shapeGreen').setAttribute('aria-pressed', m === 'green'); $('shapeQuad').setAttribute('aria-pressed', m === 'quad'); scheduleRender(); }
 $('shapeGreen').addEventListener('click', () => { setShapeMode('green'); record(); });
 $('shapeQuad').addEventListener('click', () => { setShapeMode('quad'); record(); });
+/* эффекты экрана */
+function fxFmt(k, v) { return k === 'angle' ? v + '°' : k === 'soft' ? (v ? String(v / 10).replace('.', ',') + ' px' : 'выкл.') : (k === 'pos' || k === 'width' || k === 'edgeW') ? v + '%' : v ? v + '%' : 'выкл.'; }
+function syncFx() {
+  FX_KEYS.forEach(k => { const el = $('fx_' + k); el.value = S.fx[k]; paintRange(el); $('fxv_' + k).textContent = fxFmt(k, S.fx[k]); });
+  document.querySelectorAll('[data-preset]').forEach(b => b.setAttribute('aria-pressed', b.dataset.preset === S.fxPreset));
+}
+FX_KEYS.forEach(k => {
+  const el = $('fx_' + k);
+  el.addEventListener('input', () => { S.fx[k] = +el.value; S.fxPreset = ''; if (k === 'soft') S.sampleCache.key = ''; syncFx(); scheduleRender(); });
+  el.addEventListener('change', record);
+});
+document.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => {
+  S.fx = Object.assign({}, FX_PRESETS[b.dataset.preset]); S.fxPreset = b.dataset.preset; S.sampleCache.key = ''; syncFx(); scheduleRender(); record();
+}));
 /* разметку можно спрятать, чтобы рассмотреть мелочи */
 function setGuides(on) { S.guides = on; $('btnGuides').setAttribute('aria-pressed', !on); $('btnGuides').firstChild.textContent = on ? 'скрыть разметку ' : 'показать разметку '; drawUI(); }
 $('btnGuides').addEventListener('click', () => setGuides(!S.guides));
@@ -1156,10 +1285,10 @@ let nudgeT = 0;
 function snap() {
   return { mock: S.mockCanvas, mockName: S.mockName, mockSample: S.mockSample, design: S.designSrc, designName: S.designName, designSample: S.designSample,
     quad: S.quad ? S.quad.map(p => ({ x: p.x, y: p.y })) : null, keyHue: S.keyHue, tol: S.tol, expand: S.expand, despill: S.despill, shade: S.shade,
-    fit: S.fit, rot: S.rot, flip: S.flip, keepOcc: S.keepOcc, shape: S.shape, shapeMode: S.shapeMode };
+    fit: S.fit, rot: S.rot, flip: S.flip, keepOcc: S.keepOcc, shape: S.shape, shapeMode: S.shapeMode, fx: Object.assign({}, S.fx), fxPreset: S.fxPreset };
 }
 function sameSnap(a, b) {
-  for (const k in a) { if (k === 'quad') { if (JSON.stringify(a.quad) !== JSON.stringify(b.quad)) return false; } else if (a[k] !== b[k]) return false; }
+  for (const k in a) { if (k === 'quad' || k === 'fx') { if (JSON.stringify(a[k]) !== JSON.stringify(b[k])) return false; } else if (a[k] !== b[k]) return false; }
   return true;
 }
 function record() {
@@ -1174,6 +1303,7 @@ function restore(s) {
   if (s.design !== S.designSrc) { S.designSrc = s.design; S.designName = s.designName; S.designSample = s.designSample; showName('nameDesign', s.designName, s.designSample); drawThumb($('thumbDesign'), s.design); }
   S.quad = s.quad ? s.quad.map(p => ({ x: p.x, y: p.y })) : null; S.sel = -1;
   ['keyHue', 'tol', 'expand', 'despill', 'shade', 'rot', 'flip', 'keepOcc', 'shape'].forEach(k => { S[k] = s[k]; }); setShapeMode(s.shapeMode);
+  S.fx = Object.assign({}, s.fx); S.fxPreset = s.fxPreset; syncFx(); S.sampleCache.key = '';
   ['tol', 'expand', 'despill', 'shade'].forEach(id => { $(id).value = S[id]; });
   $('keepOcc').checked = S.keepOcc; $('btnFlip').setAttribute('aria-pressed', S.flip);
   setFit(s.fit); buildOriented(); updateKey(); syncVals(); scheduleRender();
@@ -1210,7 +1340,7 @@ $('menuClose').addEventListener('click', () => setMenu(false));
 $('menuHow').addEventListener('click', () => setMenu(false));
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) setMenu(false); });
 
-syncVals();
+syncVals(); syncFx();
 setDesign(sampleDesign(), 'design-example.png', true);
 setMock(sampleMockup(), 'laptop-green-example.png', true);
 let rt = 0; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(layout, 120); });
