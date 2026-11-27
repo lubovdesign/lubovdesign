@@ -128,6 +128,16 @@ input[type=range]:focus-visible::-moz-range-thumb{background:var(--accent);borde
 .key .seg{margin-left:auto}
 .key .seg button{padding:7px 10px;font-size:13px}
 
+/* подсказка размера */
+.size-hint{display:flex;flex-direction:column;gap:8px;background:var(--bg);border-radius:4px;padding:10px}
+.sh-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13.5px}
+.sh-top b{font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sh-sub,.sh-warn p{margin:0;font-size:12px;color:var(--mute)}
+.sh-warn{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:8px}
+.sh-warn p{color:var(--ink);font-size:12.5px}
+.size-hint .seg button{justify-content:center;text-align:center;padding:8px 6px;font-size:13px}
+input[type=range]:disabled{opacity:.35;cursor:default}
+
 /* эффекты экрана */
 .presets button{justify-content:center;text-align:center;padding:9px 6px;font-size:13px}
 .more{border-top:1px solid var(--line);padding-top:10px}
@@ -216,6 +226,7 @@ input[type=range]:focus-visible::-moz-range-thumb{background:var(--accent);borde
   .hb{padding:0 16px}
   .stage-bar .seg{min-width:0;flex:1}
   .stage-bar .hist{flex:none}
+  .stage-bar>.seg:first-child{flex:1 1 100%}
   .guides i{display:none}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none !important;animation:none !important}}
@@ -279,18 +290,54 @@ input[type=range]:focus-visible::-moz-range-thumb{background:var(--accent);borde
             <span class="meta"><span class="lab">ваш дизайн</span><span class="fname" id="nameDesign">—</span></span>
           </label>
         </div>
+        <div class="size-hint" id="sizeHint" hidden>
+          <div class="sh-top"><span>макет под&nbsp;этот экран</span><b id="shSize">—</b></div>
+          <p class="sh-sub" id="shRatio"></p>
+          <div class="seg">
+            <button type="button" id="btnCopySize">скопировать размер</button>
+            <button type="button" id="btnTemplate">скачать шаблон</button>
+          </div>
+          <div class="sh-warn" id="shWarn" hidden>
+            <p id="shWarnText"></p>
+            <div class="seg" role="group" aria-label="Как вписать макет">
+              <button type="button" id="warnFill" aria-pressed="true">заполнить с&nbsp;обрезкой</button>
+              <button type="button" id="warnContain" aria-pressed="false">вписать с&nbsp;полями</button>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="tile opt" aria-label="Дизайн в зоне">
         <div class="th"><span class="tag">дизайн в&nbsp;зоне</span></div>
         <div class="seg" role="group" aria-label="Как вписать дизайн">
-          <button type="button" id="fitFill" aria-pressed="true">заполнить <i>обрезка</i></button>
+          <button type="button" id="fitFill" aria-pressed="true">заполнить</button>
+          <button type="button" id="fitContain" aria-pressed="false">вписать</button>
           <button type="button" id="fitStretch" aria-pressed="false">растянуть</button>
         </div>
         <div class="seg">
           <button type="button" id="btnRot">повернуть <i>90°</i></button>
           <button type="button" id="btnFlip" aria-pressed="false">отразить</button>
         </div>
+        <div class="field">
+          <span class="lab">мышью внутри экрана двигать</span>
+          <div class="seg" role="group" aria-label="Что двигать мышью внутри экрана">
+            <button type="button" id="dragDesign" aria-pressed="true">макет</button>
+            <button type="button" id="dragZone" aria-pressed="false">всю зону</button>
+          </div>
+        </div>
+        <div class="field">
+          <span class="lab"><label for="pos_x">по&nbsp;горизонтали</label><span class="val" id="posv_x"></span></span>
+          <input type="range" id="pos_x" min="0" max="100" step="1" value="50">
+        </div>
+        <div class="field">
+          <span class="lab"><label for="pos_y">по&nbsp;вертикали</label><span class="val" id="posv_y"></span></span>
+          <input type="range" id="pos_y" min="0" max="100" step="1" value="50">
+        </div>
+        <div class="field">
+          <span class="lab"><label for="pos_z">масштаб</label><span class="val" id="posv_z"></span></span>
+          <input type="range" id="pos_z" min="100" max="400" step="1" value="100">
+        </div>
+        <div class="bars"><button type="button" class="bar line sm" id="btnPosReset">сбросить положение <svg class="ar" aria-hidden="true"><use href="#ar"/></svg></button></div>
       </section>
 
       <section class="tile opt" aria-label="Зелёная зона">
@@ -418,7 +465,7 @@ input[type=range]:focus-visible::-moz-range-thumb{background:var(--accent);borde
       </div>
       <span class="tag acc busy" id="busy" hidden>считаю…</span>
     </div>
-    <div class="hint"><span><b>угол</b> тяните за&nbsp;квадрат</span><span><b>вся зона</b> тяните изнутри</span><span><b>точно</b> стрелки 1&nbsp;px, shift&nbsp;10&nbsp;px</span><span><b>скрыть разметку</b> клик мимо зоны или&nbsp;H</span><span><b>новый мокап</b> бросьте файл сюда</span><span><b>отмена</b> <span id="keyUndo">⌘Z</span>, повтор <span id="keyRedo">⇧⌘Z</span></span></div>
+    <div class="hint"><span><b>угол</b> тяните за&nbsp;квадрат</span><span><b>макет</b> тяните внутри экрана</span><span><b>вся зона</b> Alt + тянуть</span><span><b>точно</b> стрелки 1&nbsp;px, shift&nbsp;10&nbsp;px</span><span><b>скрыть разметку</b> клик мимо зоны или&nbsp;H</span><span><b>новый мокап</b> бросьте файл сюда</span><span><b>отмена</b> <span id="keyUndo">⌘Z</span>, повтор <span id="keyRedo">⇧⌘Z</span></span></div>
   </section>
 </main>
 
@@ -468,7 +515,7 @@ const S = {
   designSrc: null, designName: '', designOriented: null,
   quad: null, sel: -1,
   keyHue: 120, tol: 40, expand: 1, despill: 8, shade: 70,
-  fit: 'fill', rot: 0, flip: false, shape: null, shapeMode: 'green', guides: true, fx: null, fxPreset: 'soft', keepOcc: false, showMask: false, showOrig: false,
+  fit: 'fill', rot: 0, flip: false, shape: null, shapeMode: 'green', guides: true, fx: null, fxPreset: 'soft', pos: { x: 0.5, y: 0.5, z: 1 }, dragMode: 'design', pyr: null, padColor: '#fff', keepOcc: false, showMask: false, showOrig: false,
   pick: false,
   preview: { scale: 1, src: null, out: null },
   sampleCache: { key: '', data: null },
@@ -727,6 +774,35 @@ function buildOriented() {
   x.translate(c.width / 2, c.height / 2); x.rotate(S.rot * Math.PI / 2); if (S.flip) x.scale(-1, 1);
   x.drawImage(s, -s.width / 2, -s.height / 2);
   S.designOriented = c; S.sampleCache.key = '';
+  // пирамида уменьшений: быстро и чисто при любом сдвиге и масштабе
+  S.pyr = [c]; let cur = c;
+  while (Math.min(cur.width, cur.height) > 8 && S.pyr.length < 14) {
+    const n = mk(Math.ceil(cur.width / 2), Math.ceil(cur.height / 2)), nx = n.getContext('2d');
+    nx.imageSmoothingQuality = 'high'; nx.drawImage(cur, 0, 0, n.width, n.height); S.pyr.push(n); cur = n;
+  }
+  // цвет полей для «вписать»: средний цвет углов макета
+  const cx = c.getContext('2d', { willReadFrequently: true }); let r = 0, g = 0, b = 0;
+  [[0, 0], [c.width - 1, 0], [0, c.height - 1], [c.width - 1, c.height - 1]].forEach(([X, Y]) => { const d = cx.getImageData(X, Y, 1, 1).data; r += d[0]; g += d[1]; b += d[2]; });
+  S.padColor = `rgb(${r >> 2},${g >> 2},${b >> 2})`;
+}
+function zoneAspect(q) {
+  const d = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
+  return ((d(q[0], q[1]) + d(q[3], q[2])) / 2) / Math.max(1, (d(q[0], q[3]) + d(q[1], q[2])) / 2);
+}
+/* окно макета, которое видно в экране (в пикселях макета) */
+function designWindow(q) {
+  const od = S.designOriented, W = od.width, H = od.height;
+  if (S.fit === 'stretch') return { x: 0, y: 0, w: W, h: H, W, H, sx: 0, sy: 0 };
+  const A = zoneAspect(q), cover = S.fit !== 'contain';
+  let cw, ch;
+  if ((W / H > A) === cover) { ch = H; cw = H * A; } else { cw = W; ch = W / A; }
+  cw /= S.pos.z; ch /= S.pos.z;
+  return { x: S.pos.x * (W - cw), y: S.pos.y * (H - ch), w: cw, h: ch, W, H, sx: W - cw, sy: H - ch };
+}
+function defaultPos() {
+  const od = S.designOriented;
+  const tall = od && S.quad && (od.height / od.width) > 1.3 / zoneAspect(S.quad);
+  return { x: 0.5, y: tall ? 0 : 0.5, z: 1 };
 }
 function gaussBlur(img, sigma) {
   const w = img.width, h = img.height, d = img.data, r = Math.max(1, Math.ceil(sigma * 2.5));
@@ -749,24 +825,19 @@ function designSample(q, scale) {
   const od = S.designOriented; if (!od) return null;
   const dist = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
   const top = dist(q[0], q[1]), bot = dist(q[3], q[2]), lef = dist(q[0], q[3]), rig = dist(q[1], q[2]);
-  let sx = 0, sy = 0, sw = od.width, sh = od.height;
-  if (S.fit === 'fill') {
-    const A = ((top + bot) / 2) / Math.max(1, (lef + rig) / 2);
-    if (sw / sh > A) { const nw = sh * A; sx = (sw - nw) / 2; sw = nw; } else { const nh = sw / A; sy = (sh - nh) / 2; sh = nh; }
-  }
-  const tw = Math.max(2, Math.round(Math.min(Math.max(top, bot), sw)));
-  const th = Math.max(2, Math.round(Math.min(Math.max(lef, rig), sh)));
+  const win = designWindow(q);
+  const tw = Math.max(2, Math.round(Math.min(Math.max(top, bot), win.w)));
+  const th = Math.max(2, Math.round(Math.min(Math.max(lef, rig), win.h)));
   const sigma = S.fx.soft / 10 * (scale || 1);
-  const key = [tw, th, sx | 0, sy | 0, sw | 0, sh | 0, S.rot, S.flip, sigma.toFixed(2)].join(',');
+  const key = [tw, th, win.x.toFixed(1), win.y.toFixed(1), win.w.toFixed(1), win.h.toFixed(1), S.rot, S.flip, S.padColor, sigma.toFixed(2)].join(',');
   if (S.sampleCache.key === key) return S.sampleCache.data;
-  let cur = od, cx0 = sx, cy0 = sy, cw = sw, ch = sh;
-  while (cw / 2 > tw && ch / 2 > th) {
-    const nw = Math.ceil(cw / 2), nh = Math.ceil(ch / 2), c = mk(nw, nh), x = c.getContext('2d');
-    x.imageSmoothingQuality = 'high'; x.drawImage(cur, cx0, cy0, cw, ch, 0, 0, nw, nh);
-    cur = c; cx0 = 0; cy0 = 0; cw = nw; ch = nh;
-  }
+  const kx = tw / win.w, ky = th / win.h, k = Math.max(kx, ky);
+  const li = Math.max(0, Math.min(S.pyr.length - 1, Math.floor(Math.log2(1 / k) + 1e-6)));
+  const L = S.pyr[li];
   const f = mk(tw, th), fx = f.getContext('2d', { willReadFrequently: true });
-  fx.imageSmoothingQuality = 'high'; fx.drawImage(cur, cx0, cy0, cw, ch, 0, 0, tw, th);
+  fx.fillStyle = S.padColor; fx.fillRect(0, 0, tw, th);
+  fx.imageSmoothingQuality = 'high';
+  fx.drawImage(L, 0, 0, L.width, L.height, -win.x * kx, -win.y * ky, win.W * kx, win.H * ky);
   const data = fx.getImageData(0, 0, tw, th);
   if (sigma >= 0.15) gaussBlur(data, sigma);
   S.sampleCache = { key, data }; return data;
@@ -962,7 +1033,7 @@ function renderPreview() {
   const vx = view.getContext('2d');
   if (S.showOrig) vx.putImageData(P.src, 0, 0);
   else { composite(P.src, P.scale, P.out, S.showMask); vx.putImageData(P.out, 0, 0); }
-  drawUI();
+  drawUI(); syncPos(); updateHints();
 }
 let drag = null, hover = -1;
 function drawUI(loupe) {
@@ -1028,7 +1099,13 @@ ui.addEventListener('pointerdown', e => {
   if (!S.guides || S.showOrig) { setGuides(true); return; }
   const i = hit(pos);
   if (i >= 0) { drag = { i, start: pos, orig: S.quad.map(p => ({ ...p })) }; S.sel = i; }
-  else if (insideQuad(pos)) { drag = { i: -1, start: pos, orig: S.quad.map(p => ({ ...p })) }; }
+  else if (insideQuad(pos)) {
+    const moveDesign = (S.dragMode === 'design') !== e.altKey;
+    if (moveDesign && S.designOriented) {
+      if (S.fit === 'stretch') { setStatus('в режиме «растянуть» макет не двигается. Выберите «заполнить» или «вписать».', 'warn'); return; }
+      drag = { i: -2, start: pos, origPos: { ...S.pos }, win: designWindow(S.quad), Minv: inv3(squareToQuad(S.quad)) };
+    } else drag = { i: -1, start: pos, orig: S.quad.map(p => ({ ...p })) };
+  }
   else { setGuides(false); return; }
   ui.setPointerCapture(e.pointerId); e.preventDefault();
   drawUI(drag.i >= 0 ? drag : null);
@@ -1036,7 +1113,15 @@ ui.addEventListener('pointerdown', e => {
 ui.addEventListener('pointermove', e => {
   if (!S.mockCanvas || !S.quad) return;
   const pos = evtPos(e);
-  if (!drag) { if (!S.guides) { ui.style.cursor = 'pointer'; return; } const h = hit(pos); if (h !== hover) { hover = h; drawUI(); } ui.style.cursor = S.pick ? 'copy' : h >= 0 ? 'grab' : insideQuad(pos) ? 'move' : 'crosshair'; return; }
+  if (!drag) { if (!S.guides) { ui.style.cursor = 'pointer'; return; } const h = hit(pos); if (h !== hover) { hover = h; drawUI(); } ui.style.cursor = S.pick ? 'copy' : h >= 0 ? 'grab' : insideQuad(pos) ? ((S.dragMode === 'design') !== e.altKey && S.designOriented && S.fit !== 'stretch' ? 'grab' : 'move') : 'crosshair'; return; }
+  if (drag.i === -2) {
+    const k = S.mockCanvas.width / cssW, M = drag.Minv;
+    const uv = p => { const X = p.x * k, Y = p.y * k, w = M[6] * X + M[7] * Y + M[8]; return [(M[0] * X + M[1] * Y + M[2]) / w, (M[3] * X + M[4] * Y + M[5]) / w]; };
+    const a = uv(drag.start), b = uv(pos), w = drag.win;
+    if (Math.abs(w.sx) > 0.5) S.pos.x = clamp(drag.origPos.x - (b[0] - a[0]) * w.w / w.sx, 0, 1);
+    if (Math.abs(w.sy) > 0.5) S.pos.y = clamp(drag.origPos.y - (b[1] - a[1]) * w.h / w.sy, 0, 1);
+    renderPreviewNow(null); return;
+  }
   const k = S.mockCanvas.width / cssW, dx = (pos.x - drag.start.x) * k, dy = (pos.y - drag.start.y) * k;
   const W = S.mockCanvas.width, H = S.mockCanvas.height;
   if (drag.i >= 0) S.quad[drag.i] = { x: clamp(drag.orig[drag.i].x + dx, -W * 0.5, W * 1.5), y: clamp(drag.orig[drag.i].y + dy, -H * 0.5, H * 1.5) };
@@ -1094,7 +1179,7 @@ function setDesign(canvas, name, sample) {
   const c = mk(canvas.width, canvas.height), x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(canvas, 0, 0);
   S.designSrc = c; S.designName = name; S.designSample = !!sample;
   showName('nameDesign', name, sample);
-  drawThumb($('thumbDesign'), c); buildOriented(); scheduleRender();
+  drawThumb($('thumbDesign'), c); buildOriented(); S.pos = defaultPos(); scheduleRender();
 }
 function wireDrop(dropId, inputId, onFile) {
   const drop = $(dropId), input = $(inputId);
@@ -1170,13 +1255,123 @@ $('btnAutoKey').addEventListener('click', () => {
   if (!S.preview.src) return; const kh = autoKey(S.preview.src);
   if (kh) { S.keyHue = kh; updateKey(); detect(); } else setStatus('зелёный не найден автоматически. Попробуйте пипетку.', 'warn');
 });
-function setFit(f) { S.fit = f; $('fitFill').setAttribute('aria-pressed', f === 'fill'); $('fitStretch').setAttribute('aria-pressed', f === 'stretch'); S.sampleCache.key = ''; scheduleRender(); }
-$('fitFill').addEventListener('click', () => { setFit('fill'); record(); });
-$('fitStretch').addEventListener('click', () => { setFit('stretch'); record(); });
+function setFit(f) {
+  S.fit = f; [['fitFill', 'fill'], ['fitContain', 'contain'], ['fitStretch', 'stretch']].forEach(([id, v]) => $(id).setAttribute('aria-pressed', f === v));
+  S.sampleCache.key = ''; scheduleRender();
+}
+const pickFit = f => { setFit(f); S.pos.z = 1; syncPos(); record(); };
+$('fitFill').addEventListener('click', () => pickFit('fill'));
+$('fitContain').addEventListener('click', () => pickFit('contain'));
+$('fitStretch').addEventListener('click', () => pickFit('stretch'));
+$('warnFill').addEventListener('click', () => pickFit('fill'));
+$('warnContain').addEventListener('click', () => pickFit('contain'));
+/* положение макета внутри экрана */
+function syncPos() {
+  const has = !!(S.designOriented && S.quad && S.fit !== 'stretch'), win = has ? designWindow(S.quad) : null;
+  const ex = $('pos_x'), ey = $('pos_y'), ez = $('pos_z');
+  ex.value = Math.round(S.pos.x * 100); ey.value = Math.round(S.pos.y * 100); ez.value = Math.round(S.pos.z * 100);
+  ex.disabled = !has || Math.abs(win.sx) < 1; ey.disabled = !has || Math.abs(win.sy) < 1; ez.disabled = !has;
+  [ex, ey, ez].forEach(paintRange);
+  const f = (el, v, lo, hi) => el.disabled ? '—' : v < 0.005 ? lo : v > 0.995 ? hi : Math.round(v * 100) + '%';
+  $('posv_x').textContent = f(ex, S.pos.x, 'левый край', 'правый край');
+  $('posv_y').textContent = f(ey, S.pos.y, 'верх', 'низ');
+  $('posv_z').textContent = ez.disabled ? '—' : Math.round(S.pos.z * 100) + '%';
+}
+[['pos_x', 'x'], ['pos_y', 'y'], ['pos_z', 'z']].forEach(([id, k]) => {
+  const el = $(id);
+  el.addEventListener('input', () => { S.pos[k] = +el.value / 100; syncPos(); scheduleRender(); });
+  el.addEventListener('change', record);
+});
+$('btnPosReset').addEventListener('click', () => { S.pos = defaultPos(); syncPos(); scheduleRender(); record(); });
+function setDragMode(m) { S.dragMode = m; $('dragDesign').setAttribute('aria-pressed', m === 'design'); $('dragZone').setAttribute('aria-pressed', m === 'zone'); }
+$('dragDesign').addEventListener('click', () => setDragMode('design'));
+$('dragZone').addEventListener('click', () => setDragMode('zone'));
+
+/* подсказка: какой размер макета нужен под этот экран */
+const RATIOS = [[16, 9], [16, 10], [3, 2], [4, 3], [5, 4], [1, 1], [4, 5], [3, 4], [2, 3], [10, 16], [9, 16], [9, 19.5], [9, 20], [21, 9]];
+const fmtN = n => String(n).replace('.', ',');
+const fmtRatio = A => A >= 1 ? `${fmtN(+A.toFixed(2))} : 1` : `1 : ${fmtN(+(1 / A).toFixed(2))}`;
+function snapRatio(A) {
+  let best = null, bd = 0.025;
+  for (const [a, b] of RATIOS) { const d = Math.abs(Math.log(A / (a / b))); if (d < bd) { bd = d; best = { v: a / b, label: `${fmtN(a)} : ${fmtN(b)}` }; } }
+  return best;
+}
+function recSize() {
+  const q = S.quad, d = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
+  let A = zoneAspect(q); const sn = snapRatio(A); if (sn) A = sn.v;
+  const w = Math.max(Math.max(d(q[0], q[1]), d(q[3], q[2])), Math.max(d(q[0], q[3]), d(q[1], q[2])) * A);
+  return { w: Math.round(w), h: Math.round(w / A), label: sn ? sn.label : fmtRatio(A) };
+}
+let hintKey = '';
+function updateHints() {
+  const box = $('sizeHint');
+  if (!S.quad) { box.hidden = true; hintKey = ''; return; }
+  const r = recSize(), A = zoneAspect(S.quad), od = S.designOriented;
+  const dA = od ? od.width / od.height : 0, mis = dA ? Math.abs(Math.log(dA / A)) : 0;
+  const shape = !dA || mis <= 0.03 || (S.designSample && mis < 0.1) ? '' : dA < A / 1.3 ? 'tall' : dA > A * 1.3 ? 'wide' : 'near';
+  const key = [r.w, r.h, r.label, S.fit, shape, dA && fmtRatio(dA)].join('|');
+  if (key === hintKey) return; hintKey = key; box.hidden = false;
+  $('shSize').textContent = `${r.w} × ${r.h} px`;
+  $('shRatio').textContent = `пропорции ${r.label}. Это минимум: крупнее можно, в тех же пропорциях.`;
+  $('shWarn').hidden = !shape;
+  if (!shape) return;
+  const t = S.fit === 'contain' ? 'макет вписан целиком, по краям поля цвета его фона.'
+    : S.fit === 'stretch' ? `макет растянут под экран, пропорции искажены (у макета ${fmtRatio(dA)}).`
+    : shape === 'tall' ? 'макет длиннее экрана, видна только часть. Потяните его внутри экрана или двигайте ползунок «по вертикали».'
+    : shape === 'wide' ? 'макет шире экрана, видна только часть. Потяните его внутри экрана или двигайте ползунок «по горизонтали».'
+    : `пропорции макета (${fmtRatio(dA)}) немного другие: края чуть обрежутся.`;
+  $('shWarnText').textContent = t;
+  $('warnFill').setAttribute('aria-pressed', S.fit === 'fill'); $('warnContain').setAttribute('aria-pressed', S.fit === 'contain');
+}
+$('btnCopySize').addEventListener('click', async () => {
+  if (!S.quad) return; const r = recSize(), t = `${r.w}×${r.h}`; let ok = false;
+  try { await navigator.clipboard.writeText(t); ok = true; } catch (e) {
+    const ta = document.createElement('textarea'); ta.value = t; ta.style.cssText = 'position:fixed;opacity:0;left:0;top:0';
+    document.body.append(ta); ta.select(); try { ok = document.execCommand('copy'); } catch (_) {} ta.remove();
+  }
+  setStatus(ok ? `размер скопирован: ${r.w} × ${r.h} px` : `скопируйте вручную: ${r.w} × ${r.h} px`, ok ? 'ok' : 'warn');
+});
+$('btnTemplate').addEventListener('click', async () => {
+  if (!S.quad) return;
+  const r = recSize(), k = Math.min(1, 4000 / Math.max(r.w, r.h)), W = Math.max(2, Math.round(r.w * k)), H = Math.max(2, Math.round(r.h * k));
+  const c = mk(W, H), x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+  const sh = S.shapeMode === 'green' && S.shape ? S.shape : null;
+  if (sh) {
+    // серым: места, которые в мокапе закрыты рамкой, вырезом камеры или рукой
+    const mw = Math.min(W, 600), mh = Math.max(2, Math.round(mw * H / W)), m = mk(mw, mh), mx = m.getContext('2d'), id = mx.createImageData(mw, mh), T = squareToQuad(S.quad);
+    for (let y = 0; y < mh; y++) for (let xx = 0; xx < mw; xx++) {
+      const u = (xx + 0.5) / mw, v = (y + 0.5) / mh, w = T[6] * u + T[7] * v + T[8];
+      const X = (T[0] * u + T[1] * v + T[2]) / w * sh.ws, Y = (T[3] * u + T[4] * v + T[5]) / w * sh.ws;
+      const sx = clamp(Math.floor(X), 0, sh.w - 1), sy = clamp(Math.floor(Y), 0, sh.h - 1);
+      if (sh.sdf[sy * sh.w + sx] <= 0) { const p = (y * mw + xx) * 4; id.data[p] = 222; id.data[p + 1] = 222; id.data[p + 2] = 222; id.data[p + 3] = 255; }
+    }
+    mx.putImageData(id, 0, 0); x.imageSmoothingQuality = 'high'; x.drawImage(m, 0, 0, W, H);
+  }
+  const fs = Math.max(12, Math.round(Math.min(W, H) / 11));
+  x.fillStyle = '#0D0D0D'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = `500 ${fs}px Manrope, system-ui, sans-serif`; x.fillText(`${r.w} × ${r.h} px`, W / 2, H / 2);
+  x.fillStyle = '#8A8A8A'; x.font = `400 ${Math.round(fs * 0.38)}px Manrope, system-ui, sans-serif`;
+  x.fillText(sh ? 'серым: места, закрытые в мокапе' : `пропорции ${r.label}`, W / 2, H / 2 + fs * 0.9);
+  const blob = await new Promise(res => c.toBlob(res, 'image/png'));
+  await saveBlob(blob, `template-${r.w}x${r.h}.png`, `шаблон сохранён: ${r.w} × ${r.h} px`);
+});
 $('btnRot').addEventListener('click', () => { S.rot = (S.rot + 1) % 4; buildOriented(); scheduleRender(); record(); });
 $('btnFlip').addEventListener('click', () => { S.flip = !S.flip; $('btnFlip').setAttribute('aria-pressed', S.flip); buildOriented(); scheduleRender(); record(); });
 
 /* ---------- экспорт ---------- */
+async function saveBlob(blob, filename, okMsg) {
+  if (window.claude && typeof window.claude.use === 'function') {
+    const dl = await window.claude.use('downloads').catch(() => null);
+    if (dl) {
+      try { await dl.save({ filename, data: blob }); setStatus(okMsg, 'ok'); }
+      catch (e) { setStatus(e && e.code === 'declined' ? 'сохранение отменено.' : 'сохранить файл здесь не получилось.', 'warn'); }
+      return;
+    }
+  }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  setStatus(okMsg, 'ok');
+}
 $('btnExport').addEventListener('click', async () => {
   if (!S.mockCanvas) return;
   if (!S.designOriented) { setStatus('сначала загрузите дизайн.', 'warn'); return; }
@@ -1191,20 +1386,7 @@ $('btnExport').addEventListener('click', async () => {
     const blob = await new Promise(r => c.toBlob(r, 'image/png'));
     const base = (S.designName || 'design').replace(/\.[^.]+$/, '').replace(/[^\p{L}\p{N}_-]+/gu, '-').slice(0, 60) || 'design';
     const filename = `mockup-${base}.png`;
-    let done = false;
-    if (window.claude && typeof window.claude.use === 'function') {
-      const dl = await window.claude.use('downloads').catch(() => null);
-      if (dl) {
-        try { await dl.save({ filename, data: blob }); setStatus(`готово: ${filename}`, 'ok'); }
-        catch (e) { setStatus(e && e.code === 'declined' ? 'сохранение отменено.' : 'сохранить файл здесь не получилось.', 'warn'); }
-        done = true;
-      }
-    }
-    if (!done) {
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename;
-      document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-      setStatus(`готово: ${filename}, ${W} × ${H} px`, 'ok');
-    }
+    await saveBlob(blob, filename, `готово: ${filename}, ${W} × ${H} px`);
   } catch (e) { setStatus('не получилось собрать PNG: ' + (e && e.message || e), 'warn'); }
   finally { btn.disabled = false; $('busy').hidden = true; }
 });
@@ -1285,10 +1467,10 @@ let nudgeT = 0;
 function snap() {
   return { mock: S.mockCanvas, mockName: S.mockName, mockSample: S.mockSample, design: S.designSrc, designName: S.designName, designSample: S.designSample,
     quad: S.quad ? S.quad.map(p => ({ x: p.x, y: p.y })) : null, keyHue: S.keyHue, tol: S.tol, expand: S.expand, despill: S.despill, shade: S.shade,
-    fit: S.fit, rot: S.rot, flip: S.flip, keepOcc: S.keepOcc, shape: S.shape, shapeMode: S.shapeMode, fx: Object.assign({}, S.fx), fxPreset: S.fxPreset };
+    fit: S.fit, rot: S.rot, flip: S.flip, keepOcc: S.keepOcc, shape: S.shape, shapeMode: S.shapeMode, fx: Object.assign({}, S.fx), fxPreset: S.fxPreset, pos: Object.assign({}, S.pos) };
 }
 function sameSnap(a, b) {
-  for (const k in a) { if (k === 'quad' || k === 'fx') { if (JSON.stringify(a[k]) !== JSON.stringify(b[k])) return false; } else if (a[k] !== b[k]) return false; }
+  for (const k in a) { if (k === 'quad' || k === 'fx' || k === 'pos') { if (JSON.stringify(a[k]) !== JSON.stringify(b[k])) return false; } else if (a[k] !== b[k]) return false; }
   return true;
 }
 function record() {
@@ -1303,7 +1485,7 @@ function restore(s) {
   if (s.design !== S.designSrc) { S.designSrc = s.design; S.designName = s.designName; S.designSample = s.designSample; showName('nameDesign', s.designName, s.designSample); drawThumb($('thumbDesign'), s.design); }
   S.quad = s.quad ? s.quad.map(p => ({ x: p.x, y: p.y })) : null; S.sel = -1;
   ['keyHue', 'tol', 'expand', 'despill', 'shade', 'rot', 'flip', 'keepOcc', 'shape'].forEach(k => { S[k] = s[k]; }); setShapeMode(s.shapeMode);
-  S.fx = Object.assign({}, s.fx); S.fxPreset = s.fxPreset; syncFx(); S.sampleCache.key = '';
+  S.fx = Object.assign({}, s.fx); S.fxPreset = s.fxPreset; syncFx(); S.pos = Object.assign({}, s.pos); S.sampleCache.key = '';
   ['tol', 'expand', 'despill', 'shade'].forEach(id => { $(id).value = S[id]; });
   $('keepOcc').checked = S.keepOcc; $('btnFlip').setAttribute('aria-pressed', S.flip);
   setFit(s.fit); buildOriented(); updateKey(); syncVals(); scheduleRender();
